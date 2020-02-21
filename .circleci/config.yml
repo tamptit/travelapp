@@ -1,5 +1,5 @@
 orbs:
-  heroku: circleci/heroku@x.y
+  heroku: circleci/heroku@x1.0.1git
 version: 2.1
 workflows:
   heroku_deploy:
