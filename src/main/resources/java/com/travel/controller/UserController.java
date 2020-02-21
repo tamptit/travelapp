@@ -25,12 +25,17 @@ public class UserController {
 //    UserValidator userValidator;
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
-    public User findByIdUser(@PathVariable(name = "idUser") Long id) {
-
-        return userRepository.findById(id).orElse(null);
+    public ResponseEntity findByIdUser(@PathVariable(name = "id") Long id) {
+        Optional<User> user = userRepository.findById(id);
+        return ResponseEntity.ok().body(user);
     }
 
-    @PostMapping("/registry")
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public ResponseEntity testOk() {
+        return ResponseEntity.ok().body("oki");
+    }
+
+    @PostMapping("/register")
     public ResponseEntity registerUser(@Valid @RequestBody User user) {
         List<ErrorMessage> listError = checkExist(user);
         if (listError.isEmpty()) {
@@ -51,7 +56,7 @@ public class UserController {
         if (userRepository.findByEmail(email) != null) {
             list.add(new ErrorMessage(400, "Email exist"));
         }
-        if (user.getPasswordConfirm().equals(user.getPassword())){
+        if (!user.getPasswordConfirm().equals(user.getPassword())) {
             list.add(new ErrorMessage(400, "Password is not matched."));
         }
         return list;
