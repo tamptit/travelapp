@@ -1,15 +1,50 @@
-version: 2.1
+version: 2.0
 
-orbs:
-  heroku: circleci/heroku@1.0.1 # Use the Heroku orb in your config
+jobs:
+  build:
+    docker:
+      - - image: circleci/openjdk:8-jdk # primary container - where job steps are run
+      - image: circleci/postgres:9.4.12-alpine # services container
+    working_directory: ~/travel-app
+    steps:
+      - checkout
+      # Bundle install dependencies
+      - run: bundle install --path vendor/bundle
+
+      # Database setup
+      - run: bundle exec rake db:create db:schema:load
+
+      - run:
+          name: Run tests
+          command: rake
+
+  deploy:
+    machine:
+      enabled: true
+    working_directory: ~/travel-app
+    environment:
+      HEROKU_APP: "sleepy-refuge-55486" # define env var $HEROKU_APP
+    steps:
+      - checkout
+      - run:
+          name: Setup Heroku
+          command: bash .circleci/setup-heroku.sh # run a script to set up Heroku
+
+      - run:
+          command: |
+            git push heroku sequential-branch-filter:master
+            heroku run rake db:migrate
+            sleep 5 # sleep for 5 seconds to wait for dynos
+            heroku restart
 
 workflows:
-  heroku_deploy:
+  version: 2
+  build-and-deploy:
     jobs:
       - build
-      - heroku/deploy-via-git
-        requires:
-          - build # only run deploy-via-git job if the build job has completed
-        filters:
-          branches:
-            only: master
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: sequential-branch-filter
