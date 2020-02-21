@@ -30,13 +30,17 @@ import java.util.Map;
 public class UserController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
-    @Autowired private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    @Autowired private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-    @Autowired private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
-    @Autowired private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping(value = "/login")
     public ResponseEntity<Object> login(@RequestBody UserForm requestBody) {
@@ -99,7 +103,7 @@ public class UserController {
         if (userRepository.findByUsername(username).orElse(null) != null) {
             list.add(new ErrorMessage(400, "Username exist"));
         }
-        if (userRepository.findByEmail(email).orElse(null) != null  ) {
+        if (userRepository.findByEmail(email).orElse(null) != null) {
             list.add(new ErrorMessage(400, "Email exist"));
         }
         return list;

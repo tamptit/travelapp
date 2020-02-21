@@ -14,3 +14,6 @@ create table public.users
     constraint user_username_uindex
         unique (username)
 );
+
+INSERT INTO public.users( username, full_name, email, password, date_birth, gender)
+	VALUES ('username123', 'tranhoangnam', 'namtran123@gamil', 'qweasd', '2019-09-20', 1);
