@@ -7,49 +7,38 @@ import javax.validation.constraints.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
-    //@Size(min = 6, max = 50)
-    //@Min(value = 6, message = "Age should not be less than 18")
-    @NotEmpty(message = "Username is required")
+//    @Size(min = 8, max = 50)
+//    @Min(value = 6, message = "Age should not be less than 18")
+//    @NotEmpty(message = "Username is required")
     private String username;
 
     @Column(unique = true)
-    @Email(message = "Email should be valid")
-    @Size(min = 3, max = 50)
+//    @NotEmpty(message = "Email is required")
+//    @Size(min = 3, max = 100)
     private String email;
 
     @Column(name = "full_name")
-    @NotEmpty(message = "Full name is required")
+//    @NotEmpty(message = "Full name is required")
     private String fullName;
 
     @Column(name = "date_Birth")
-    @Past
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dOfB;
 
     @Column(name = "gender")
-    @NotNull(message = "Sex is required")
+//    @NotEmpty(message = "Sex is required")
     private boolean gender;
 
     @Column(unique = true)
-    @Size(min = 6, message = "Pass minimum 6 charactor")
+//    @Size(min = 1, max = 6)
     private String password;
-    @Transient
-    private  String passwordConfirm;
-
-    public String getPasswordConfirm() {
-        return passwordConfirm;
-    }
-
-    public void setPasswordConfirm(String passwordConfirm) {
-        this.passwordConfirm = passwordConfirm;
-    }
 
     public Long getId() {
         return id;
