@@ -20,11 +20,7 @@ CREATE TABLE public.plan_content
 	status      varchar(45) DEFAULT NULL,
 	start_time  time        DEFAULT NULL,
 	end_time    time        DEFAULT NULL,
-	plan_id     INT     DEFAULT NULL,
-	--      KEY `FK_Content_Plan_idx` (`plan_id`),
-	-- 	  plan_id INTEGER REFERENCES plan(id),
 	plan_id INT REFERENCES plan(id)
-	--     CONSTRAINT plan_id FOREIGN KEY (plan_id) REFERENCES public.plan (id)
 );
 CREATE TABLE public.comment
 (
