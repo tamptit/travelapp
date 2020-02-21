@@ -1,0 +1,42 @@
+plugins {
+	id 'org.springframework.boot' version '2.2.4.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+	id "org.flywaydb.flyway" version "5.2.4"
+}
+
+group = 'com.travel'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//	implementation 'org.mariadb.jdbc:mariadb-java-client:2.5.4'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:2.5.4'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	testImplementation 'org.springframework.security:spring-security-test'
+	compile('org.flywaydb:flyway-core')
+	// https://mvnrepository.com/artifact/log4j/log4j
+	compile group: 'log4j', name: 'log4j', version: '1.2.17'
+	// https://mvnrepository.com/artifact/javax.validation/validation-api
+	compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+}
+
+test {
+	useJUnitPlatform()
+}
+
+flyway {
+	url = 'jdbc:mariadb://localhost:3306/mysql'
+	user = 'root'
+	password =
+	schemas = 'travel'
+}
