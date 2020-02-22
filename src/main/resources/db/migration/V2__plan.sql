@@ -1,4 +1,3 @@
-SET CLIENT_ENCODING TO 'utf8';
 -- create user table
 CREATE TABLE public.plan
 (
@@ -35,31 +34,31 @@ CREATE TABLE public.comment
 
 INSERT INTO public.plan(
 	id, name, content, active_user, follow_user, start_day, end_day, status)
-	VALUES ('11', 'Hà Nội đến Hồ Chí Minh', 'Demo', '65', '150', '2020-12-12', '2020-12-05', 'active');
+	VALUES ('11', 'Ha Noi to HCM', 'Demo', '65', '150', '2020-12-12', '2020-12-05', 'active');
 INSERT INTO public.plan(
 	id, name, content, active_user, follow_user, start_day, end_day, status)
-	VALUES ('2', 'Hà Nội đến Lào Cai', 'Demo', '65', '200', '2020-12-12', '2020-12-05', 'latest');
+	VALUES ('2', 'Ha Noi to Lao Cai', 'Demo', '65', '200', '2020-12-12', '2020-12-05', 'latest');
 INSERT INTO public.plan(
 	id, name, content, active_user, follow_user, start_day, end_day, status)
-	VALUES ('3', 'Hà Nội đến Hải Dương', 'Demo', '50', '300', '2020-12-12', '2020-12-05', 'latest');
+	VALUES ('3', 'Ha Noi to Hai Duong', 'Demo', '50', '300', '2020-12-12', '2020-12-05', 'latest');
 INSERT INTO public.plan(
 	id, name, content, active_user, follow_user, start_day, end_day, status)
-	VALUES ('4', 'Hà Nội đến Thái Bình', 'Demo', '100', '150', '2020-12-12', '2020-12-05', 'latest');
+	VALUES ('4', 'Ha Noi to Thai Binh', 'Demo', '100', '150', '2020-12-12', '2020-12-05', 'latest');
 INSERT INTO public.plan(
 	id, name, content, active_user, follow_user, start_day, end_day, status)
-	VALUES ('5', 'Hà Nội đến Cao Bằng', 'Demo', '80', '150', '2020-12-12', '2020-12-05', 'latest');
+	VALUES ('5', 'Ha Noi to Dien Bien', 'Demo', '80', '150', '2020-12-12', '2020-12-05', 'latest');
 INSERT INTO public.plan(
 	id, name, content, active_user, follow_user, start_day, end_day, status)
-	VALUES ('6', 'Hà Nội đến Nam Định', 'Demo', '69', '200', '2020-12-12', '2020-12-05', 'latest');
+	VALUES ('6', 'Ha Noi to Ha Giang', 'Demo', '69', '200', '2020-12-12', '2020-12-05', 'latest');
 INSERT INTO public.plan(
 	id, name, content, active_user, follow_user, start_day, end_day, status)
-	VALUES ('7', 'Hà Nội đến Quảng Ninh', 'Demo', '96', '200', '2020-12-12', '2020-12-05', 'latest');
+	VALUES ('7', 'Ha Noi to Nam Dinh', 'Demo', '96', '200', '2020-12-12', '2020-12-05', 'latest');
 INSERT INTO public.plan(
 	id, name, content, active_user, follow_user, start_day, end_day, status)
-	VALUES ('8', 'Hồ Chí Minh đến Đà Nẵng', 'Demo', '45', '145', '2020-12-12', '2020-12-05', 'latest');
+	VALUES ('8', 'HCM to Da Nang', 'Demo', '45', '145', '2020-12-12', '2020-12-05', 'latest');
 INSERT INTO public.plan(
 	id, name, content, active_user, follow_user, start_day, end_day, status)
-	VALUES ('9', 'Hồ Chí Minh đến Hà Nội', 'Demo', '65', '120', '2020-12-12', '2020-12-05', 'latest');
+	VALUES ('9', 'Ha Noi to Hoi An', 'Demo', '65', '120', '2020-12-12', '2020-12-05', 'latest');
 INSERT INTO public.plan(
 	id, name, content, active_user, follow_user, start_day, end_day, status)
-	VALUES ('10', 'Hồ Chí Minh đến Hải Phòng', 'Demo', '85', '105', '2020-12-12', '2020-12-05', 'active');
+	VALUES ('10', 'HCM to Phan Thiet', 'Demo', '85', '105', '2020-12-12', '2020-12-05', 'active');
