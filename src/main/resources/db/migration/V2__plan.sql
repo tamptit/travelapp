@@ -1,3 +1,4 @@
+SET CLIENT_ENCODING TO 'utf8';
 -- create user table
 CREATE TABLE public.plan
 (
