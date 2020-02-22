@@ -17,5 +17,10 @@ public class MainController {
         return "ok";
     }
 
+    @GetMapping("/ok")
+    public String testHeroku() {
+        return "ok";
+    }
+
 }
 
