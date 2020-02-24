@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.text.ParseException;
 
 
@@ -15,6 +16,12 @@ public class MainController {
     @GetMapping("/")
     public String userRegistry() {
         return "ok";
+    }
+    @RequestMapping("/user")
+    @ResponseBody
+    public Principal user (Principal principal)
+    {
+        return principal;
     }
 
 }
