@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.text.ParseException;
 
-
 @RestController
-@RequestMapping(value = "/api")
+@RequestMapping(value = "/test")
 public class MainController {
 
     @GetMapping("/")
@@ -22,6 +21,11 @@ public class MainController {
     public Principal user (Principal principal)
     {
         return principal;
+    }
+
+    @GetMapping("/ok")
+    public String testHeroku() {
+        return "ok";
     }
 
 }
