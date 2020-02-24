@@ -22,8 +22,8 @@ public class JwtConfiguration {
   }
 
   private long expirationTime = 864_000_000;
-  private String secret = "ma_bi_mat_hehehehe";
-  private String issuer = "hell.com.vn";
+  private String secret = "secret_key";
+  private String issuer = "quylua98";
 
   public long getExpirationTime() {
     return expirationTime;

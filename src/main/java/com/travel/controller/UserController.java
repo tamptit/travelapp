@@ -1,10 +1,13 @@
 package com.travel.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travel.config.JwtTokenProvider;
+import com.travel.dto.TokenDto;
 import com.travel.dto.UserForm;
 import com.travel.entity.ErrorMessage;
 import com.travel.entity.User;
 import com.travel.repository.UserRepository;
+import com.travel.utils.CookieUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -30,33 +35,43 @@ import java.util.Map;
 public class UserController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
-    @Autowired
-    private UserRepository userRepository;
+    private static final String jwtTokenCookieName = "JWT-TOKEN";
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    @Autowired private UserRepository userRepository;
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    @Autowired private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    @Autowired private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired private BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping(value = "/login")
-    public ResponseEntity<Object> login(@RequestBody UserForm requestBody) {
+    public ResponseEntity<Object> login(
+            HttpServletResponse response,
+            HttpServletRequest request,
+            @RequestBody UserForm userForm
+
+    ) {
         try {
-            String username = requestBody.getEmail();
+            String username = userForm.getUsername();
             Authentication authentication =
                     authenticationManager.authenticate(
-                            new UsernamePasswordAuthenticationToken(username, requestBody.getPassword()));
+                            new UsernamePasswordAuthenticationToken(username, userForm.getPassword()));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtTokenProvider.generateToken(authentication);
+            CookieUtil.create(response, jwtTokenCookieName, token, false, -1, request.getServerName());
             return new ResponseEntity<>(token, HttpStatus.OK);
+
         } catch (Exception e) {
             new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping(value = "/logout")
+    public void logout(HttpServletResponse httpServletResponse,HttpServletRequest request){
+        CookieUtil.clear(httpServletResponse, jwtTokenCookieName,request.getServerName());
     }
 
     @PutMapping("/register")
@@ -79,7 +94,18 @@ public class UserController {
         }
     }
 
-    @GetMapping(value = "/userprofile")
+    @PostMapping(value = "/validate")
+    public ResponseEntity validate(
+            @RequestBody TokenDto tokenDto
+    ) {
+        if(jwtTokenProvider.validateToken(tokenDto.getToken())){
+            return ResponseEntity.ok().body(true);
+        }else{
+            return ResponseEntity.badRequest().body(false);
+        }
+    }
+
+    @GetMapping(value = "/user-profile")
     public ResponseEntity<Object> getUserProfileFromToken() {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         String email = au.getName();
@@ -103,7 +129,7 @@ public class UserController {
         if (userRepository.findByUsername(username).orElse(null) != null) {
             list.add(new ErrorMessage(400, "Username exist"));
         }
-        if (userRepository.findByEmail(email).orElse(null) != null) {
+        if (userRepository.findByEmail(email).orElse(null) != null  ) {
             list.add(new ErrorMessage(400, "Email exist"));
         }
         return list;

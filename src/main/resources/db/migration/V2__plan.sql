@@ -1,35 +1,35 @@
 -- create user table
 CREATE TABLE public.plan
 (
-	id bigserial  primary key,
-	name       	varchar(45) DEFAULT NULL,
-	content     text,
-	active_user INT     DEFAULT NULL,
-	follow_user INT     DEFAULT NULL,
-	start_day   date        DEFAULT NULL,
-	end_day     date        DEFAULT NULL,
-	status      varchar(45) DEFAULT NULL
+    id bigserial primary key,
+    name        varchar(45) DEFAULT NULL,
+    content     text,
+    active_user INT         DEFAULT NULL,
+    follow_user INT         DEFAULT NULL,
+    start_day   date        DEFAULT NULL,
+    end_day     date        DEFAULT NULL,
+    status      varchar(45) DEFAULT NULL
 );
 
 CREATE TABLE public.plan_content
-  (
-	id bigserial  primary key,
-	start_point varchar(45) DEFAULT NULL,
-	end_point  varchar(45) DEFAULT NULL,
-	vehicle     varchar(45) DEFAULT NULL,
-	status      varchar(45) DEFAULT NULL,
-	start_time  time        DEFAULT NULL,
-	end_time    time        DEFAULT NULL,
-	plan_id INT REFERENCES plan(id)
+(
+    id bigserial primary key,
+    start_point varchar(45) DEFAULT NULL,
+    end_point   varchar(45) DEFAULT NULL,
+    vehicle     varchar(45) DEFAULT NULL,
+    status      varchar(45) DEFAULT NULL,
+    start_time  time        DEFAULT NULL,
+    end_time    time        DEFAULT NULL,
+    plan_id     INT REFERENCES plan (id)
 );
 CREATE TABLE public.comment
 (
-	id bigserial  primary key,
-	content text,
-	status  varchar(45) DEFAULT NULL,
-	time    date        DEFAULT NULL,
-	user_id INT REFERENCES users(id),
-	plan_id INT REFERENCES plan(id)
+    id bigserial primary key,
+    content text,
+    status  varchar(45) DEFAULT NULL,
+    time    date        DEFAULT NULL,
+    user_id INT REFERENCES users (id),
+    plan_id INT REFERENCES plan (id)
 );
 
 INSERT INTO public.plan(
@@ -62,3 +62,4 @@ INSERT INTO public.plan(
 INSERT INTO public.plan(
 	id, name, content, active_user, follow_user, start_day, end_day, status)
 	VALUES ('10', 'HCM to Phan Thiet', 'Demo', '85', '105', '2020-12-12', '2020-12-05', 'active');
+

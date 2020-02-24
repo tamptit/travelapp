@@ -1,65 +1,79 @@
 package com.travel.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 public class UserForm {
+    @Size(min = 8, max = 50)
+    @Min(value = 6, message = "Age should not be less than 18")
+    @NotEmpty(message = "Username is required")
+    private String username;
 
-  private String username;
-  private String email;
-  private String password;
-  private String fullName;
-  private Date dOfB;
-  private boolean gender;
+    @NotEmpty(message = "Email is required")
+    @Size(min = 3, max = 100)
+    private String email;
 
-  public UserForm() {}
+    @Size(min = 1, max = 6, message = "Size must be between 1 and 6")
+    private String password;
 
-  public String getUsername() {
-    return username;
-  }
+    private String fullName;
 
-  public void setUsername(String username) {
-    this.username = username;
-  }
+    private Date dOfB;
 
-  public String getPassword() {
-    return password;
-  }
+    @NotNull(message = "Sex is required")
+    private boolean gender;
 
-  public void setPassword(String password) {
-    this.password = password;
-  }
+    public UserForm() {
+    }
 
-  public String getEmail() {
-    return email;
-  }
+    public String getUsername() {
+        return username;
+    }
 
-  public void setEmail(String email) {
-    this.email = email;
-  }
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-  public String getFullName() {
-    return fullName;
-  }
+    public String getPassword() {
+        return password;
+    }
 
-  public void setFullName(String fullName) {
-    this.fullName = fullName;
-  }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-  public Date getdOfB() {
-    return dOfB;
-  }
+    public String getEmail() {
+        return email;
+    }
 
-  public void setdOfB(Date dOfB) {
-    this.dOfB = dOfB;
-  }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-  public boolean isGender() {
-    return gender;
-  }
+    public String getFullName() {
+        return fullName;
+    }
 
-  public void setGender(boolean gender) {
-    this.gender = gender;
-  }
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public Date getdOfB() {
+        return dOfB;
+    }
+
+    public void setdOfB(Date dOfB) {
+        this.dOfB = dOfB;
+    }
+
+    public boolean isGender() {
+        return gender;
+    }
+
+    public void setGender(boolean gender) {
+        this.gender = gender;
+    }
 }

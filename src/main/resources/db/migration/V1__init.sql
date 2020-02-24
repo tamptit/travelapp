@@ -2,19 +2,18 @@
 create table public.users
 (
     id bigserial primary key,
-    username varchar(50)  not null,
-    full_name varchar(100) DEFAULT NULL,
-    email    varchar(100) not null,
-    password varchar(50)  not null,
+    username   varchar(50)  not null,
+    full_name  varchar(100) DEFAULT NULL,
+    email      varchar(100) not null,
+    password   varchar(50)  not null,
     date_birth date DEFAULT NULL,
-    gender smallint not null,
+    gender     smallint     not null,
 
     constraint user_email_uindex
         unique (email),
     constraint user_username_uindex
         unique (username)
 );
-
 
 INSERT INTO public.users(
 	 username, full_name, email, password, date_birth, gender)
@@ -33,3 +32,4 @@ INSERT INTO public.users(
     VALUES ( 'nam.hoang005', 'Le Hoang Nam', 'nam.hoangle005@gmail', 'namhoangle005', '2020-02-22', 0);
 INSERT INTO public.users( username, full_name, email, password, date_birth, gender)
 	VALUES ('username123', 'tranhoangnam', 'namtran123@gamil', 'qweasd', '2019-09-10', 1);
+
