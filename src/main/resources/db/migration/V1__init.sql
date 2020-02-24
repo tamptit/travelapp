@@ -1,7 +1,7 @@
 -- create user table
-create table public.users
+create table users
 (
-    id bigserial primary key,
+    id bigint primary key,
     username   varchar(50)  not null,
     full_name  varchar(100) DEFAULT NULL,
     email      varchar(100) not null,
@@ -14,6 +14,3 @@ create table public.users
     constraint user_username_uindex
         unique (username)
 );
-
-INSERT INTO public.users(username, full_name, email, password, date_birth, gender)
-VALUES ('username123', 'tranhoangnam', 'namtran123@gamil', 'qweasd', '2019-09-20', 1);

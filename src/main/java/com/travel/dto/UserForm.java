@@ -7,8 +7,7 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 
 public class UserForm {
-    @Size(min = 8, max = 50)
-    @Min(value = 6, message = "Age should not be less than 18")
+    @Size(min = 8, max = 50, message = "Username length must be between 8 and 50")
     @NotEmpty(message = "Username is required")
     private String username;
 

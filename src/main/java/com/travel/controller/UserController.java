@@ -127,10 +127,10 @@ public class UserController {
         String username = userForm.getUsername();
         String email = userForm.getEmail();
         if (userRepository.findByUsername(username).orElse(null) != null) {
-            list.add(new ErrorMessage(400, "Username exist"));
+            list.add(new ErrorMessage("Username exist"));
         }
         if (userRepository.findByEmail(email).orElse(null) != null  ) {
-            list.add(new ErrorMessage(400, "Email exist"));
+            list.add(new ErrorMessage("Email exist"));
         }
         return list;
     }
@@ -139,7 +139,7 @@ public class UserController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+        ex.getBindingResult().getFieldErrors().forEach(error -> errors.put("message", error.getDefaultMessage()));
         return errors;
     }
 
