@@ -12,8 +12,6 @@ public class UserPrincipal implements UserDetails {
 
   private String username;
 
-  private String roleName;
-
   @JsonIgnore private String password;
 
   private Collection<? extends GrantedAuthority> authorities;
@@ -27,7 +25,6 @@ public class UserPrincipal implements UserDetails {
     this.id = id;
     this.username = username;
     this.password = password;
-    this.roleName = roleName;
     this.authorities = authorities;
   }
 
@@ -76,14 +73,6 @@ public class UserPrincipal implements UserDetails {
 
   public void setUsername(String username) {
     this.username = username;
-  }
-
-  public String getRoleName() {
-    return roleName;
-  }
-
-  public void setRoleName(String roleName) {
-    this.roleName = roleName;
   }
 
   public void setPassword(String password) {

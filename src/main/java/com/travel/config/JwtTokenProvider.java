@@ -25,7 +25,7 @@ public class JwtTokenProvider {
   private static final ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
 
   private static final String USER_ID = "id";
-  private static final String USER_ROLE = "role";
+  private static final String USER_NAME = "username";
 
   @Autowired private JwtConfiguration jwtConfiguration;
 
@@ -39,7 +39,7 @@ public class JwtTokenProvider {
     Map<String, Object> mapModel = new HashMap<>();
 
     mapModel.put(USER_ID, userPrincipal.getId());
-    mapModel.put(USER_ROLE, userPrincipal.getRoleName());
+    mapModel.put(USER_NAME, userPrincipal.getUsername());
 
     return Jwts.builder() //
         .setSubject(mapper.writeValueAsString(mapModel))
@@ -88,4 +88,5 @@ public class JwtTokenProvider {
     }
     return false;
   }
+
 }

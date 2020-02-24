@@ -16,36 +16,37 @@ import java.util.List;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-  @Autowired private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-  @Override
-  @Transactional
-  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    User user =
-        userRepository
-            .findByEmail(email)
-            .orElseThrow(
-                () -> new UsernameNotFoundException("User not found with username : " + email));
-    return create(user);
-  }
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user =
+                userRepository
+                        .findByEmail(username)
+                        .orElse(userRepository.findByUsername(username).orElse(null));
+        if (user == null) throw new UsernameNotFoundException("User not found with username : " + username);
+        return create(user);
+    }
 
-  // This method is used by JWTAuthenticationFilter
-  @Transactional
-  public UserDetails loadUserById(Long id) {
-    User user =
-        userRepository
-            .findById(id)
-            .orElseThrow(() -> new UsernameNotFoundException("User not found with id : " + id));
+    // This method is used by JWTAuthenticationFilter
+    @Transactional
+    public UserDetails loadUserById(Long id) {
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found with id : " + id));
 
-    return create(user);
-  }
+        return create(user);
+    }
 
-  private UserDetails create(User user) {
+    private UserDetails create(User user) {
 //    String roleName = user.getRole().getRoleName();
 //    List<GrantedAuthority> authorities = new ArrayList<>();
 //    authorities.add(new SimpleGrantedAuthority("ROLE_" + roleName));
 
-    return new UserPrincipal(
-        user.getId(), user.getEmail(), user.getPassword(),null,null);
-  }
+        return new UserPrincipal(
+                user.getId(), user.getEmail(), user.getPassword(), null, null);
+    }
 }
