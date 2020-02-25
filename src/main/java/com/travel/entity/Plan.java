@@ -3,6 +3,8 @@ package com.travel.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Entity
@@ -12,9 +14,12 @@ public class Plan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NotBlank(message = "Please fill in all the blank space !!!")
+    @Size(min=4,max=200,message = "Please use 4 to 200 letters")
     @Column(name = "name")
     private String name;
 
+    @NotBlank(message = "Please fill in all the blank space !!!")
     @Column(name = "content")
     private String content;
 
@@ -32,6 +37,7 @@ public class Plan {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date endDay;
 
+    @NotBlank(message = "Please fill in all the blank space !!!")
     @Column(name = "status")
     private String startus;
 

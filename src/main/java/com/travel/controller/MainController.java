@@ -16,17 +16,12 @@ public class MainController {
     public String userRegistry() {
         return "ok";
     }
-    @RequestMapping("/user")
-    @ResponseBody
-    public Principal user (Principal principal)
-    {
-        return principal;
-    }
 
     @GetMapping("/ok")
     public String testHeroku() {
         return "ok";
     }
+
 
 }
 
