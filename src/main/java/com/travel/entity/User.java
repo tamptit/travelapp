@@ -3,7 +3,6 @@ package com.travel.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
 import java.util.Date;
 
 @Entity
@@ -33,6 +32,7 @@ public class User {
     @Column(unique = true)
 
     private String password;
+
 
     public Long getId() {
         return id;
@@ -88,6 +88,14 @@ public class User {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public Date getdOfB() {
+        return dOfB;
+    }
+
+    public void setdOfB(Date dOfB) {
+        this.dOfB = dOfB;
     }
 
     @Override

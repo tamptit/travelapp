@@ -9,14 +9,14 @@ import java.text.ParseException;
 
 @RestController
 @RequestMapping(value = "/test")
-public class MainController {
+    public class MainController {
 
-    @GetMapping("/")
-    public String userRegistry() {
-        return "ok";
-    }
+        @GetMapping("/")
+        public String userRegistry() {
+            return "ok";
+        }
 
-    @GetMapping("/ok")
+        @GetMapping("/ok")
     public String testHeroku() {
         return "ok";
     }

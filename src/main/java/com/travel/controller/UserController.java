@@ -6,7 +6,9 @@ import com.travel.dto.TokenDto;
 import com.travel.dto.UserForm;
 import com.travel.entity.ErrorMessage;
 import com.travel.entity.User;
+import com.travel.model.GenericResponse;
 import com.travel.repository.UserRepository;
+import com.travel.service.MailService;
 import com.travel.utils.CookieUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/api/auth")
@@ -37,13 +36,19 @@ public class UserController {
 
     private static final String jwtTokenCookieName = "JWT-TOKEN";
 
-    @Autowired private UserRepository userRepository;
+    //MailService mailService = new MailService();
 
-    @Autowired private AuthenticationManager authenticationManager;
+    @Autowired
+    private UserRepository userRepository;
 
-    @Autowired private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-    @Autowired private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping(value = "/login")
     public ResponseEntity<Object> login(
@@ -60,7 +65,6 @@ public class UserController {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtTokenProvider.generateToken(authentication);
-            CookieUtil.create(response, jwtTokenCookieName, token, false, -1, request.getServerName());
             return new ResponseEntity<>(token, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -70,8 +74,8 @@ public class UserController {
     }
 
     @PostMapping(value = "/logout")
-    public void logout(HttpServletResponse httpServletResponse,HttpServletRequest request){
-        CookieUtil.clear(httpServletResponse, jwtTokenCookieName,request.getServerName());
+    public void logout(HttpServletResponse httpServletResponse, HttpServletRequest request) {
+        CookieUtil.clear(httpServletResponse, jwtTokenCookieName, request.getServerName());
     }
 
     @PutMapping("/register")
@@ -98,9 +102,9 @@ public class UserController {
     public ResponseEntity validate(
             @RequestBody TokenDto tokenDto
     ) {
-        if(jwtTokenProvider.validateToken(tokenDto.getToken())){
+        if (jwtTokenProvider.validateToken(tokenDto.getToken())) {
             return ResponseEntity.ok().body(true);
-        }else{
+        } else {
             return ResponseEntity.badRequest().body(false);
         }
     }
@@ -127,20 +131,23 @@ public class UserController {
         String username = userForm.getUsername();
         String email = userForm.getEmail();
         if (userRepository.findByUsername(username).orElse(null) != null) {
-            list.add(new ErrorMessage("Username exist"));
+            list.add(new ErrorMessage("This user already exists"));
         }
-        if (userRepository.findByEmail(email).orElse(null) != null  ) {
-            list.add(new ErrorMessage("Email exist"));
+        if (userRepository.findByEmail(email).orElse(null) != null) {
+            list.add(new ErrorMessage("This user already exists"));
         }
         return list;
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error -> errors.put("message", error.getDefaultMessage()));
+    public List<ErrorMessage> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+
+        List<ErrorMessage> errors = new ArrayList<>();
+        ex.getBindingResult().getFieldErrors().forEach(error -> errors.add(new ErrorMessage(error.getDefaultMessage())));
+
         return errors;
     }
+
 
 }
