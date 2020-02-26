@@ -1,6 +1,7 @@
 package com.travel.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -9,17 +10,18 @@ import java.util.Date;
 
 @Entity
 @Table(name = "plan")
+
 public class Plan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank(message = "Please fill in all the blank space !!!")
+    @NotBlank(message = "Name is required !!!")
     @Size(min=4,max=200,message = "Please use 4 to 200 letters")
     @Column(name = "name")
     private String name;
 
-    @NotBlank(message = "Please fill in all the blank space !!!")
+    @NotBlank(message = "Content is required !!!")
     @Column(name = "content")
     private String content;
 
@@ -37,7 +39,7 @@ public class Plan {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date endDay;
 
-    @NotBlank(message = "Please fill in all the blank space !!!")
+    @NotBlank(message = "Status is required!!!")
     @Column(name = "status")
     private String startus;
 
