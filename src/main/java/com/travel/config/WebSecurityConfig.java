@@ -1,6 +1,7 @@
 package com.travel.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,7 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -27,6 +27,7 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+@EnableOAuth2Sso
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   String[] URLS = {"/api/auth/**"};
@@ -39,6 +40,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   public JwtAuthenticationFilter jwtAuthenticationFilter() {
     return new JwtAuthenticationFilter();
   }
+
+//  @Override
+//  public void configure(HttpSecurity http) throws Exception {
+//    http.csrf().disable().authorizeRequests().antMatchers("/login")
+//            .permitAll().anyRequest().authenticated();
+//    http.authorizeRequests().and().logout().logoutUrl("/logout").logoutSuccessUrl("/");
+//  }
 
   @Override
   public void configure(AuthenticationManagerBuilder authenticationManagerBuilder)
@@ -72,9 +80,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers(URLS)
         .permitAll()
         .anyRequest()
-        .authenticated()
-        .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"));
+        .authenticated();
     http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
   }
 
   @Bean
