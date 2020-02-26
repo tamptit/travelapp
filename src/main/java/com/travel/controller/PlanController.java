@@ -31,7 +31,7 @@ public class PlanController {
 
     // lấy 10 kế hoạch mới nhất
     @GetMapping("/list")
-    public List<Plan> getLatestPlan(@RequestBody Plan plan) throws ParseException {
+    public List<Plan> getLatestPlan() throws ParseException {
         Page<Plan> page = planRepository.findAll(
                 PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id")));
         return page.getContent();
@@ -39,7 +39,7 @@ public class PlanController {
 
     //     lấy 10 kế hoạch HOT nhất
     @GetMapping("/hot")
-    public List<Plan> getHotPlan(@RequestBody Plan plan) throws ParseException {
+    public List<Plan> getHotPlan() throws ParseException {
         Page<Plan> page = planRepository.findAll(
                 PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "activeUser").and(Sort.by(Sort.Direction.DESC, "followUser"))));
         return page.getContent();

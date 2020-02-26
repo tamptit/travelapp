@@ -1,4 +1,4 @@
-package com.travel.entity;
+package com.travel.dto;
 
 import javax.persistence.Entity;
 

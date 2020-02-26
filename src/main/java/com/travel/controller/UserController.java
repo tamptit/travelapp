@@ -1,13 +1,14 @@
 package com.travel.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.travel.config.JwtConfiguration;
 import com.travel.config.JwtTokenProvider;
+import com.travel.dto.LoginForm;
 import com.travel.dto.TokenDto;
 import com.travel.dto.UserForm;
-import com.travel.entity.ErrorMessage;
+import com.travel.dto.ErrorMessage;
 import com.travel.entity.User;
 import com.travel.repository.UserRepository;
-import com.travel.utils.CookieUtil;
+import com.travel.utils.Constaints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,21 +22,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/auth")
 public class UserController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
-
-    private static final String jwtTokenCookieName = "JWT-TOKEN";
 
     @Autowired private UserRepository userRepository;
 
@@ -46,32 +40,27 @@ public class UserController {
     @Autowired private BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping(value = "/login")
-    public ResponseEntity<Object> login(
-            HttpServletResponse response,
-            HttpServletRequest request,
-            @RequestBody UserForm userForm
-
+    public ResponseEntity login(
+            @Valid @RequestBody LoginForm loginForm
     ) {
         try {
-            String username = userForm.getUsername();
+            String username = loginForm.getUsername();
             Authentication authentication =
                     authenticationManager.authenticate(
-                            new UsernamePasswordAuthenticationToken(username, userForm.getPassword()));
+                            new UsernamePasswordAuthenticationToken(username, loginForm.getPassword()));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtTokenProvider.generateToken(authentication);
-            CookieUtil.create(response, jwtTokenCookieName, token, false, -1, request.getServerName());
             return new ResponseEntity<>(token, HttpStatus.OK);
 
         } catch (Exception e) {
-            new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage()));
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping(value = "/logout")
-    public void logout(HttpServletResponse httpServletResponse,HttpServletRequest request){
-        CookieUtil.clear(httpServletResponse, jwtTokenCookieName,request.getServerName());
+    public ResponseEntity logout(){
+        return ResponseEntity.ok().body(Constaints.SUCCESS_MESSAGE);
     }
 
     @PutMapping("/register")
@@ -88,7 +77,7 @@ public class UserController {
             user.setEmail(userForm.getEmail());
             user.setPassword(passwordEncoder.encode(userForm.getPassword()));
             userRepository.save(user);
-            return ResponseEntity.ok().body("OK");
+            return ResponseEntity.ok().body(Constaints.SUCCESS_MESSAGE);
         } else {
             return ResponseEntity.badRequest().body(listError);
         }
@@ -119,7 +108,7 @@ public class UserController {
             userForm.setFullName(user.getFullName());
             return new ResponseEntity<>(userForm, HttpStatus.OK);
         }
-        return new ResponseEntity<>("\"Fail to load user profile\"", HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(Constaints.FAIL_TO_LOAD_USERDETAILS, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     public List<ErrorMessage> validate(UserForm userForm) {
@@ -137,9 +126,9 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error -> errors.put("message", error.getDefaultMessage()));
+    public List<ErrorMessage> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        List<ErrorMessage> errors = new ArrayList<>();
+        ex.getBindingResult().getFieldErrors().forEach(error -> errors.add(new ErrorMessage(error.getDefaultMessage())));
         return errors;
     }
 
