@@ -47,11 +47,11 @@ public class UserController {
 
     static final int EXPIRATION = 60;
 
+    static final int HOUR_EXPIRE = 1;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     private static final String jwtTokenCookieName = "JWT-TOKEN";
-
-    //MailService mailService = new MailService();
 
     @Value("${url}")
     private String urlFrontEnd;
@@ -176,32 +176,24 @@ public class UserController {
         return errors;
     }
 
-    // Process form submission from forgotPassword page
-    @Value("${url}")
-    private String link;
-
     @PostMapping(value = "/forgot", produces = "application/json")
-    public String processForgotPasswordForm(@RequestParam("mail") String mail, HttpServletRequest request) {
+    public ResponseEntity processForgotPasswordForm(@RequestParam("mail") String mail, HttpServletRequest request) {
 
         Optional<User> optional = userRepository.findByEmail(mail);
 
         if (!optional.isPresent()) {
-            return ("We didn't find an account for that e-mail address");
+            return ResponseEntity.ok().body("ok mail");
         } else {
-            // Generate random 36-character string token for reset password
-            // get token by User.. setToken .. save(resettoken)
             User user = optional.get();
             Calendar date = Calendar.getInstance();
-            date.add(Calendar.HOUR, 1);
+            date.add(Calendar.HOUR, HOUR_EXPIRE);
             Date date_expired = date.getTime();
             PasswordResetToken passwordResetToken = passwordTokenRepository.findByUser(user);
             if (passwordResetToken == null) { // table chua co row cua user nay
                 passwordResetToken = new PasswordResetToken();
-
                 passwordResetToken.setUser(user);
                 passwordResetToken.setToken(UUID.randomUUID().toString());
                 passwordResetToken.setExpiryDate(date_expired);
-
             } else {
                 passwordResetToken.setToken(UUID.randomUUID().toString());
                 passwordResetToken.setExpiryDate(date_expired);
@@ -209,62 +201,67 @@ public class UserController {
             passwordTokenRepository.save(passwordResetToken);   // save passwordToken
 
             //String appUrl = request.getScheme() + "://" + request.getServerName();
-            // Email message
+
             SimpleMailMessage passwordResetEmail = new SimpleMailMessage();
             passwordResetEmail.setFrom("travelapp.travel2020@gmail.com");
             passwordResetEmail.setTo(user.getEmail());
             passwordResetEmail.setSubject("Password Reset Request");
 
-            String text = link + "/api/auth?token=" + passwordResetToken.getToken();
+            String text = urlFrontEnd + "/api/auth?token=" + passwordResetToken.getToken();
             passwordResetEmail.setText("To reset your password, click the link below:\n" + text);
             emailService.sendEmail(passwordResetEmail);
-            // Add success message to view
 
-            return ("A password reset link has been sent to " + user.getEmail());
+            return ResponseEntity.ok().body("ok");
         }
 
     }
 
     // Display form to reset password
-    @RequestMapping(value = "/reset", method = RequestMethod.GET)
-    public String displayResetPasswordPage(@RequestParam("token") String token, @RequestParam("token") String newPassword) {
-        //Optional<User> user = passwordTokenRepository.findByToken(token);
-        PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(token);
-        Optional<User> user = Optional.ofNullable(passwordResetToken.getUser());
 
-        if (user.isPresent()) { // Token found in DB
-            return "display form reset";
-        } else { // Token not found in DB
-            return "Link is an invalid password reset link.";
+    @RequestMapping(value = "/valid-reset-password", method = RequestMethod.GET)
+    public ResponseEntity validateResetPasswordPage(@RequestParam Map<String, String> requestParams) {
+        String newPassword = requestParams.get("password");
+        PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token"));
+        Date date = new Date();
+        if (date.before(passwordResetToken.getExpiryDate())) {
+            return ResponseEntity.ok().body(new ErrorMessage("Invalid"));
         }
+
+        if (newPassword.isEmpty() || newPassword.length() < 6) {
+            return ResponseEntity.ok().body(new ErrorMessage("Password should be minimum of 6 characters"));
+        }
+        return ResponseEntity.ok().body(requestParams.get("token"));
     }
+
 
     // Process reset password form
     @Transactional
-    @RequestMapping(value = "/reset", method = RequestMethod.POST)
-    public String setNewPassword(@RequestParam Map<String, String> requestParams, RedirectAttributes redir) {
+    @RequestMapping(value = "/reset-password", method = RequestMethod.POST)
+    public ResponseEntity setNewPassword(@RequestParam Map<String, String> requestParams) {
 
         // Find the user associated with the reset token
         PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token"));
         Optional<User> user = Optional.ofNullable(passwordResetToken.getUser());
-        //Optional<User> user = passwordTokenRepository.findByToken(requestParams.get("token"));
         Date date = new Date();
         if (date.before(passwordResetToken.getExpiryDate())) {
             User resetUser = user.get();
-            //PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token"));
             // Set new password
+            if (requestParams.get("password").isEmpty()) {
+                return ResponseEntity.ok().body(new ErrorMessage("Password should be minimum of 6 characters"));
+            }
             resetUser.setPassword(bCryptPasswordEncoder.encode(requestParams.get("password")));
-            // Set the reset token to null so it cannot be used again
             //resetUser.setResetToken(null);
             // Save user
             userRepository.save(resetUser);
             passwordResetToken.setToken(null);
             passwordResetToken.setExpiryDate(null);
             passwordTokenRepository.save(passwordResetToken);
-            return "redirect login";
+            return ResponseEntity.ok().body("logined");
+
         } else {
-            return ("Oops!  This is an invalid password reset link."); // link khong con ton tai
+            return ResponseEntity.ok().body("ok");
         }
     }
+
 
 }
