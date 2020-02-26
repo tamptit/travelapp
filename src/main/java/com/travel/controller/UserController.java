@@ -191,22 +191,24 @@ public class UserController {
             // Generate random 36-character string token for reset password
             // get token by User.. setToken .. save(resettoken)
             User user = optional.get();
+            Calendar date = Calendar.getInstance();
+            date.add(Calendar.HOUR, 1);
+            Date date_expired = date.getTime();
             PasswordResetToken passwordResetToken = passwordTokenRepository.findByUser(user);
             if (passwordResetToken == null) { // table chua co row cua user nay
                 passwordResetToken = new PasswordResetToken();
-                Calendar date = Calendar.getInstance();
-                long t = date.getTimeInMillis();
-                Date date_expired = new Date(t + (60 * ONE_MINUTE_IN_MILLIS));
 
                 passwordResetToken.setUser(user);
                 passwordResetToken.setToken(UUID.randomUUID().toString());
                 passwordResetToken.setExpiryDate(date_expired);
+
             } else {
                 passwordResetToken.setToken(UUID.randomUUID().toString());
+                passwordResetToken.setExpiryDate(date_expired);
             }
             passwordTokenRepository.save(passwordResetToken);   // save passwordToken
 
-            String appUrl = request.getScheme() + "://" + request.getServerName();
+            //String appUrl = request.getScheme() + "://" + request.getServerName();
             // Email message
             SimpleMailMessage passwordResetEmail = new SimpleMailMessage();
             passwordResetEmail.setFrom("travelapp.travel2020@gmail.com");
@@ -246,25 +248,22 @@ public class UserController {
         PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token"));
         Optional<User> user = Optional.ofNullable(passwordResetToken.getUser());
         //Optional<User> user = passwordTokenRepository.findByToken(requestParams.get("token"));
-        Calendar date = Calendar.getInstance();
-        if (date.after(passwordResetToken.getExpiryDate())) {
+        Date date = new Date();
+        if (date.before(passwordResetToken.getExpiryDate())) {
             User resetUser = user.get();
             //PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token"));
             // Set new password
             resetUser.setPassword(bCryptPasswordEncoder.encode(requestParams.get("password")));
             // Set the reset token to null so it cannot be used again
             //resetUser.setResetToken(null);
-
             // Save user
             userRepository.save(resetUser);
             passwordResetToken.setToken(null);
             passwordResetToken.setExpiryDate(null);
-
+            passwordTokenRepository.save(passwordResetToken);
             return "redirect login";
-
         } else {
             return ("Oops!  This is an invalid password reset link."); // link khong con ton tai
-
         }
     }
 
