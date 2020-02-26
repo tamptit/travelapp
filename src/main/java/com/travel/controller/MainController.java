@@ -8,18 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 
 @RestController
-@RequestMapping(value = "/test")
+@RequestMapping(value = "/api/auth/test")
     public class MainController {
 
         @GetMapping("/")
         public String userRegistry() {
             return "ok";
         }
-
-        @GetMapping("/ok")
-    public String testHeroku() {
-        return "ok";
-    }
 
 }
 

@@ -26,7 +26,6 @@ public class User {
     private Date dOfB;
 
     @Column(name = "gender")
-
     private boolean gender;
 
     @Column(unique = true)

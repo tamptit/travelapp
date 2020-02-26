@@ -27,19 +27,9 @@ public class MailService {
         this.javaMailSender = javaMailSender;
     }
 
-    public void sendEmail( String email) throws MailException {
-
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setTo(email);
-        mail.setSubject("Testing Mail API");
-        mail.setText("Hurray ! You have done that dude...");
-//        mail.setText("To reset your password, click the link below:\n" + appUrl
-//        + "/reset?token=" + user.getResetToken());
-
-        /*
-         * This send() contains an Object of SimpleMailMessage as an Parameter
-         */
-        javaMailSender.send(mail);}
+    public void sendEmail( SimpleMailMessage mail) throws MailException {
+        javaMailSender.send(mail);
+    }
 
 
     public void sendEmailWithAttachment(UserForm userForm) throws MailException, MessagingException {

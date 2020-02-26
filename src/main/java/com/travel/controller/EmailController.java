@@ -14,7 +14,7 @@ import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping(value = "/api/auth/mail")
+//@RequestMapping(value = "/api/auth/mail")
 //@RequestMapping(value = "/mail")
 public class EmailController {
 
@@ -32,7 +32,7 @@ public class EmailController {
 
 
         try {
-            notificationService.sendEmail(email);
+            //notificationService.sendEmail(email);
         } catch (MailException mailException) {
             System.out.println(mailException);
         }

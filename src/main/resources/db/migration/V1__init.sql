@@ -7,7 +7,7 @@ create table public.users
     email      varchar(100) not null,
     password   varchar(100)  not null,
     date_birth date DEFAULT NULL,
-    gender     smallint     not null,
+    gender     boolean     not null,
 
     constraint user_email_uindex
         unique (email),
@@ -16,4 +16,4 @@ create table public.users
 );
 
 INSERT INTO public.users(username, full_name, email, password, date_birth, gender)
-VALUES ('username123', 'tranhoangnam', 'namtran123@gamil', 'qweasd', '2019-09-20', 1);
+VALUES ('username123', 'tranhoangnam', 'namtran123@gamil', 'qweasd', '2019-09-20', true);

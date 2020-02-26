@@ -1,27 +1,37 @@
 package com.travel.controller;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travel.config.JwtTokenProvider;
 import com.travel.dto.TokenDto;
 import com.travel.dto.UserForm;
 import com.travel.entity.ErrorMessage;
+import com.travel.entity.PasswordResetToken;
 import com.travel.entity.User;
 import com.travel.model.GenericResponse;
+import com.travel.repository.PasswordTokenRepository;
 import com.travel.repository.UserRepository;
 import com.travel.service.MailService;
 import com.travel.utils.CookieUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,8 +48,14 @@ public class UserController {
 
     //MailService mailService = new MailService();
 
+    @Value("${url}")
+    private String urlFrontEnd;
+
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -50,12 +66,17 @@ public class UserController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private MailService emailService;
+
+    @Autowired
+    private PasswordTokenRepository passwordTokenRepository;
+
     @PostMapping(value = "/login")
     public ResponseEntity<Object> login(
             HttpServletResponse response,
             HttpServletRequest request,
             @RequestBody UserForm userForm
-
     ) {
         try {
             String username = userForm.getUsername();
@@ -130,11 +151,12 @@ public class UserController {
         List<ErrorMessage> list = new ArrayList<>();
         String username = userForm.getUsername();
         String email = userForm.getEmail();
+
         if (userRepository.findByUsername(username).orElse(null) != null) {
             list.add(new ErrorMessage("This user already exists"));
         }
         if (userRepository.findByEmail(email).orElse(null) != null) {
-            list.add(new ErrorMessage("This user already exists"));
+            list.add(new ErrorMessage("This email already exists"));
         }
         return list;
     }
@@ -149,5 +171,83 @@ public class UserController {
         return errors;
     }
 
+    // Process form submission from forgotPassword page
+    @PostMapping(value = "/forgot", produces = "application/json")
+    public String processForgotPasswordForm(@RequestParam("mail") String mail, HttpServletRequest request) {
+
+        Optional<User> optional = userRepository.findByEmail(mail);
+
+        if (!optional.isPresent()) {
+            return ("We didn't find an account for that e-mail address");
+        } else {
+            // Generate random 36-character string token for reset password
+            // get token by User.. setToken .. save(resettoken)
+            User user = optional.get();
+            PasswordResetToken passwordResetToken = passwordTokenRepository.findByUser(user);
+            if(passwordResetToken == null){ // table chua co row cua user nay
+                passwordResetToken = new PasswordResetToken();
+                passwordResetToken.setUser(user);
+                passwordResetToken.setToken(UUID.randomUUID().toString());
+            }else{
+                passwordResetToken.setToken(UUID.randomUUID().toString());
+            }
+            passwordTokenRepository.save(passwordResetToken);   // save passwordToken
+
+            String appUrl = request.getScheme() + "://" + request.getServerName();
+            // Email message
+            SimpleMailMessage passwordResetEmail = new SimpleMailMessage();
+            passwordResetEmail.setFrom("travelapp.travel2020@gmail.com");
+            passwordResetEmail.setTo(user.getEmail());
+            passwordResetEmail.setSubject("Password Reset Request");
+            String text = appUrl + "/api/reset?token=" + passwordResetToken.getToken();
+            passwordResetEmail.setText("To reset your password, click the link below:\n" + text);
+            emailService.sendEmail(passwordResetEmail);
+            // Add success message to view
+
+            return ("A password reset link has been sent to " + user.getEmail());
+        }
+
+    }
+
+    // Display form to reset password
+    @RequestMapping(value = "/reset", method = RequestMethod.GET)
+    public String displayResetPasswordPage( @RequestParam("token") String token, @RequestParam("token") String newPassword ) {
+        Optional<User> user = passwordTokenRepository.findByToken(token);
+        if (user.isPresent()) { // Token found in DB
+            return "display form reset";
+        } else { // Token not found in DB
+            return "This is an invalid password reset link.";
+        }
+    }
+
+    // Process reset password form
+    @Transactional
+    @RequestMapping(value = "/reset", method = RequestMethod.POST)
+    public String setNewPassword(@RequestParam Map<String, String> requestParams, RedirectAttributes redir) {
+
+        // Find the user associated with the reset token
+        Optional<User> user = passwordTokenRepository.findByToken(requestParams.get("token"));
+
+        // This should always be non-null but we check just in case
+        if (user.isPresent()) {
+
+            User resetUser = user.get();
+            // Set new password
+            resetUser.setPassword(bCryptPasswordEncoder.encode(requestParams.get("password")));
+            // Set the reset token to null so it cannot be used again
+            //resetUser.setResetToken(null);
+
+            // Save user
+            userRepository.save(resetUser);
+            // In order to set a model attribute on a redirect, we must use
+            // RedirectAttributes
+
+            return "redirect login";
+
+        } else {
+            return ("Oops!  This is an invalid password reset link."); // link khong con ton tai
+
+        }
+    }
 
 }
