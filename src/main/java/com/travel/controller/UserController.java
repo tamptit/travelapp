@@ -42,6 +42,11 @@ import java.util.*;
 @RestController
 @RequestMapping(value = "/api/auth")
 public class UserController {
+
+    static final long ONE_MINUTE_IN_MILLIS = 60000;//millisecs
+
+    static final int EXPIRATION = 60;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     private static final String jwtTokenCookieName = "JWT-TOKEN";
@@ -172,6 +177,9 @@ public class UserController {
     }
 
     // Process form submission from forgotPassword page
+    @Value("${url}")
+    private String link;
+
     @PostMapping(value = "/forgot", produces = "application/json")
     public String processForgotPasswordForm(@RequestParam("mail") String mail, HttpServletRequest request) {
 
@@ -184,11 +192,16 @@ public class UserController {
             // get token by User.. setToken .. save(resettoken)
             User user = optional.get();
             PasswordResetToken passwordResetToken = passwordTokenRepository.findByUser(user);
-            if(passwordResetToken == null){ // table chua co row cua user nay
+            if (passwordResetToken == null) { // table chua co row cua user nay
                 passwordResetToken = new PasswordResetToken();
+                Calendar date = Calendar.getInstance();
+                long t = date.getTimeInMillis();
+                Date date_expired = new Date(t + (60 * ONE_MINUTE_IN_MILLIS));
+
                 passwordResetToken.setUser(user);
                 passwordResetToken.setToken(UUID.randomUUID().toString());
-            }else{
+                passwordResetToken.setExpiryDate(date_expired);
+            } else {
                 passwordResetToken.setToken(UUID.randomUUID().toString());
             }
             passwordTokenRepository.save(passwordResetToken);   // save passwordToken
@@ -199,7 +212,8 @@ public class UserController {
             passwordResetEmail.setFrom("travelapp.travel2020@gmail.com");
             passwordResetEmail.setTo(user.getEmail());
             passwordResetEmail.setSubject("Password Reset Request");
-            String text = appUrl + "/api/reset?token=" + passwordResetToken.getToken();
+
+            String text = link + "/api/auth?token=" + passwordResetToken.getToken();
             passwordResetEmail.setText("To reset your password, click the link below:\n" + text);
             emailService.sendEmail(passwordResetEmail);
             // Add success message to view
@@ -211,12 +225,15 @@ public class UserController {
 
     // Display form to reset password
     @RequestMapping(value = "/reset", method = RequestMethod.GET)
-    public String displayResetPasswordPage( @RequestParam("token") String token, @RequestParam("token") String newPassword ) {
-        Optional<User> user = passwordTokenRepository.findByToken(token);
+    public String displayResetPasswordPage(@RequestParam("token") String token, @RequestParam("token") String newPassword) {
+        //Optional<User> user = passwordTokenRepository.findByToken(token);
+        PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(token);
+        Optional<User> user = Optional.ofNullable(passwordResetToken.getUser());
+
         if (user.isPresent()) { // Token found in DB
             return "display form reset";
         } else { // Token not found in DB
-            return "This is an invalid password reset link.";
+            return "Link is an invalid password reset link.";
         }
     }
 
@@ -226,12 +243,13 @@ public class UserController {
     public String setNewPassword(@RequestParam Map<String, String> requestParams, RedirectAttributes redir) {
 
         // Find the user associated with the reset token
-        Optional<User> user = passwordTokenRepository.findByToken(requestParams.get("token"));
-
-        // This should always be non-null but we check just in case
-        if (user.isPresent()) {
-
+        PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token"));
+        Optional<User> user = Optional.ofNullable(passwordResetToken.getUser());
+        //Optional<User> user = passwordTokenRepository.findByToken(requestParams.get("token"));
+        Calendar date = Calendar.getInstance();
+        if (date.after(passwordResetToken.getExpiryDate())) {
             User resetUser = user.get();
+            //PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token"));
             // Set new password
             resetUser.setPassword(bCryptPasswordEncoder.encode(requestParams.get("password")));
             // Set the reset token to null so it cannot be used again
@@ -239,8 +257,8 @@ public class UserController {
 
             // Save user
             userRepository.save(resetUser);
-            // In order to set a model attribute on a redirect, we must use
-            // RedirectAttributes
+            passwordResetToken.setToken(null);
+            passwordResetToken.setExpiryDate(null);
 
             return "redirect login";
 
