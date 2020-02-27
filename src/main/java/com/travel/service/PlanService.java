@@ -19,10 +19,8 @@ public class PlanService {
     public Plan saveOrUpdate (Plan plan)
     {
         // logic
-
         Date currentDate = new Date();
         plan.setCreatedDay(currentDate);
-        
         return planRepository.save(plan);
     }
 

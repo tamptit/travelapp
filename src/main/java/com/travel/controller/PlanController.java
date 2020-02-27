@@ -3,12 +3,13 @@ package com.travel.controller;
 import com.travel.dto.PageResponse;
 import com.travel.entity.Plan;
 import com.travel.repository.PlanRepository;
-import com.travel.service.MapValidationErrorService;
+import com.travel.validator.MapValidationError;
 import com.travel.service.PlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +31,9 @@ public class PlanController {
     @Autowired
     private PlanRepository planRepository;
     @Autowired
-    private MapValidationErrorService mapValidationErrorService;
-    @Value("10")
-    private int totalRowInPage;
+    private MapValidationError mapValidationErrorService;
+
+    public static final int TOTAL_ROW_IN_PAGE=10;
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Plan> findAll() {
@@ -45,17 +46,15 @@ public class PlanController {
         ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
         if (errorMap != null) return errorMap;
         Plan plan1 = planService.saveOrUpdate(plan);
-        return new ResponseEntity<Plan>(plan, HttpStatus.CREATED);
+        return new ResponseEntity<Plan>(plan1, HttpStatus.CREATED);
     }
 
     // lấy 10 kế hoạch mới nhất
     @GetMapping("/list")
     public PageResponse getLatestPlan(@PathParam(value = "page") int page) throws ParseException {
-//        Page<Plan> page = planRepository.findAll(
-//                PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id")));
-//        return page.getContent();
         page = page <= 0 ? 0 : page - 1;
-        Page<Plan> planPager = planRepository.findAll(PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdDay")));
+        Pageable sortedByCreatedDay = PageRequest.of(page, TOTAL_ROW_IN_PAGE,Sort.by("createdDay").descending());
+        Page<Plan> planPager = planRepository.findAll(sortedByCreatedDay);
         PageResponse response = new PageResponse();
         response.setCurrentPage(page);
         response.setTotalPage(planPager.getTotalPages());
