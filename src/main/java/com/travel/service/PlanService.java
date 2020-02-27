@@ -5,6 +5,8 @@ import com.travel.repository.PlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 public class PlanService {
     @Autowired
@@ -13,6 +15,8 @@ public class PlanService {
     public Plan saveOrUpdate (Plan plan)
     {
         // logic
+        Date currentDate = new Date();
+        plan.setCreatedDay(currentDate);
         return planRepository.save(plan);
     }
 

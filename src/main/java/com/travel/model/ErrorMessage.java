@@ -1,7 +1,4 @@
-package com.travel.dto;
-
-import javax.persistence.Entity;
-
+package com.travel.model;
 
 public class ErrorMessage {
     private String message;
