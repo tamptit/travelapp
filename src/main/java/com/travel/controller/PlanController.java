@@ -22,17 +22,20 @@ import java.text.ParseException;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/auth/")
+@RequestMapping(value = "/api/plan/")
 @CrossOrigin
 public class PlanController {
+
     @Autowired
     private PlanService planService;
+
     @Autowired
     private PlanRepository planRepository;
+
     @Autowired
     private MapValidationErrorService mapValidationErrorService;
-    @Value("10")
-    private int totalRowInPage;
+
+    private static final int TOTAL_ROW_IN_PAGE = 5;
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Plan> findAll() {
@@ -51,11 +54,8 @@ public class PlanController {
     // lấy 10 kế hoạch mới nhất
     @GetMapping("/list")
     public PageResponse getLatestPlan(@PathParam(value = "page") int page) throws ParseException {
-//        Page<Plan> page = planRepository.findAll(
-//                PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id")));
-//        return page.getContent();
         page = page <= 0 ? 0 : page - 1;
-        Page<Plan> planPager = planRepository.findAll(PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id")));
+        Page<Plan> planPager = planRepository.findAll(PageRequest.of(page, TOTAL_ROW_IN_PAGE, Sort.by(Sort.Direction.DESC, "id")));
         PageResponse response = new PageResponse();
         response.setCurrentPage(page);
         response.setTotalPage(planPager.getTotalPages());
@@ -69,7 +69,7 @@ public class PlanController {
     public PageResponse getHotPlan(@PathParam(value = "page") int page) throws ParseException {
         page = page <= 0 ? 0 : page - 1;
         Page<Plan> hotPager = planRepository.findAll(
-                PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "activeUser").and(Sort.by(Sort.Direction.DESC, "followUser"))));
+                PageRequest.of(page, TOTAL_ROW_IN_PAGE, Sort.by(Sort.Direction.DESC, "activeUser").and(Sort.by(Sort.Direction.DESC, "followUser"))));
         PageResponse response = new PageResponse();
         response.setCurrentPage(page);
         response.setTotalPage(hotPager.getTotalPages());
