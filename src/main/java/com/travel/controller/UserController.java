@@ -196,7 +196,7 @@ public class UserController {
             passwordResetEmail.setTo(user.getEmail());
             passwordResetEmail.setSubject("Password Reset Request");
 
-            String text = urlFrontEnd + "/api/auth?token=" + passwordResetToken.getToken();
+            String text = urlFrontEnd + "?token=" + passwordResetToken.getToken();
             passwordResetEmail.setText("To reset your password, click the link below:\n" + text);
             emailService.sendEmail(passwordResetEmail);
 
