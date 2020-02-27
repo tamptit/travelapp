@@ -216,6 +216,7 @@ public class UserController {
         PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token"));
         Date date = new Date();
         if (date.before(passwordResetToken.getExpiryDate())) {
+
             return ResponseEntity.ok().body(new ErrorMessage("Invalid"));
         }
 
@@ -246,7 +247,7 @@ public class UserController {
             // Save user
             userRepository.save(resetUser);
             passwordResetToken.setToken(null);
-            passwordResetToken.setExpiryDate(null);
+            //passwordResetToken.setExpiryDate(null);
             passwordTokenRepository.save(passwordResetToken);
             return ResponseEntity.ok().body("logined");
 
