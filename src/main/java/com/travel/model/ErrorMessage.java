@@ -1,4 +1,4 @@
-package com.travel.entity;
+package com.travel.model;
 
 import javax.persistence.Entity;
 

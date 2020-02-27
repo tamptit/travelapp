@@ -1,14 +1,11 @@
 package com.travel.controller;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travel.config.JwtTokenProvider;
 import com.travel.dto.TokenDto;
 import com.travel.dto.UserForm;
-import com.travel.entity.ErrorMessage;
+import com.travel.model.ErrorMessage;
 import com.travel.entity.PasswordResetToken;
 import com.travel.entity.User;
-import com.travel.model.GenericResponse;
 import com.travel.repository.PasswordTokenRepository;
 import com.travel.repository.UserRepository;
 import com.travel.service.MailService;
@@ -18,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,15 +24,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.text.ParseException;
 import java.util.*;
 
 @RestController
@@ -237,7 +229,7 @@ public class UserController {
     // Process reset password form
     @Transactional
     @RequestMapping(value = "/reset-password", method = RequestMethod.POST)
-    public ResponseEntity setNewPassword(@RequestParam Map<String, String> requestParams) {
+    public ResponseEntity setNewPassword(@RequestBody Map<String, String> requestParams) {
 
         // Find the user associated with the reset token
         PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token"));
