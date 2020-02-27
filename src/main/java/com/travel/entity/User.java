@@ -118,7 +118,6 @@ public class User {
                 ", dOB=" + dOfB +
                 ", password='" + password + '\'' +
                 ", gender=" + gender +
-                ", join_date=" + joinDate +
                 '}';
     }
 
