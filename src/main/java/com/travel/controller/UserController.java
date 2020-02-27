@@ -169,7 +169,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/forgot", produces = "application/json")
-    public ResponseEntity processForgotPasswordForm(@RequestParam("mail") String mail, HttpServletRequest request) {
+    public ResponseEntity processForgotPasswordForm(@RequestBody String mail, HttpServletRequest request) {
 
         Optional<User> optional = userRepository.findByEmail(mail);
 
@@ -192,8 +192,6 @@ public class UserController {
             }
             passwordTokenRepository.save(passwordResetToken);   // save passwordToken
 
-            //String appUrl = request.getScheme() + "://" + request.getServerName();
-
             SimpleMailMessage passwordResetEmail = new SimpleMailMessage();
             passwordResetEmail.setFrom("travelapp.travel2020@gmail.com");
             passwordResetEmail.setTo(user.getEmail());
@@ -211,44 +209,38 @@ public class UserController {
     // Display form to reset password
 
     @RequestMapping(value = "/valid-reset-password", method = RequestMethod.GET)
-    public ResponseEntity validateResetPasswordPage(@RequestParam Map<String, String> requestParams) {
+    public ResponseEntity validateResetPasswordPage(@RequestBody Map<String, String> requestParams) {
         String newPassword = requestParams.get("password");
         PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token"));
-        Date date = new Date();
-        if (date.before(passwordResetToken.getExpiryDate())) {
-
+        if (passwordResetToken == null){  // check token in table
             return ResponseEntity.ok().body(new ErrorMessage("Invalid"));
+        }else if (new Date().before(passwordResetToken.getExpiryDate())){// check date_expired
+            return ResponseEntity.ok().body(new ErrorMessage("Invalid"));
+        }else {
+            return ResponseEntity.ok().body(requestParams.get("token"));
         }
 
-        if (newPassword.isEmpty() || newPassword.length() < 6) {
-            return ResponseEntity.ok().body(new ErrorMessage("Password should be minimum of 6 characters"));
-        }
-        return ResponseEntity.ok().body(requestParams.get("token"));
     }
-
-
     // Process reset password form
     @Transactional
     @RequestMapping(value = "/reset-password", method = RequestMethod.POST)
     public ResponseEntity setNewPassword(@RequestBody Map<String, String> requestParams) {
 
-        // Find the user associated with the reset token
+        // Find PasswordResetToken by token
         PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token"));
         Optional<User> user = Optional.ofNullable(passwordResetToken.getUser());
         Date date = new Date();
         if (date.before(passwordResetToken.getExpiryDate())) {
             User resetUser = user.get();
-            // Set new password
-            if (requestParams.get("password").isEmpty()) {
+            if (requestParams.get("password").isEmpty()) {                  // Set new password
                 return ResponseEntity.ok().body(new ErrorMessage("Password should be minimum of 6 characters"));
             }
             resetUser.setPassword(bCryptPasswordEncoder.encode(requestParams.get("password")));
-            //resetUser.setResetToken(null);
-            // Save user
-            userRepository.save(resetUser);
+
+            userRepository.save(resetUser);         // Save user
             passwordResetToken.setToken(null);
-            //passwordResetToken.setExpiryDate(null);
             passwordTokenRepository.save(passwordResetToken);
+            //passwordResetToken.save(passwordResetToken);
             return ResponseEntity.ok().body("logined");
 
         } else {
