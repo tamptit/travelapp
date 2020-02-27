@@ -55,7 +55,7 @@ public class PlanController {
 //                PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id")));
 //        return page.getContent();
         page = page <= 0 ? 0 : page - 1;
-        Page<Plan> planPager = planRepository.findAll(PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id")));
+        Page<Plan> planPager = planRepository.findAll(PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdDay")));
         PageResponse response = new PageResponse();
         response.setCurrentPage(page);
         response.setTotalPage(planPager.getTotalPages());

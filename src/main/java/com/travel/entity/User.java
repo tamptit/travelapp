@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -33,6 +34,17 @@ public class User {
     @Column(unique = true)
 
     private String password;
+
+    @OneToMany(mappedBy="user")
+    private Set<Plan> plans;
+
+    public Set<Plan> getPlans() {
+        return plans;
+    }
+
+    public void setPlans(Set<Plan> plans) {
+        this.plans = plans;
+    }
 
     public Long getId() {
         return id;

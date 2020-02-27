@@ -9,6 +9,7 @@ CREATE TABLE travel.plan
     `start_day`   date        DEFAULT NULL,
     `end_day`     date        DEFAULT NULL,
     `status`      varchar(45) DEFAULT NULL,
+    `created_day` DATETIME     DEFAULT NULL,
     PRIMARY KEY (`id`)
 );
 CREATE TABLE travel.plan_content
