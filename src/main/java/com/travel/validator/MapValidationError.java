@@ -1,4 +1,4 @@
-package com.travel.service;
+package com.travel.validator;
 
 import com.travel.entity.Plan;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,7 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 @Service
-public class MapValidationErrorService {
+public class MapValidationError {
     public ResponseEntity<?> mapValidationService( BindingResult result)  {
         if (result.hasErrors())
         {
