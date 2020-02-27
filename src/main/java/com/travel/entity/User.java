@@ -29,8 +29,11 @@ public class User {
     private boolean gender;
 
     @Column(unique = true)
-
     private String password;
+
+    @Column(name = "join_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date joinDate;
 
 
     public Long getId() {
@@ -97,6 +100,14 @@ public class User {
         this.dOfB = dOfB;
     }
 
+    public Date getJoinDate() {
+        return joinDate;
+    }
+
+    public void setJoinDate(Date joinDate) {
+        this.joinDate = joinDate;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -107,6 +118,7 @@ public class User {
                 ", dOB=" + dOfB +
                 ", password='" + password + '\'' +
                 ", gender=" + gender +
+                ", join_date=" + joinDate +
                 '}';
     }
 
