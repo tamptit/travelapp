@@ -1,10 +1,12 @@
 package com.travel.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -35,8 +37,12 @@ public class User {
 
     private String password;
 
-    @OneToMany(mappedBy="user")
-    private Set<Plan> plans;
+    @OneToMany(mappedBy = "user")
+    @JsonBackReference
+    private Set<Plan> plans = new HashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<PlanInteractor> planInteractors = new HashSet<>();
 
     public Set<Plan> getPlans() {
         return plans;

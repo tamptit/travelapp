@@ -15,7 +15,7 @@ public class UserForm {
     @Size(min = 3, max = 100)
     private String email;
 
-    @Size(min = 1, max = 6, message = "Size must be between 1 and 6")
+    @Size(min = 6, max = 20, message = "asd")
     private String password;
 
     private String fullName;

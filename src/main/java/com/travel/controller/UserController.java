@@ -100,7 +100,8 @@ public class UserController {
     ) {
         if(jwtTokenProvider.validateToken(tokenDto.getToken())){
             return ResponseEntity.ok().body(true);
-        }else{
+        }
+        else{
             return ResponseEntity.badRequest().body(false);
         }
     }

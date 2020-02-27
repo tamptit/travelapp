@@ -6,7 +6,6 @@ import com.travel.repository.PlanRepository;
 import com.travel.validator.MapValidationError;
 import com.travel.service.PlanService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +32,7 @@ public class PlanController {
     @Autowired
     private MapValidationError mapValidationErrorService;
 
-    public static final int TOTAL_ROW_IN_PAGE=10;
+    public static final int TOTAL_ROW_IN_PAGE = 10;
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Plan> findAll() {
@@ -53,7 +52,7 @@ public class PlanController {
     @GetMapping("/list")
     public PageResponse getLatestPlan(@PathParam(value = "page") int page) throws ParseException {
         page = page <= 0 ? 0 : page - 1;
-        Pageable sortedByCreatedDay = PageRequest.of(page, TOTAL_ROW_IN_PAGE,Sort.by("createdDay").descending());
+        Pageable sortedByCreatedDay = PageRequest.of(page, TOTAL_ROW_IN_PAGE, Sort.by("createdDay").descending());
         Page<Plan> planPager = planRepository.findAll(sortedByCreatedDay);
         PageResponse response = new PageResponse();
         response.setCurrentPage(page);
@@ -67,8 +66,8 @@ public class PlanController {
     @GetMapping("/hot")
     public PageResponse getHotPlan(@PathParam(value = "page") int page) throws ParseException {
         page = page <= 0 ? 0 : page - 1;
-        Page<Plan> hotPager = planRepository.findAll(
-                PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "activeUser").and(Sort.by(Sort.Direction.DESC, "followUser"))));
+        Pageable sortedByCountUser = PageRequest.of(page, TOTAL_ROW_IN_PAGE, Sort.by("countUser").descending());
+        Page<Plan> hotPager = planRepository.findAll(sortedByCountUser);
         PageResponse response = new PageResponse();
         response.setCurrentPage(page);
         response.setTotalPage(hotPager.getTotalPages());
