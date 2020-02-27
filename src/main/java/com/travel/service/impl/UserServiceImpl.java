@@ -19,7 +19,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(email);
     }
 
-
     @Override
     public void save(User user) {
 

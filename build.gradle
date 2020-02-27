@@ -18,7 +18,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 //	implementation 'org.mariadb.jdbc:mariadb-java-client:2.5.4'
-    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:2.5.4'
+//    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:2.5.4'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
@@ -31,8 +31,8 @@ dependencies {
     // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 
-//    // https://mvnrepository.com/artifact/org.postgresql/postgresql
-//    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.0'
+    // https://mvnrepository.com/artifact/org.postgresql/postgresql
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.0'
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '1.2.0.RELEASE'
@@ -48,6 +48,5 @@ test {
 flyway {
     url = 'jdbc:postgresql://127.0.0.1/5432/travel'
     user = 'postgres'
-    password = '1234'
-    //schemas = 'travel'
+    password = 'mysecretpassword'
 }
