@@ -1,9 +1,6 @@
 package com.travel.dto;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.Date;
 
 public class UserForm {
@@ -11,15 +8,18 @@ public class UserForm {
     @NotEmpty(message = "Username is required")
     private String username;
 
+    @Size(min = 8, max = 50)
     @NotEmpty(message = "Email is required")
-    @Size(min = 3, max = 100)
     private String email;
 
-    @Size(min = 6, max = 20, message = "asd")
+    @Size(min = 6, max=50, message = "Password should be minimum of 6 characters")
+    @NotEmpty(message = "Password is required")
     private String password;
 
+    @NotEmpty(message = "Full name is required")
     private String fullName;
 
+    @Past(message = "Date of birth is incorrect")
     private Date dOfB;
 
     @NotNull(message = "Sex is required")
