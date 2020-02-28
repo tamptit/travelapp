@@ -9,7 +9,6 @@ public class PageResponse {
     private int totalPage;
     private List<Plan> plans;
 
-
     public int getCurrentPage() {
         return currentPage;
     }
