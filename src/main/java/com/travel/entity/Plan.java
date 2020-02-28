@@ -57,7 +57,6 @@ public class Plan {
     @OneToMany(mappedBy = "plan")
     private Set<PlanInteractor> planInteractors = new HashSet<>();
 
-
     public Long getCountUser() {
         return countUser;
     }

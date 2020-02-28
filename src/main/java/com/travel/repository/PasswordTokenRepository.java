@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository("passwordTokenRepository")
+
 public interface PasswordTokenRepository extends JpaRepository<PasswordResetToken, Long> {
     //Optional<User> findByToken(String token);
 
