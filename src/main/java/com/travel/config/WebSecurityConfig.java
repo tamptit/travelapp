@@ -28,7 +28,7 @@ import java.util.Arrays;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-  String[] URLS = {"/api/auth/**"};
+  String[] URLS = {"/api/auth/**","/api/member/**"};
 
   @Autowired CustomUserDetailsService customUserDetailsService;
 
