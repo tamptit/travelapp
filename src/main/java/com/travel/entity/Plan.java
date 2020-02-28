@@ -54,8 +54,6 @@ public class Plan {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "plan")
-    private Set<PlanInteractor> planInteractors = new HashSet<>();
 
     public Long getCountUser() {
         return countUser;
@@ -137,11 +135,5 @@ public class Plan {
         this.image = image;
     }
 
-    public Set<PlanInteractor> getPlanInteractors() {
-        return planInteractors;
-    }
 
-    public void setPlanInteractors(Set<PlanInteractor> planInteractors) {
-        this.planInteractors = planInteractors;
-    }
 }

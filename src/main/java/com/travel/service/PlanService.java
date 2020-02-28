@@ -23,7 +23,6 @@ public class PlanService {
     public Plan saveOrUpdate (Plan plan)
     {
         // logic
-
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(au.getName()).orElse(null);
         Date currentDate = new Date();
