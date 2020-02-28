@@ -23,7 +23,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    String[] URLS = {"/api/auth/**", "/api/member/**"};
+    String[] URLS = {"/api/auth/**", "/api/member/**", "/api/plan/**"};
 
     @Autowired
     CustomUserDetailsService customUserDetailsService;
@@ -35,13 +35,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter();
     }
-
-//  @Override
-//  public void configure(HttpSecurity http) throws Exception {
-//    http.csrf().disable().authorizeRequests().antMatchers("/login")
-//            .permitAll().anyRequest().authenticated();
-//    http.authorizeRequests().and().logout().logoutUrl("/logout").logoutSuccessUrl("/");
-//  }
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder)

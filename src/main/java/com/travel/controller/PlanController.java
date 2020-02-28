@@ -22,7 +22,7 @@ import java.text.ParseException;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/auth/")
+@RequestMapping(value = "/api/plan")
 @CrossOrigin
 public class PlanController {
     @Autowired

@@ -44,7 +44,7 @@ public class UserController {
 
     private static final String jwtTokenCookieName = "JWT-TOKEN";
 
-    @Value("${url}")
+    @Value("${url.resetPassword}")
     private String urlFrontEnd;
 
     @Autowired
@@ -83,11 +83,9 @@ public class UserController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtTokenProvider.generateToken(authentication);
             return new ResponseEntity<>(token, HttpStatus.OK);
-
         } catch (Exception e) {
-            new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping(value = "/logout")
@@ -167,9 +165,9 @@ public class UserController {
     }
 
     @PostMapping(value = "/forgot", produces = "application/json")
-    public ResponseEntity processForgotPasswordForm(@RequestBody String mail, HttpServletRequest request) {
+    public ResponseEntity processForgotPasswordForm(@RequestBody Map<String,String> mail) {
 
-        Optional<User> optional = userRepository.findByEmail(mail);
+        Optional<User> optional = userRepository.findByEmail(mail.get("mail"));
 
         if (!optional.isPresent()) {
             return ResponseEntity.ok().body("ok mail");
@@ -195,7 +193,7 @@ public class UserController {
             passwordResetEmail.setTo(user.getEmail());
             passwordResetEmail.setSubject("Password Reset Request");
 
-            String text = urlFrontEnd + "/api/auth?token=" + passwordResetToken.getToken();
+            String text = urlFrontEnd + "?token=" + passwordResetToken.getToken();
             passwordResetEmail.setText("To reset your password, click the link below:\n" + text);
             emailService.sendEmail(passwordResetEmail);
 
@@ -207,17 +205,15 @@ public class UserController {
     // Display form to reset password
 
     @RequestMapping(value = "/valid-reset-password", method = RequestMethod.GET)
-    public ResponseEntity validateResetPasswordPage(@RequestBody Map<String, String> requestParams) {
-        String newPassword = requestParams.get("password");
-        PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token"));
+    public ResponseEntity validateResetPasswordPage(@RequestParam("token") String requestParams) {
+        PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams);
         if (passwordResetToken == null) {  // check token in table
-            return ResponseEntity.ok().body(new ErrorMessage("Invalid"));
-        } else if (new Date().before(passwordResetToken.getExpiryDate())) {// check date_expired
-            return ResponseEntity.ok().body(new ErrorMessage("Invalid"));
+            return ResponseEntity.badRequest().body(new ErrorMessage("Invalid"));
+        } else if (new Date().after(passwordResetToken.getExpiryDate())) {// check date_expired
+            return ResponseEntity.badRequest().body(new ErrorMessage("Invalid"));
         } else {
-            return ResponseEntity.ok().body(requestParams.get("token"));
+            return ResponseEntity.ok().body("ok");
         }
-
     }
     // Process reset password form
     @Transactional
@@ -230,8 +226,8 @@ public class UserController {
         Date date = new Date();
         if (date.before(passwordResetToken.getExpiryDate())) {
             User resetUser = user.get();
-            if (requestParams.get("password").isEmpty()) {                  // Set new password
-                return ResponseEntity.ok().body(new ErrorMessage("Password should be minimum of 6 characters"));
+            if (requestParams.get("password").isEmpty() || requestParams.get("password").length() < 6) {                  // Set new password
+                return ResponseEntity.badRequest().body(new ErrorMessage("Password should be minimum of 6 characters"));
             }
             resetUser.setPassword(bCryptPasswordEncoder.encode(requestParams.get("password")));
 
