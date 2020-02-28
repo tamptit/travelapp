@@ -1,5 +1,6 @@
 package com.travel.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
@@ -35,6 +36,11 @@ public class User {
 
     private String password;
 
+    @Column(name = "join_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date joinDate;
+
+    @JsonBackReference
     @OneToMany(mappedBy="user")
     private Set<Plan> plans;
 
@@ -100,6 +106,14 @@ public class User {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public Date getJoinDate() {
+        return joinDate;
+    }
+
+    public void setJoinDate(Date joinDate) {
+        this.joinDate = joinDate;
     }
 
     @Override
