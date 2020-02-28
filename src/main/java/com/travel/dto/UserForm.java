@@ -1,5 +1,7 @@
 package com.travel.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.*;
 import java.util.Date;
 
@@ -20,6 +22,7 @@ public class UserForm {
     private String fullName;
 
     @Past(message = "Date of birth is incorrect")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dOfB;
 
     @NotNull(message = "Sex is required")

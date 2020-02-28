@@ -206,44 +206,44 @@ public class UserController {
 
     // Display form to reset password
     @RequestMapping(value = "/valid-reset-password", method = RequestMethod.GET)
-    public ResponseEntity validateResetPasswordPage(@RequestBody Map<String, Object> requestParams) {
-        String newPassword = requestParams.get("password").toString();
+    public ResponseEntity validateResetPasswordPage(@RequestParam Map<String, String> requestParams) {
+        //String newPassword = requestParams.get("password").toString();
         PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token").toString());
-        if (passwordResetToken == null){                                            // check token in table
-            return ResponseEntity.ok().body(new ErrorMessage("Invalid"));
-        }else if (new Date().before(passwordResetToken.getExpiryDate())){           // check date_expired
-            return ResponseEntity.ok().body(new ErrorMessage("Invalid"));
-        }else {
-            return ResponseEntity.ok().body(requestParams.get("token"));
-        }
-
-    }
-    // Process reset password form
-    @Transactional
-    @RequestMapping(value = "/reset-password", method = RequestMethod.POST)
-    public ResponseEntity setNewPassword(@RequestBody Map<String, Object> requestParams) {
-
-        // Find PasswordResetToken by token
-        PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token").toString());
-        Optional<User> user = Optional.ofNullable(passwordResetToken.getUser());
-
-        if (new Date().before(passwordResetToken.getExpiryDate())) {
-            User resetUser = user.get();
-            if (requestParams.get("password").toString().isEmpty()) {                  // Set new password
-                return ResponseEntity.ok().body(new ErrorMessage("Password should be minimum of 6 characters"));
-            }
-            resetUser.setPassword(bCryptPasswordEncoder.encode(requestParams.get("password").toString()));
-
-            userRepository.save(resetUser);         // Save user
-            passwordResetToken.setToken(null);
-            passwordTokenRepository.save(passwordResetToken);
-            //passwordResetToken.save(passwordResetToken);
-            return ResponseEntity.ok().body("logined");
-
+        if (passwordResetToken == null) {                                            // check token in table
+            return ResponseEntity.badRequest().body(new ErrorMessage("Invalid"));
+        } else if (new Date().before(passwordResetToken.getExpiryDate())) {           // check date_expired
+            return ResponseEntity.badRequest().body(new ErrorMessage("Invalid"));
         } else {
-            return ResponseEntity.ok().body("ok");
+            return ResponseEntity.ok().body("tk");
+
         }
     }
+        // Process reset password form
+        @Transactional
+        @RequestMapping(value = "/reset-password", method = RequestMethod.POST)
+        public ResponseEntity setNewPassword (@RequestBody Map <String, Object > requestParams){
+
+            // Find PasswordResetToken by token
+            PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token").toString());
+            Optional<User> user = Optional.ofNullable(passwordResetToken.getUser());
+
+            if (new Date().before(passwordResetToken.getExpiryDate())) {
+                User resetUser = user.get();
+                if (requestParams.get("password").toString().isEmpty()) {                  // Set new password
+                    return ResponseEntity.ok().body(new ErrorMessage("Password should be minimum of 6 characters"));
+                }
+                resetUser.setPassword(bCryptPasswordEncoder.encode(requestParams.get("password").toString()));
+
+                userRepository.save(resetUser);         // Save user
+                passwordResetToken.setToken(null);
+                passwordTokenRepository.save(passwordResetToken);
+                //passwordResetToken.save(passwordResetToken);
+                return ResponseEntity.ok().body("logined");
+
+            } else {
+                return ResponseEntity.ok().body("ok");
+            }
+        }
 
 
 }
