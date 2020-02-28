@@ -169,7 +169,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/forgot", produces = "application/json")
-    public ResponseEntity processForgotPasswordForm(@RequestBody Map<?,?> mail) {
+    public ResponseEntity processForgotPasswordForm(@RequestBody Map<?, ?> mail) {
 
         Optional<User> optional = userRepository.findByEmail(mail.get("mail").toString());
 
@@ -218,32 +218,33 @@ public class UserController {
 
         }
     }
-        // Process reset password form
-        @Transactional
-        @RequestMapping(value = "/reset-password", method = RequestMethod.POST)
-        public ResponseEntity setNewPassword (@RequestBody Map <String, Object > requestParams){
 
-            // Find PasswordResetToken by token
-            PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token").toString());
-            Optional<User> user = Optional.ofNullable(passwordResetToken.getUser());
+    // Process reset password form
+    @Transactional
+    @RequestMapping(value = "/reset-password", method = RequestMethod.POST)
+    public ResponseEntity setNewPassword(@RequestBody Map<String, Object> requestParams) {
 
-            if (new Date().before(passwordResetToken.getExpiryDate())) {
-                User resetUser = user.get();
-                if (requestParams.get("password").toString().isEmpty()) {                  // Set new password
-                    return ResponseEntity.ok().body(new ErrorMessage("Password should be minimum of 6 characters"));
-                }
-                resetUser.setPassword(bCryptPasswordEncoder.encode(requestParams.get("password").toString()));
+        // Find PasswordResetToken by token
+        PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token").toString());
+        Optional<User> user = Optional.ofNullable(passwordResetToken.getUser());
 
-                userRepository.save(resetUser);         // Save user
-                passwordResetToken.setToken(null);
-                passwordTokenRepository.save(passwordResetToken);
-                //passwordResetToken.save(passwordResetToken);
-                return ResponseEntity.ok().body("logined");
-
-            } else {
-                return ResponseEntity.ok().body("ok");
+        if (new Date().before(passwordResetToken.getExpiryDate())) {
+            User resetUser = user.get();
+            if (requestParams.get("password").toString().isEmpty()) {                  // Set new password
+                return ResponseEntity.ok().body(new ErrorMessage("Password should be minimum of 6 characters"));
             }
+            resetUser.setPassword(bCryptPasswordEncoder.encode(requestParams.get("password").toString()));
+
+            userRepository.save(resetUser);         // Save user
+            passwordResetToken.setToken(null);
+            passwordTokenRepository.save(passwordResetToken);
+            //passwordResetToken.save(passwordResetToken);
+            return ResponseEntity.ok().body("logined");
+
+        } else {
+            return ResponseEntity.ok().body("ok");
         }
+    }
 
 
 }
