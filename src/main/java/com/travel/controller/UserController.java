@@ -177,7 +177,7 @@ public class UserController {
             date.add(Calendar.HOUR, HOUR_EXPIRE);
             Date date_expired = date.getTime();
             PasswordResetToken passwordResetToken = passwordTokenRepository.findByUser(user);
-            if (passwordResetToken == null) { // table chua co row cua user nay
+            if (passwordResetToken == null) {                           // table chua co row cua user nay
                 passwordResetToken = new PasswordResetToken();
                 passwordResetToken.setUser(user);
                 passwordResetToken.setToken(UUID.randomUUID().toString());
@@ -186,8 +186,7 @@ public class UserController {
                 passwordResetToken.setToken(UUID.randomUUID().toString());
                 passwordResetToken.setExpiryDate(date_expired);
             }
-            passwordTokenRepository.save(passwordResetToken);   // save passwordToken
-
+            passwordTokenRepository.save(passwordResetToken);           // save passwordToken
             SimpleMailMessage passwordResetEmail = new SimpleMailMessage();
             passwordResetEmail.setFrom("travelapp.travel2020@gmail.com");
             passwordResetEmail.setTo(user.getEmail());
@@ -199,11 +198,9 @@ public class UserController {
 
             return ResponseEntity.ok().body("ok");
         }
-
     }
 
     // Display form to reset password
-
     @RequestMapping(value = "/valid-reset-password", method = RequestMethod.GET)
     public ResponseEntity validateResetPasswordPage(@RequestParam("token") String requestParams) {
         PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams);
@@ -223,8 +220,8 @@ public class UserController {
         // Find PasswordResetToken by token
         PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token"));
         Optional<User> user = Optional.ofNullable(passwordResetToken.getUser());
-        Date date = new Date();
-        if (date.before(passwordResetToken.getExpiryDate())) {
+
+        if (new Date().before(passwordResetToken.getExpiryDate())) {
             User resetUser = user.get();
             if (requestParams.get("password").isEmpty() || requestParams.get("password").length() < 6) {                  // Set new password
                 return ResponseEntity.badRequest().body(new ErrorMessage("Password should be minimum of 6 characters"));

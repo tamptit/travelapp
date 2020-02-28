@@ -1,15 +1,15 @@
 -- create user table
 CREATE TABLE public.plan
-(
-	id bigserial  primary key,
-	name       	varchar(45) DEFAULT NULL,
-	content     text,
-	active_user INT     DEFAULT NULL,
-	follow_user INT     DEFAULT NULL,
-	start_day   date        DEFAULT NULL,
-	end_day     date        DEFAULT NULL,
-	status      varchar(45) DEFAULT NULL
-);
+  (
+      id bigserial  primary key,
+      name       	varchar(45) DEFAULT NULL,
+      content     text,
+      active_user INT     DEFAULT NULL,
+      follow_user INT     DEFAULT NULL,
+      start_day   date        DEFAULT NULL,
+      end_day     date        DEFAULT NULL,
+      status      varchar(45) DEFAULT NULL
+  );
 
 CREATE TABLE public.plan_content
 (
