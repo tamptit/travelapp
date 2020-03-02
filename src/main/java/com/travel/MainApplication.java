@@ -13,4 +13,9 @@ public class MainApplication {
 		SpringApplication.run(MainApplication.class, args);
 	}
 
+	@Bean
+	@Scope(value = "singleton")
+	public ObjectMapper objectMapper(){
+		return new ObjectMapper();
+	}
 }

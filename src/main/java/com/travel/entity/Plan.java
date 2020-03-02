@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -52,13 +53,13 @@ public class Plan {
     private User user;
 
     @OneToMany(mappedBy="plan")
-    private PlanInteractor planInteractors;
+    private List<PlanInteractor> planInteractors;
 
-    public PlanInteractor getPlanInteractors() {
+    public List<PlanInteractor> getPlanInteractors() {
         return planInteractors;
     }
 
-    public void setPlanInteractors(PlanInteractor planInteractors) {
+    public void setPlanInteractors(List<PlanInteractor> planInteractors) {
         this.planInteractors = planInteractors;
     }
 
@@ -145,8 +146,7 @@ public class Plan {
                 ", startus='" + startus + '\'' +
                 ", createdDay=" + createdDay +
                 ", image='" + image + '\'' +
-                ", user=" + user +
-                ", planInteractors=" + planInteractors +
+                //", user=" + user +
                 '}';
     }
 }

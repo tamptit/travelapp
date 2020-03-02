@@ -73,8 +73,6 @@ public class PlanInteractor {
     public String toString() {
         return "PlanInteractor{" +
                 "id=" + id +
-                ", user=" + user +
-                ", plan=" + plan +
                 ", status=" + status +
                 '}';
     }

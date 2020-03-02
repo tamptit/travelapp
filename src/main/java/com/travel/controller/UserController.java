@@ -77,7 +77,7 @@ public class UserController {
         if (listError.isEmpty()) {
             User user = new User();
             user.setFullName(userForm.getFullName());
-            user.setdOB(userForm.getdOfB());
+            user.setdOfB(userForm.getdOfB());
             user.setGender(userForm.isGender());
             user.setUsername(userForm.getUsername());
             user.setEmail(userForm.getEmail());
@@ -109,7 +109,7 @@ public class UserController {
             UserForm userForm = new UserForm();
             userForm.setUsername(user.getUsername());
             userForm.setEmail(user.getEmail());
-            userForm.setdOfB(user.getdOB());
+            userForm.setdOfB(user.getdOfB());
             userForm.setGender(user.isGender());
             userForm.setFullName(user.getFullName());
             return new ResponseEntity<>(userForm, HttpStatus.OK);

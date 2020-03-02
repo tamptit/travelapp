@@ -41,26 +41,25 @@ public class User {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date joinDate;
 
-    @JsonBackReference
-    @OneToMany(mappedBy="user")
-    private Plan plans;
+    @OneToMany(targetEntity=Plan.class, mappedBy="user")
+    private List<Plan> plans;
 
     @OneToMany(mappedBy="user")
-    private PlanInteractor planInteractors;
+    private List<PlanInteractor> planInteractors;
 
-    public Plan getPlans() {
+    public List<Plan> getPlans() {
         return plans;
     }
 
-    public void setPlans(Plan plans) {
+    public void setPlans(List<Plan> plans) {
         this.plans = plans;
     }
 
-    public PlanInteractor getPlanInteractors() {
+    public List<PlanInteractor> getPlanInteractors() {
         return planInteractors;
     }
 
-    public void setPlanInteractors(PlanInteractor planInteractors) {
+    public void setPlanInteractors(List<PlanInteractor> planInteractors) {
         this.planInteractors = planInteractors;
     }
 
@@ -94,14 +93,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Date getdOB() {
-        return dOfB;
-    }
-
-    public void setdOB(Date dOB) {
-        this.dOfB = dOB;
     }
 
     public boolean isGender() {
@@ -147,8 +138,7 @@ public class User {
                 ", gender=" + gender +
                 ", password='" + password + '\'' +
                 ", joinDate=" + joinDate +
-                ", plans=" + plans +
-                ", planInteractors=" + planInteractors +
+                ", plan=" + plans +
                 '}';
     }
 }

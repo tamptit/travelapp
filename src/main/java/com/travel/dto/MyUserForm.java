@@ -14,10 +14,7 @@ import java.util.List;
 
 public class MyUserForm {
 
-
     private User user; // model
-
-    private List<PlanInteractor> planInteractor;
 
     private  List<Plan> joinPlan;
 
@@ -54,14 +51,6 @@ public class MyUserForm {
 
     public void setFlowPlan(List<Plan> flowPlan) {
         this.flowPlan = flowPlan;
-    }
-
-    public List<PlanInteractor> getPlanInteractor() {
-        return planInteractor;
-    }
-
-    public void setPlanInteractor(List<PlanInteractor> planInteractor) {
-        this.planInteractor = planInteractor;
     }
 
 }
