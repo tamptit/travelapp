@@ -1,9 +1,12 @@
 package com.travel.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -26,15 +29,28 @@ public class User {
     private Date dOfB;
 
     @Column(name = "gender")
+
     private boolean gender;
 
     @Column(unique = true)
+
     private String password;
 
     @Column(name = "join_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date joinDate;
 
+    @JsonBackReference
+    @OneToMany(mappedBy="user")
+    private Set<Plan> plans;
+
+    public Set<Plan> getPlans() {
+        return plans;
+    }
+
+    public void setPlans(Set<Plan> plans) {
+        this.plans = plans;
+    }
 
     public Long getId() {
         return id;
@@ -90,14 +106,6 @@ public class User {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
-    }
-
-    public Date getdOfB() {
-        return dOfB;
-    }
-
-    public void setdOfB(Date dOfB) {
-        this.dOfB = dOfB;
     }
 
     public Date getJoinDate() {

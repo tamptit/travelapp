@@ -1,12 +1,15 @@
 package com.travel.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "plan")
@@ -17,19 +20,13 @@ public class Plan {
     private long id;
 
     @NotBlank(message = "Name is required !!!")
-    @Size(min=4,max=200,message = "Please use 4 to 200 letters")
+    @Size(min = 4, max = 200, message = "Please use 4 to 200 letters")
     @Column(name = "name")
     private String name;
 
     @NotBlank(message = "Content is required !!!")
     @Column(name = "content")
     private String content;
-
-    @Column(name = "active_user")
-    private int activeUser;
-
-    @Column(name = "follow_user")
-    private int followUser;
 
     @Column(name = "start_day")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -47,9 +44,24 @@ public class Plan {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date createdDay;
 
+    @Column(name = "image")
+    private String image;
+
+    @Column(name = "count_user")
+    private Long countUser;
+
     @ManyToOne
-    @JoinColumn(name="user_id", nullable=false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+
+    public Long getCountUser() {
+        return countUser;
+    }
+
+    public void setCountUser(Long countUser) {
+        this.countUser = countUser;
+    }
 
     public User getUser() {
         return user;
@@ -83,7 +95,6 @@ public class Plan {
         this.endDay = endDay;
     }
 
-
     public long getId() {
         return id;
     }
@@ -116,19 +127,13 @@ public class Plan {
         this.startus = startus;
     }
 
-    public int getActiveUser() {
-        return activeUser;
+    public String getImage() {
+        return image;
     }
 
-    public void setActiveUser(int activeUser) {
-        this.activeUser = activeUser;
+    public void setImage(String image) {
+        this.image = image;
     }
 
-    public int getFollowUser() {
-        return followUser;
-    }
 
-    public void setFollowUser(int followUser) {
-        this.followUser = followUser;
-    }
 }
