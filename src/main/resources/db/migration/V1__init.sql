@@ -15,5 +15,5 @@ create table public.users
         unique (username)
 );
 
-INSERT INTO public.users(username, full_name, email, password, date_birth, gender)
-VALUES ('username123', 'tranhoangnam', 'namtran123@gamil', 'qweasd', '2019-09-20', true);
+INSERT INTO public.users(username, full_name, email, password, date_birth, join_date,gender)
+VALUES ('username123', 'tranhoangnam', 'namtran123@gamil', 'qweasd', '2019-09-20', "2020-02-29",true);

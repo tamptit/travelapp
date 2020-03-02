@@ -66,7 +66,7 @@ public class MemberController {
     public ResponseEntity getUserPlan(@PathVariable Long id) {
         MyUserForm myUserForm = new MyUserForm();
         User user = userRepository.findById(id).orElse(null);
-
+        user.setdOfB("2020-09-06");
         com.travel.model.User userModel = new com.travel.model.User(user.getId(), user.getUsername(), user.getEmail(),
                 user.getFullName(), user.getdOfB(), user.isGender(), user.getJoinDate());
         //com.travel.model.User userModel = objectMapper.convertValue(user, com.travel.model.User.class);

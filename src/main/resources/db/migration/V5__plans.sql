@@ -1,4 +1,11 @@
 DROP TABLE IF EXISTS public.plan CASCADE;
+INSERT INTO public.users(username, full_name, email, password, date_birth, join_date ,gender)
+VALUES ('lenhatnam001', 'LeNhatNam', 'namnhat001@gamil', '123456','1999-09-08' ,'2020-02-29', true);
+INSERT INTO public.users(username, full_name, email, password, date_birth, join_date ,gender)
+VALUES ('lenhatnam002', 'LeNhatNam', 'namnhat002@gamil', '123456','1999-08-09' ,'2020-02-29', true);
+INSERT INTO public.users(username, full_name, email, password, date_birth, join_date ,gender)
+VALUES ('lenhatnam003', 'LeNhatNam', 'namnhat003@gamil', '123456','1999-10-09' ,'2020-02-29', true);
+
 CREATE TABLE public.plan
 (
 	id bigserial  primary key,
