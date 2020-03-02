@@ -22,7 +22,7 @@ import java.text.ParseException;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/auth/")
+@RequestMapping(value = "/api/plan")
 @CrossOrigin
 public class PlanController {
     @Autowired
@@ -73,11 +73,6 @@ public class PlanController {
         response.setTotalPage(hotPager.getTotalPages());
         response.setPlans(hotPager.getContent());
         return response;
-    }
-
-    @GetMapping("/user")
-    public Principal user(Principal principal) {
-        return principal;
     }
 
 }
