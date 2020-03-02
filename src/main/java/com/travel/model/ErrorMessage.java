@@ -1,8 +1,5 @@
 package com.travel.model;
 
-import javax.persistence.Entity;
-
-
 public class ErrorMessage {
     private String message;
 

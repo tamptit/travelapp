@@ -58,7 +58,7 @@ public class JwtTokenProvider {
       mapModel = mapper.readValue(claims.getSubject(), new TypeReference<Map<String, String>>() {});
       strId = mapModel.get(USER_ID);
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.error(e.getMessage());
     }
     return Long.parseLong(strId);
   }
