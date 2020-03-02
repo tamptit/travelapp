@@ -16,9 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-
 @RestController
-@RequestMapping(value = "/api/")
+@RequestMapping(value = "/api")
 public class PasswordController {
 
     static final int HOUR_EXPIRE = 1;
@@ -28,9 +27,6 @@ public class PasswordController {
 
     @Autowired
     UserRepository userRepository;
-
-    @Autowired
-    PasswordResetToken passwordResetToken;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -81,13 +77,15 @@ public class PasswordController {
     @RequestMapping(value = "/valid-reset-password", method = RequestMethod.GET)
     public ResponseEntity validateResetPasswordPage(@RequestParam Map<String, String> requestParams) {
         //String newPassword = requestParams.get("password").toString();
-        PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token").toString());
+        PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token"));
         if (passwordResetToken == null) {                                            // check token in table
             return ResponseEntity.badRequest().body(new ErrorMessage("Invalid"));
-        } else if (new Date().before(passwordResetToken.getExpiryDate())) {           // check date_expired
-            return ResponseEntity.badRequest().body(new ErrorMessage("Invalid"));
         } else {
-            return ResponseEntity.ok().body("tk");
+            if (new Date().after(passwordResetToken.getExpiryDate())){
+                return ResponseEntity.badRequest().body(new ErrorMessage("Date"));
+            }else{
+                return ResponseEntity.ok().body("tk");
+            }
         }
     }
     // Process reset password form
