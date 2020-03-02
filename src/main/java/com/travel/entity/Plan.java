@@ -47,20 +47,19 @@ public class Plan {
     @Column(name = "image")
     private String image;
 
-    @Column(name = "count_user")
-    private Long countUser;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @OneToMany(mappedBy="plan")
+    private PlanInteractor planInteractors;
 
-    public Long getCountUser() {
-        return countUser;
+    public PlanInteractor getPlanInteractors() {
+        return planInteractors;
     }
 
-    public void setCountUser(Long countUser) {
-        this.countUser = countUser;
+    public void setPlanInteractors(PlanInteractor planInteractors) {
+        this.planInteractors = planInteractors;
     }
 
     public User getUser() {
@@ -135,5 +134,19 @@ public class Plan {
         this.image = image;
     }
 
-
+    @Override
+    public String toString() {
+        return "Plan{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", content='" + content + '\'' +
+                ", startDay=" + startDay +
+                ", endDay=" + endDay +
+                ", startus='" + startus + '\'' +
+                ", createdDay=" + createdDay +
+                ", image='" + image + '\'' +
+                ", user=" + user +
+                ", planInteractors=" + planInteractors +
+                '}';
+    }
 }

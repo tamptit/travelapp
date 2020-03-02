@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -42,14 +43,25 @@ public class User {
 
     @JsonBackReference
     @OneToMany(mappedBy="user")
-    private Set<Plan> plans;
+    private Plan plans;
 
-    public Set<Plan> getPlans() {
+    @OneToMany(mappedBy="user")
+    private PlanInteractor planInteractors;
+
+    public Plan getPlans() {
         return plans;
     }
 
-    public void setPlans(Set<Plan> plans) {
+    public void setPlans(Plan plans) {
         this.plans = plans;
+    }
+
+    public PlanInteractor getPlanInteractors() {
+        return planInteractors;
+    }
+
+    public void setPlanInteractors(PlanInteractor planInteractors) {
+        this.planInteractors = planInteractors;
     }
 
     public Long getId() {
@@ -108,6 +120,14 @@ public class User {
         this.fullName = fullName;
     }
 
+    public Date getdOfB() {
+        return dOfB;
+    }
+
+    public void setdOfB(Date dOfB) {
+        this.dOfB = dOfB;
+    }
+
     public Date getJoinDate() {
         return joinDate;
     }
@@ -123,10 +143,12 @@ public class User {
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", fullName='" + fullName + '\'' +
-                ", dOB=" + dOfB +
-                ", password='" + password + '\'' +
+                ", dOfB=" + dOfB +
                 ", gender=" + gender +
+                ", password='" + password + '\'' +
+                ", joinDate=" + joinDate +
+                ", plans=" + plans +
+                ", planInteractors=" + planInteractors +
                 '}';
     }
-
 }
