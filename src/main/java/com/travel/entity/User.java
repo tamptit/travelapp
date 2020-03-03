@@ -28,12 +28,11 @@ public class User {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dOfB;
 
-    @Column(name = "gender")
 
+    @Column(name = "gender")
     private boolean gender;
 
     @Column(unique = true)
-
     private String password;
 
     @Column(name = "join_date")
@@ -43,6 +42,12 @@ public class User {
     @JsonBackReference
     @OneToMany(mappedBy="user")
     private Set<Plan> plans;
+
+    @Column(name = "login_type")
+    private String loginType;
+
+    @Column(name = "principal_id")
+    private String principalId;
 
     public Set<Plan> getPlans() {
         return plans;
@@ -114,6 +119,22 @@ public class User {
 
     public void setJoinDate(Date joinDate) {
         this.joinDate = joinDate;
+    }
+
+    public String getLoginType() {
+        return loginType;
+    }
+
+    public void setLoginType(String loginType) {
+        this.loginType = loginType;
+    }
+
+    public String getPrincipalId() {
+        return principalId;
+    }
+
+    public void setPrincipalId(String principalId) {
+        this.principalId = principalId;
     }
 
     @Override

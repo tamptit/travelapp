@@ -9,7 +9,6 @@ import com.travel.entity.User;
 import com.travel.repository.PasswordTokenRepository;
 import com.travel.repository.UserRepository;
 import com.travel.service.MailService;
-import com.travel.utils.CookieUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,10 +90,10 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping(value = "/logout")
-    public void logout(HttpServletResponse httpServletResponse, HttpServletRequest request) {
-        CookieUtil.clear(httpServletResponse, jwtTokenCookieName, request.getServerName());
-    }
+//    @PostMapping(value = "/logout")
+//    public void logout(HttpServletResponse httpServletResponse, HttpServletRequest request) {
+//        CookieUtil.clear(httpServletResponse, jwtTokenCookieName, request.getServerName());
+//    }
 
     @PutMapping("/register")
     public ResponseEntity registerUser(

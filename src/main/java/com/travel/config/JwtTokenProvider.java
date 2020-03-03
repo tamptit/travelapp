@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,73 +21,85 @@ import java.util.Map;
 @Component
 public class JwtTokenProvider {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenProvider.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenProvider.class);
+    private static final ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
+    private static final String USER_ID = "id";
+    private static final String USER_NAME = "username";
 
-  private static final ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
+    @Autowired
+    private JwtConfiguration jwtConfiguration;
 
-  private static final String USER_ID = "id";
-  private static final String USER_NAME = "username";
+    public String generateToken(Authentication authentication) throws JsonProcessingException {
 
-  @Autowired private JwtConfiguration jwtConfiguration;
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
-  public String generateToken(Authentication authentication) throws JsonProcessingException {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + jwtConfiguration.getExpirationTime());
+        Map<String, Object> mapModel = new HashMap<>();
+        mapModel.put(USER_ID, userPrincipal.getId());
+        mapModel.put(USER_NAME, userPrincipal.getUsername());
 
-    UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-
-    Date now = new Date();
-    Date validity = new Date(now.getTime() + jwtConfiguration.getExpirationTime());
-
-    Map<String, Object> mapModel = new HashMap<>();
-
-    mapModel.put(USER_ID, userPrincipal.getId());
-    mapModel.put(USER_NAME, userPrincipal.getUsername());
-
-    return Jwts.builder() //
-        .setSubject(mapper.writeValueAsString(mapModel))
-        .setIssuedAt(new Date())
-        .setExpiration(validity)
-        .signWith(JwtConfiguration.HASH_ALGORITHM, jwtConfiguration.getSecret())
-        .compact();
-  }
-
-  public Long getUserIdFromJWT(String token) {
-    Claims claims =
-        Jwts.parser().setSigningKey(jwtConfiguration.getSecret()).parseClaimsJws(token).getBody();
-    Map<String, String> mapModel;
-    String strId = "";
-    try {
-      mapModel = mapper.readValue(claims.getSubject(), new TypeReference<Map<String, String>>() {});
-      strId = mapModel.get(USER_ID);
-    } catch (IOException e) {
-      e.printStackTrace();
+        return Jwts.builder() //
+                .setSubject(mapper.writeValueAsString(mapModel))
+                .setIssuedAt(new Date())
+                .setExpiration(validity)
+                .signWith(JwtConfiguration.HASH_ALGORITHM, jwtConfiguration.getSecret())
+                .compact();
     }
-    return Long.parseLong(strId);
-  }
+    public String generateTokenFromGoogle(Long id,String email) throws JsonProcessingException {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + jwtConfiguration.getExpirationTime());
+        Map<String, Object> mapModel = new HashMap<>();
+        mapModel.put(USER_ID,id );
+        mapModel.put(USER_NAME, email);
 
-  public String resolveToken(HttpServletRequest request) {
-    String bearerToken = request.getHeader(JwtConfiguration.JWT_HEADER_KEY);
-    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(JwtConfiguration.TOKEN_PREFIX)) {
-      return bearerToken.substring(7, bearerToken.length());
+        return Jwts.builder() //
+                .setSubject(mapper.writeValueAsString(mapModel))
+                .setIssuedAt(new Date())
+                .setExpiration(validity)
+                .signWith(JwtConfiguration.HASH_ALGORITHM, jwtConfiguration.getSecret())
+                .compact();
     }
-    return null;
-  }
 
-  public boolean validateToken(String authToken) {
-    try {
-      Jwts.parser().setSigningKey(jwtConfiguration.getSecret()).parseClaimsJws(authToken);
-      return true;
-    } catch (SignatureException ex) {
-      LOGGER.error("Invalid JWT signature");
-    } catch (MalformedJwtException ex) {
-      LOGGER.error("Invalid JWT token");
-    } catch (ExpiredJwtException ex) {
-      LOGGER.error("Expired JWT token");
-    } catch (UnsupportedJwtException ex) {
-      LOGGER.error("Unsupported JWT token");
-    } catch (IllegalArgumentException ex) {
-      LOGGER.error("JWT claims string is empty.");
+    public Long getUserIdFromJWT(String token) {
+        Claims claims =
+                Jwts.parser().setSigningKey(jwtConfiguration.getSecret()).parseClaimsJws(token).getBody();
+        Map<String, String> mapModel;
+        String strId = "";
+        try {
+            mapModel = mapper.readValue(claims.getSubject(), new TypeReference<Map<String, String>>() {
+            });
+            strId = mapModel.get(USER_ID);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Long.parseLong(strId);
     }
-    return false;
-  }
+
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(JwtConfiguration.JWT_HEADER_KEY);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(JwtConfiguration.TOKEN_PREFIX)) {
+            return bearerToken.substring(7, bearerToken.length());
+        }
+        return null;
+    }
+
+    public boolean validateToken(String authToken) {
+        try {
+            Jwts.parser().setSigningKey(jwtConfiguration.getSecret()).parseClaimsJws(authToken);
+            return true;
+        } catch (SignatureException ex) {
+            LOGGER.error("Invalid JWT signature");
+        } catch (MalformedJwtException ex) {
+            LOGGER.error("Invalid JWT token");
+        } catch (ExpiredJwtException ex) {
+            LOGGER.error("Expired JWT token");
+        } catch (UnsupportedJwtException ex) {
+            LOGGER.error("Unsupported JWT token");
+        } catch (IllegalArgumentException ex) {
+            LOGGER.error("JWT claims string is empty.");
+        }
+        return false;
+    }
 
 }
