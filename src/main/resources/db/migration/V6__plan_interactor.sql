@@ -1,6 +1,3 @@
--- create user table
-
-
 
 CREATE TABLE public.plan_interactor
   (

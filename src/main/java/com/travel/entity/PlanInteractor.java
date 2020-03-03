@@ -1,6 +1,7 @@
 package com.travel.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -17,11 +18,13 @@ public class PlanInteractor {
 
     @NotEmpty
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
     @NotEmpty
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(nullable = false, name = "plan_id")
     private Plan plan;
 

@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface PlanInteractorRepository extends JpaRepository<Plan, Long> {
 
-    List<PlanInteractor> findByUser(User user);
+    List<PlanInteractor> findByUserId(Long id);
 
 }

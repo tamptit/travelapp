@@ -47,13 +47,13 @@ public class User {
     @OneToMany(mappedBy="user")
     private List<PlanInteractor> planInteractors;
 
-    public List<Plan> getPlans() {
-        return plans;
-    }
-
-    public void setPlans(List<Plan> plans) {
-        this.plans = plans;
-    }
+//    public List<Plan> getPlans() {
+//        return plans;
+//    }
+//
+//    public void setPlans(List<Plan> plans) {
+//        this.plans = plans;
+//    }
 
     public List<PlanInteractor> getPlanInteractors() {
         return planInteractors;
@@ -138,7 +138,7 @@ public class User {
                 ", gender=" + gender +
                 ", password='" + password + '\'' +
                 ", joinDate=" + joinDate +
-                ", plan=" + plans +
+                //", plan=" + plans +
                 '}';
     }
 }

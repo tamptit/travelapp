@@ -1,5 +1,6 @@
 package com.travel.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -49,6 +50,7 @@ public class Plan {
     private String image;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -146,7 +148,7 @@ public class Plan {
                 ", startus='" + startus + '\'' +
                 ", createdDay=" + createdDay +
                 ", image='" + image + '\'' +
-                //", user=" + user +
+                ", user=" + user +
                 '}';
     }
 }

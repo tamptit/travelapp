@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface PlanRepository extends JpaRepository<Plan, Long> {
 
-    List<Plan> findByUser(User user);
+    //List<Plan> findByUser(User user);
 
 }
