@@ -1,5 +1,6 @@
 package com.travel.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -9,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -47,20 +49,20 @@ public class Plan {
     @Column(name = "image")
     private String image;
 
-    @Column(name = "count_user")
-    private Long countUser;
-
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @OneToMany(mappedBy="plan")
+    private List<PlanInteractor> planInteractors;
 
-    public Long getCountUser() {
-        return countUser;
+    public List<PlanInteractor> getPlanInteractors() {
+        return planInteractors;
     }
 
-    public void setCountUser(Long countUser) {
-        this.countUser = countUser;
+    public void setPlanInteractors(List<PlanInteractor> planInteractors) {
+        this.planInteractors = planInteractors;
     }
 
     public User getUser() {
@@ -135,5 +137,18 @@ public class Plan {
         this.image = image;
     }
 
-
+    @Override
+    public String toString() {
+        return "Plan{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", content='" + content + '\'' +
+                ", startDay=" + startDay +
+                ", endDay=" + endDay +
+                ", startus='" + startus + '\'' +
+                ", createdDay=" + createdDay +
+                ", image='" + image + '\'' +
+                ", user=" + user +
+                '}';
+    }
 }

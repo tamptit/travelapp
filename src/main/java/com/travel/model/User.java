@@ -1,33 +1,48 @@
-package com.travel.dto;
+package com.travel.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import javax.validation.constraints.*;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Date;
 
-public class UserForm {
-    @Size(min = 6, max = 50, message = "Username length must be between 8 and 50")
-    @NotEmpty(message = "Username is required")
+public class User {
+
+    private Long id;
+
     private String username;
 
-    @NotEmpty(message = "Email is required")
     private String email;
 
-    @Size(min = 6, max=50, message = "Password should be minimum of 6 characters")
-    @NotEmpty(message = "Password is required")
-    private String password;
-
-    @NotEmpty(message = "Full name is required")
     private String fullName;
 
-    @Past(message = "Date of birth is incorrect")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dOfB;
 
-    @NotNull(message = "Sex is required")
     private boolean gender;
 
-    public UserForm() {
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date joinDate;
+
+    public User(Long id, String username, String email, String fullName, Date dOfB, boolean gender, Date joinDate) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.fullName = fullName;
+        this.dOfB = dOfB;
+        this.gender = gender;
+        this.joinDate = joinDate;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -36,14 +51,6 @@ public class UserForm {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getEmail() {
@@ -76,5 +83,13 @@ public class UserForm {
 
     public void setGender(boolean gender) {
         this.gender = gender;
+    }
+
+    public Date getJoinDate() {
+        return joinDate;
+    }
+
+    public void setJoinDate(Date joinDate) {
+        this.joinDate = joinDate;
     }
 }

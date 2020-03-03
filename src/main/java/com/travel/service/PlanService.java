@@ -27,9 +27,10 @@ public class PlanService {
         User user = userRepository.findByEmail(au.getName()).orElse(null);
         Date currentDate = new Date();
         long stt = 0;
-        plan.setCountUser(stt+1);
+        //plan.setCountUser(stt+1);
         plan.setCreatedDay(currentDate);
-        plan.setUser(user);
+
+        //plan.setUser(user);
         return planRepository.save(plan);
     }
 

@@ -2,7 +2,6 @@ package com.travel.entity;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.Optional;
 
 @Entity
 @Table(name = "password_token")

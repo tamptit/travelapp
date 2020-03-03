@@ -11,5 +11,10 @@ public class MainApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MainApplication.class, args);
 	}
-
+//
+//	@Bean
+//	@Scope(value = "singleton")
+//	public ObjectMapper objectMapper(){
+//		return new ObjectMapper();
+//	}
 }

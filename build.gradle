@@ -18,7 +18,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 //	implementation 'org.mariadb.jdbc:mariadb-java-client:2.5.4'
-    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:2.5.4'
+//    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:2.5.4'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
@@ -64,6 +64,5 @@ test {
 flyway {
     url = 'jdbc:postgresql://127.0.0.1/5432/travel'
     user = 'postgres'
-    password = '1234'
-    //schemas = 'travel'
+    password = 'mysecretpassword'
 }
