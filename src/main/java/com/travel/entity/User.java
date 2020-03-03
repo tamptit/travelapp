@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -28,7 +29,6 @@ public class User {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dOfB;
 
-
     @Column(name = "gender")
     private boolean gender;
 
@@ -39,9 +39,12 @@ public class User {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date joinDate;
 
-    @JsonBackReference
+
+    @OneToMany(targetEntity=Plan.class, mappedBy="user")
+    private List<Plan> plans;
+
     @OneToMany(mappedBy="user")
-    private Set<Plan> plans;
+    private List<PlanInteractor> planInteractors;
 
     @Column(name = "login_type")
     private String loginType;
@@ -49,14 +52,20 @@ public class User {
     @Column(name = "principal_id")
     private String principalId;
 
-    public Set<Plan> getPlans() {
-        return plans;
-    }
+//    public List<Plan> getPlans() {
+//        return plans;
+//    }
+//
+//    public void setPlans(List<Plan> plans) {
+//        this.plans = plans;
+//    }
 
-    public void setPlans(Set<Plan> plans) {
-        this.plans = plans;
+    public List<PlanInteractor> getPlanInteractors() {
+        return planInteractors;
     }
-
+    public void setPlanInteractors(List<PlanInteractor> planInteractors) {
+        this.planInteractors = planInteractors;
+    }
     public Long getId() {
         return id;
     }
@@ -89,14 +98,6 @@ public class User {
         this.password = password;
     }
 
-    public Date getdOB() {
-        return dOfB;
-    }
-
-    public void setdOB(Date dOB) {
-        this.dOfB = dOB;
-    }
-
     public boolean isGender() {
         return gender;
     }
@@ -111,6 +112,14 @@ public class User {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public Date getdOfB() {
+        return dOfB;
+    }
+
+    public void setdOfB(Date dOfB) {
+        this.dOfB = dOfB;
     }
 
     public Date getJoinDate() {
@@ -144,10 +153,11 @@ public class User {
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", fullName='" + fullName + '\'' +
-                ", dOB=" + dOfB +
-                ", password='" + password + '\'' +
+                ", dOfB=" + dOfB +
                 ", gender=" + gender +
+                ", password='" + password + '\'' +
+                ", joinDate=" + joinDate +
+                //", plan=" + plans +
                 '}';
     }
-
 }
