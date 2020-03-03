@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/auth/")
+@RequestMapping(value = "/api/plan")
 @CrossOrigin
 public class PlanController {
 
@@ -50,8 +50,7 @@ public class PlanController {
 
     public static final int TOTAL_ROW_IN_PAGE = 10;
 
-    @GetMapping()
-    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET)
     public List<Plan> findAll() {
         return planRepository.findAll();
     }
@@ -92,17 +91,7 @@ public class PlanController {
         return response;
     }
 
-    @GetMapping("/user")
-    @ResponseBody
-    public ResponseEntity<?> user(@AuthenticationPrincipal User principal) {
-        try {
-            String token = jwtTokenProvider.generateTokenFromGoogle(principal.getId(),principal.getUsername());
-            return ResponseEntity.ok().body(token);
-        } catch (JsonProcessingException e) {
-            LOGGER.error(e.getMessage());
-            return ResponseEntity.badRequest().body("");
-        }
-    }
+
 
 
 }

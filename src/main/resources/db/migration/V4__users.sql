@@ -1,6 +1,6 @@
 -- udate user table
 ALTER TABLE public.users
-    ADD COLUMN join_date date default null
+    ADD COLUMN join_date date default null;
 
 INSERT INTO public.users(username, full_name, email, password, date_birth, join_date ,gender)
 VALUES ('lenhatnam001', 'LeNhatNam', 'namnhat001@gamil', '$2y$11$8nM7sXQEjLmZTTsynYkyz.15CJ3G/y/lIWlr0CTci6fFB4TBMyqzu
