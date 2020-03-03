@@ -38,6 +38,14 @@ INSERT INTO public.plan_interactor( plan_id, user_id, join_date, status) VALUES 
 INSERT INTO public.plan_interactor( plan_id, user_id, join_date, status) VALUES ( '5', '3', '2020-02-10',  '0');
 
 
+INSERT INTO public.plan_interactor( plan_id, user_id, join_date, status) VALUES ( '4', '1', '2020-03-01',  '1');
+INSERT INTO public.plan_interactor( plan_id, user_id, join_date, status) VALUES ( '3', '1', '2020-02-10',  '1');
+INSERT INTO public.plan_interactor( plan_id, user_id, join_date, status) VALUES ( '2', '1', '2020-02-10',  '1');
+INSERT INTO public.plan_interactor( plan_id, user_id, join_date, status) VALUES ( '1', '1', '2020-02-10',  '0');
+INSERT INTO public.plan_interactor( plan_id, user_id, join_date, status) VALUES ( '11', '1', '2020-02-10',  '0');
+INSERT INTO public.plan_interactor( plan_id, user_id, join_date, status) VALUES ( '1', '2', '2020-02-10',  '0');
+
+
 
 
 

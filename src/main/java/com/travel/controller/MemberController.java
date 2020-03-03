@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
 import java.util.*;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 @RestController
@@ -71,11 +72,30 @@ public class MemberController {
         //com.travel.model.User userModel = objectMapper.convertValue(user, com.travel.model.User.class);
         myUserForm.setUser(userModel);
         List<PlanInteractor> planInteractors = user.getPlanInteractors();
+
         //List<PlanInteractor> planInteractors = planInteractorRepository.findByUserId(user.getId());
-        List<Plan> flowPlan = planInteractors.stream().filter(p -> p.getStatus() == Constants.USER_FOLLOW_STATUS || p.getStatus() == Constants.USER_JOIN_REQUEST).map(p -> p.getPlan()).collect(Collectors.toList());
-        List<Plan> joinPlan = planInteractors.stream().filter(p -> p.getStatus() == Constants.USER_JOINED).map(p -> p.getPlan()).collect(Collectors.toList());
-        myUserForm.setJoinPlan(joinPlan);
-        myUserForm.setFlowPlan(flowPlan);
+
+        List<Plan> flowPlan = planInteractors.stream().
+                filter(p -> p.getStatus() == Constants.USER_FOLLOW_STATUS || p.getStatus() == Constants.USER_JOIN_REQUEST)
+                .map(p -> p.getPlan())
+                .sorted((p1,p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
+                .collect(Collectors.toList());
+
+
+        List<Plan> joinPlan = planInteractors.stream()
+                .filter(p -> p.getStatus() == Constants.USER_JOINED)
+                .map(p -> p.getPlan())
+                .sorted((p1,p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
+                .collect(Collectors.toList());
+        myUserForm.setFlowPlan(new ArrayList<>());
+        myUserForm.setJoinPlan(new ArrayList<>());
+        for (int i = 0; i < 4; i++) {
+            myUserForm.getFlowPlan().add(flowPlan.get(i));
+            myUserForm.getJoinPlan().add(joinPlan.get(i));
+        }
+
+//        myUserForm.setJoinPlan(joinPlan);
+//        myUserForm.setFlowPlan(flowPlan);
         return ResponseEntity.ok().body(myUserForm);
     }
 
