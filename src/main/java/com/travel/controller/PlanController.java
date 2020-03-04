@@ -5,6 +5,7 @@ import com.travel.config.JwtTokenProvider;
 import com.travel.dto.PageResponse;
 import com.travel.entity.Plan;
 import com.travel.entity.User;
+import com.travel.repository.PlanInteractorRepository;
 import com.travel.repository.PlanRepository;
 import com.travel.validator.MapValidationError;
 import com.travel.service.PlanService;
@@ -21,7 +22,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +29,10 @@ import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 import java.security.Principal;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/plan")
@@ -47,13 +49,12 @@ public class PlanController {
     private PlanRepository planRepository;
     @Autowired
     private MapValidationError mapValidationErrorService;
+    @Autowired
+    PlanInteractorRepository planInteractorRepository;
 
     public static final int TOTAL_ROW_IN_PAGE = 10;
 
-    @RequestMapping(method = RequestMethod.GET)
-    public List<Plan> findAll() {
-        return planRepository.findAll();
-    }
+
 
     //Them ke hoach
     @PostMapping("add-plan")
@@ -75,11 +76,20 @@ public class PlanController {
         response.setTotalPage(planPager.getTotalPages());
         response.setPlans(planPager.getContent());
         return response;
-
+    }
+    // 10 kế hoạch mới nhất
+    @RequestMapping(value = "/lastest-plan", method = RequestMethod.GET)
+    public List<Plan> findAll() {
+        List<Plan> sortPlan = planRepository.findAllByOrderByCreatedDayDesc();
+        List<Plan> hotPlan = new ArrayList<Plan>();
+        for (int i = 0 ; i <10; i++){
+            hotPlan.add(sortPlan.get(i));
+        }
+        return hotPlan;
     }
 
     //     lấy 10 kế hoạch HOT nhất
-    @GetMapping("/hot")
+    @GetMapping("/plan-hot")
     public PageResponse getHotPlan(@PathParam(value = "page") int page) throws ParseException {
         page = page <= 0 ? 0 : page - 1;
         Pageable sortedByCountUser = PageRequest.of(page, TOTAL_ROW_IN_PAGE, Sort.by("countUser").descending());
@@ -91,7 +101,11 @@ public class PlanController {
         return response;
     }
 
-
+    @GetMapping("/hot-plan")
+    public List<Plan> getListHotPlan(){
+        List<Plan> hotPlan = planRepository.findListHotPlan();
+        return hotPlan;
+    }
 
 
 }

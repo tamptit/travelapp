@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class PlanService {
@@ -32,6 +33,12 @@ public class PlanService {
 
         //plan.setUser(user);
         return planRepository.save(plan);
+    }
+
+    public Plan getHotPlan(){
+        List<Plan> a = planRepository.findListHotPlan();
+
+        return null;
     }
 
 }
