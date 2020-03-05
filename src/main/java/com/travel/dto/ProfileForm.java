@@ -12,13 +12,16 @@ public class ProfileForm {
 
     private  List<PlanProfileRespone> listFollowPlan;
 
+    private List<PlanProfileRespone> listMyPlan;
+
     public ProfileForm() {
     }
 
-    public ProfileForm(User user, List<PlanProfileRespone> joinPlan, List<PlanProfileRespone> flowPlan) {
+    public ProfileForm(User user, List<PlanProfileRespone> listJoinPlan, List<PlanProfileRespone> listFollowPlan, List<PlanProfileRespone> listMyPlan) {
         this.user = user;
-        this.listJoinPlan = joinPlan;
-        this.listFollowPlan = flowPlan;
+        this.listJoinPlan = listJoinPlan;
+        this.listFollowPlan = listFollowPlan;
+        this.listMyPlan = listMyPlan;
     }
 
     public User getUser() {
@@ -43,5 +46,13 @@ public class ProfileForm {
 
     public void setListFollowPlan(List<PlanProfileRespone> listFollowPlan) {
         this.listFollowPlan = listFollowPlan;
+    }
+
+    public List<PlanProfileRespone> getListMyPlan() {
+        return listMyPlan;
+    }
+
+    public void setListMyPlan(List<PlanProfileRespone> listMyPlan) {
+        this.listMyPlan = listMyPlan;
     }
 }

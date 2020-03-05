@@ -1,6 +1,5 @@
 package com.travel.controller;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travel.dto.PlanProfileRespone;
 import com.travel.dto.ProfileForm;
@@ -87,11 +86,17 @@ public class MemberController {
     public ResponseEntity getUserPlan(@PathVariable Long id) {
         ProfileForm profileForm = new ProfileForm();
         User user = userRepository.findById(id).orElse(null);
+
         com.travel.model.User userModel = new com.travel.model.User(user.getId(), user.getUsername(), user.getEmail(),
                 user.getFullName(), user.getdOfB(), user.isGender(), user.getJoinDate());
         //com.travel.model.User userModel = objectMapper.convertValue(user, com.travel.model.User.class);
+
         profileForm.setUser(userModel);
         List<PlanInteractor> planInteractors = user.getPlanInteractors();
+
+        List<Plan> myPlan = planRepository.findAllById(id);
+        List<PlanProfileRespone> myPlanProfile = myPlan.stream().map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImage(), p.getPlanInteractors()
+                .size())).collect(Collectors.toList());
 
         //List<PlanInteractor> planInteractors = planInteractorRepository.findByUserId(user.getId());
 
@@ -102,9 +107,8 @@ public class MemberController {
                 .collect(Collectors.toList());
 
         List<PlanProfileRespone> listFollowPlan = planFollowList.stream()
-                .map(p -> new PlanProfileRespone(p.getId(),p.getName(),p.getImage(),p.getPlanInteractors().size()))
+                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImage(), p.getPlanInteractors().size()))
                 .collect(Collectors.toList());
-
 
         List<Plan> planJoinList = planInteractors.stream()
                 .filter(p -> p.getStatus() == Constants.USER_JOINED)
@@ -113,15 +117,37 @@ public class MemberController {
                 .collect(Collectors.toList());
 
         List<PlanProfileRespone> listJoinPlan = planJoinList.stream()
-                .map(p -> new PlanProfileRespone(p.getId(),p.getName(),p.getImage(),p.getPlanInteractors().size()))
+                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImage(), p.getPlanInteractors().size()))
                 .collect(Collectors.toList());
 
         profileForm.setListFollowPlan(new ArrayList<>());
         profileForm.setListJoinPlan(new ArrayList<>());
+        profileForm.setListMyPlan(new ArrayList<>());
 
-        for (int i = 0; i < 4; i++) {
-            profileForm.getListFollowPlan().add(listFollowPlan.get(i));
-            profileForm.getListJoinPlan().add(listJoinPlan.get(i));
+        listJoinPlan.get(0).
+
+        if (myPlanProfile.size() >= 4) {
+            for (int i = 0; i < 4; i++) {
+                profileForm.getListMyPlan().add(myPlanProfile.get(i));
+            }
+        } else {
+            profileForm.setListFollowPlan(myPlanProfile);
+        }
+
+        if (listFollowPlan.size() >= 4) {
+            for (int i = 0; i < 4; i++) {
+                profileForm.getListFollowPlan().add(listFollowPlan.get(i));
+            }
+        } else {
+            profileForm.setListFollowPlan(listFollowPlan);
+        }
+
+        if (listJoinPlan.size() >= 4) {
+            for (int i = 0; i < 4; i++) {
+                profileForm.getListJoinPlan().add(listJoinPlan.get(i));
+            }
+        } else {
+            profileForm.setListJoinPlan(listJoinPlan);
         }
 
         return ResponseEntity.ok().body(profileForm);
