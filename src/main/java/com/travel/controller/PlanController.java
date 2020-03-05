@@ -1,10 +1,10 @@
 package com.travel.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.travel.config.JwtTokenProvider;
 import com.travel.dto.PageResponse;
+import com.travel.dto.PlanForm;
 import com.travel.entity.Plan;
-import com.travel.entity.User;
 import com.travel.repository.PlanInteractorRepository;
 import com.travel.repository.PlanRepository;
 import com.travel.validator.MapValidationError;
@@ -12,16 +12,14 @@ import com.travel.service.PlanService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,14 +52,12 @@ public class PlanController {
 
     public static final int TOTAL_ROW_IN_PAGE = 10;
 
-
-
     //Them ke hoach
     @PostMapping("add-plan")
-    public ResponseEntity<?> createNewPlan(@Valid @RequestBody Plan plan, BindingResult result) {
+    public ResponseEntity<?> createNewPlan(@Valid @RequestBody PlanForm planForm, BindingResult result) {
         ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
         if (errorMap != null) return errorMap;
-        Plan plan1 = planService.saveOrUpdate(plan);
+        Plan plan1 = planService.saveOrUpdate(planForm);
         return new ResponseEntity<Plan>(plan1, HttpStatus.CREATED);
     }
 
@@ -87,7 +83,6 @@ public class PlanController {
         }
         return hotPlan;
     }
-
     //     lấy 10 kế hoạch HOT nhất
     @GetMapping("/plan-hot")
     public PageResponse getHotPlan(@PathParam(value = "page") int page) throws ParseException {
@@ -101,11 +96,11 @@ public class PlanController {
         return response;
     }
 
-    @GetMapping("/hot-plan")
-    public List<Plan> getListHotPlan(){
-        List<Plan> hotPlan = planRepository.findListHotPlan();
-        return hotPlan;
+    @RequestMapping("/hot-plan")
+    public ResponseEntity getListHotPlan(Pageable pageable) {
+        pageable = PageRequest.of(0,5);
+        Page page = planRepository.findListHotPlan(pageable);
+        return ResponseEntity.ok().body(page.getContent());
     }
-
 
 }
