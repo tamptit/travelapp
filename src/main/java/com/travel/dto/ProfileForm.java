@@ -1,32 +1,24 @@
 package com.travel.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.travel.entity.Plan;
-import com.travel.entity.PlanInteractor;
 import com.travel.model.User;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Size;
-import java.util.Date;
 import java.util.List;
 
 public class ProfileForm {
 
     private User user; // model
 
-    private  List<Plan> joinPlan;
+    private  List<PlanProfileRespone> listJoinPlan;
 
-    private  List<Plan> followPlan;
+    private  List<PlanProfileRespone> listFollowPlan;
 
     public ProfileForm() {
     }
 
-    public ProfileForm(User user, List<Plan> joinPlan, List<Plan> flowPlan) {
+    public ProfileForm(User user, List<PlanProfileRespone> joinPlan, List<PlanProfileRespone> flowPlan) {
         this.user = user;
-        this.joinPlan = joinPlan;
-        this.followPlan = flowPlan;
+        this.listJoinPlan = joinPlan;
+        this.listFollowPlan = flowPlan;
     }
 
     public User getUser() {
@@ -37,20 +29,19 @@ public class ProfileForm {
         this.user = user;
     }
 
-    public List<Plan> getJoinPlan() {
-        return joinPlan;
+    public List<PlanProfileRespone> getListJoinPlan() {
+        return listJoinPlan;
     }
 
-    public void setJoinPlan(List<Plan> joinPlan) {
-        this.joinPlan = joinPlan;
+    public void setListJoinPlan(List<PlanProfileRespone> listJoinPlan) {
+        this.listJoinPlan = listJoinPlan;
     }
 
-    public List<Plan> getFlowPlan() {
-        return followPlan;
+    public List<PlanProfileRespone> getListFollowPlan() {
+        return listFollowPlan;
     }
 
-    public void setFlowPlan(List<Plan> flowPlan) {
-        this.followPlan = flowPlan;
+    public void setListFollowPlan(List<PlanProfileRespone> listFollowPlan) {
+        this.listFollowPlan = listFollowPlan;
     }
-
 }

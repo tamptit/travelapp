@@ -43,7 +43,7 @@ public class RegisterController {
             user.setUsername(userForm.getUsername());
             user.setEmail(userForm.getEmail());
             user.setPassword(passwordEncoder.encode(userForm.getPassword()));
-            //user.setJoinDate(new Date());
+            user.setJoinDate(new Date());
             userRepository.save(user);
             return ResponseEntity.ok().body("OK");
         } else {

@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,6 +54,7 @@ public class PlanController {
     public static final int TOTAL_ROW_IN_PAGE = 10;
 
     //Them ke hoach
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("add-plan")
     public ResponseEntity<?> createNewPlan(@Valid @RequestBody PlanForm planForm, BindingResult result) {
         ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
@@ -102,8 +104,5 @@ public class PlanController {
         Page page = planRepository.findListHotPlan(pageable);
         return ResponseEntity.ok().body(page.getContent());
     }
-
-
-
 
 }

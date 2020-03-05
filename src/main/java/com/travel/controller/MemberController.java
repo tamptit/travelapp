@@ -2,6 +2,7 @@ package com.travel.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.travel.dto.PlanProfileRespone;
 import com.travel.dto.ProfileForm;
 import com.travel.dto.UserForm;
 import com.travel.dto.UserPageResponse;
@@ -25,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
 import java.util.*;
-import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 @RestController
@@ -95,23 +95,33 @@ public class MemberController {
 
         //List<PlanInteractor> planInteractors = planInteractorRepository.findByUserId(user.getId());
 
-        List<Plan> flowPlan = planInteractors.stream().
-                filter(p -> p.getStatus() == Constants.USER_FOLLOW_STATUS || p.getStatus() == Constants.USER_JOIN_REQUEST)
+        List<Plan> planFollowList = planInteractors.stream()
+                .filter(p -> p.getStatus() == Constants.USER_FOLLOW_STATUS || p.getStatus() == Constants.USER_JOIN_REQUEST)
                 .map(p -> p.getPlan())
-                .sorted((p1,p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
+                .sorted((p1, p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
+                .collect(Collectors.toList());
+
+        List<PlanProfileRespone> listFollowPlan = planFollowList.stream()
+                .map(p -> new PlanProfileRespone(p.getId(),p.getName(),p.getImage(),p.getPlanInteractors().size()))
                 .collect(Collectors.toList());
 
 
-        List<Plan> joinPlan = planInteractors.stream()
+        List<Plan> planJoinList = planInteractors.stream()
                 .filter(p -> p.getStatus() == Constants.USER_JOINED)
                 .map(p -> p.getPlan())
-                .sorted((p1,p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
+                .sorted((p1, p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
                 .collect(Collectors.toList());
-        profileForm.setFlowPlan(new ArrayList<>());
-        profileForm.setJoinPlan(new ArrayList<>());
+
+        List<PlanProfileRespone> listJoinPlan = planJoinList.stream()
+                .map(p -> new PlanProfileRespone(p.getId(),p.getName(),p.getImage(),p.getPlanInteractors().size()))
+                .collect(Collectors.toList());
+
+        profileForm.setListFollowPlan(new ArrayList<>());
+        profileForm.setListJoinPlan(new ArrayList<>());
+
         for (int i = 0; i < 4; i++) {
-            profileForm.getFlowPlan().add(flowPlan.get(i));
-            profileForm.getJoinPlan().add(joinPlan.get(i));
+            profileForm.getListFollowPlan().add(listFollowPlan.get(i));
+            profileForm.getListJoinPlan().add(listJoinPlan.get(i));
         }
 
         return ResponseEntity.ok().body(profileForm);
