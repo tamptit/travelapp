@@ -12,7 +12,6 @@ import com.travel.repository.PlanInteractorRepository;
 import com.travel.repository.PlanRepository;
 import com.travel.repository.UserRepository;
 import com.travel.utils.Constants;
-import jdk.vm.ci.meta.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
 import java.util.*;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 @RestController
@@ -92,16 +92,28 @@ public class MemberController {
         //com.travel.model.User userModel = objectMapper.convertValue(user, com.travel.model.User.class);
         profileForm.setUser(userModel);
         List<PlanInteractor> planInteractors = user.getPlanInteractors();
+
         //List<PlanInteractor> planInteractors = planInteractorRepository.findByUserId(user.getId());
-        List<Plan> followPlan = planInteractors.stream()
-                .filter(p -> p.getStatus() == Constants.USER_FOLLOW_STATUS || p.getStatus() == Constants.USER_JOIN_REQUEST)
-                .map(p -> p.getPlan()).collect(Collectors.toList());
+
+        List<Plan> flowPlan = planInteractors.stream().
+                filter(p -> p.getStatus() == Constants.USER_FOLLOW_STATUS || p.getStatus() == Constants.USER_JOIN_REQUEST)
+                .map(p -> p.getPlan())
+                .sorted((p1,p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
+                .collect(Collectors.toList());
+
+
         List<Plan> joinPlan = planInteractors.stream()
                 .filter(p -> p.getStatus() == Constants.USER_JOINED)
                 .map(p -> p.getPlan())
+                .sorted((p1,p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
                 .collect(Collectors.toList());
-        profileForm.setJoinPlan(joinPlan);
-        profileForm.setFlowPlan(followPlan);
+        profileForm.setFlowPlan(new ArrayList<>());
+        profileForm.setJoinPlan(new ArrayList<>());
+        for (int i = 0; i < 4; i++) {
+            profileForm.getFlowPlan().add(flowPlan.get(i));
+            profileForm.getJoinPlan().add(joinPlan.get(i));
+        }
+
         return ResponseEntity.ok().body(profileForm);
     }
 
