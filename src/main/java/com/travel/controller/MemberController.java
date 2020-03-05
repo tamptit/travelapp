@@ -3,6 +3,7 @@ package com.travel.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travel.dto.MyUserForm;
+import com.travel.dto.UserForm;
 import com.travel.dto.UserPageResponse;
 import com.travel.entity.Plan;
 import com.travel.entity.PlanInteractor;
@@ -17,7 +18,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
@@ -44,6 +48,23 @@ public class MemberController {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @GetMapping(value = "/profile")
+    public ResponseEntity<Object> getUserProfileFromToken() {
+        Authentication au = SecurityContextHolder.getContext().getAuthentication();
+        String email = au.getName();
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user != null) {
+            UserForm userForm = new UserForm();
+            userForm.setUsername(user.getUsername());
+            userForm.setEmail(user.getEmail());
+            userForm.setdOfB(user.getdOfB());
+            userForm.setGender(user.isGender());
+            userForm.setFullName(user.getFullName());
+            return new ResponseEntity<>(userForm, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(Constants.FAIL_TO_LOAD_USERDETAILS, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     @GetMapping(value = "/new-comer")
     public UserPageResponse getNewComers(@PathParam(value = "page") int page) {
