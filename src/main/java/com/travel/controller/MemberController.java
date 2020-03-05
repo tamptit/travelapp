@@ -124,8 +124,6 @@ public class MemberController {
         profileForm.setListJoinPlan(new ArrayList<>());
         profileForm.setListMyPlan(new ArrayList<>());
 
-        listJoinPlan.get(0).
-
         if (myPlanProfile.size() >= 4) {
             for (int i = 0; i < 4; i++) {
                 profileForm.getListMyPlan().add(myPlanProfile.get(i));
