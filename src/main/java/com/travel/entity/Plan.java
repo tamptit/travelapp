@@ -15,18 +15,17 @@ import java.util.Set;
 
 @Entity
 @Table(name = "plan")
-
 public class Plan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank(message = "Name is required !!!")
+    @NotBlank(message = "Name is required")
     @Size(min = 4, max = 200, message = "Please use 4 to 200 letters")
     @Column(name = "name")
     private String name;
 
-    @NotBlank(message = "Content is required !!!")
+    @NotBlank(message = "Content is required")
     @Column(name = "content")
     private String content;
 
@@ -38,9 +37,9 @@ public class Plan {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date endDay;
 
-    @NotBlank(message = "Status is required!!!")
+    @NotBlank(message = "Status is required")
     @Column(name = "status")
-    private String startus;
+    private String status;
 
     @Column(name = "created_day")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
@@ -54,8 +53,26 @@ public class Plan {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy="plan")
+    @OneToMany(mappedBy = "plan")
     private List<PlanInteractor> planInteractors;
+
+    public Plan() {
+    }
+
+    public Plan(@NotBlank(message = "Name is required") @Size(min = 4, max = 200, message = "Please use 4 to 200 letters") String name,
+                @NotBlank(message = "Content is required") String content, Date startDay, Date endDay,
+                @NotBlank(message = "Status is required") String status,
+                Date createdDay, String image,
+                User user) {
+        this.name = name;
+        this.content = content;
+        this.startDay = startDay;
+        this.endDay = endDay;
+        this.status = status;
+        this.createdDay = createdDay;
+        this.image = image;
+        this.user = user;
+    }
 
     public List<PlanInteractor> getPlanInteractors() {
         return planInteractors;
@@ -121,12 +138,12 @@ public class Plan {
         this.content = content;
     }
 
-    public String getStartus() {
-        return startus;
+    public String getStatus() {
+        return status;
     }
 
-    public void setStartus(String startus) {
-        this.startus = startus;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getImage() {
@@ -145,7 +162,7 @@ public class Plan {
                 ", content='" + content + '\'' +
                 ", startDay=" + startDay +
                 ", endDay=" + endDay +
-                ", startus='" + startus + '\'' +
+                ", status='" + status + '\'' +
                 ", createdDay=" + createdDay +
                 ", image='" + image + '\'' +
                 ", user=" + user +

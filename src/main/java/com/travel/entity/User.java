@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -30,22 +31,24 @@ public class User {
     private Date dOfB;
 
     @Column(name = "gender")
-
     private boolean gender;
 
     @Column(unique = true)
-
     private String password;
 
     @Column(name = "join_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date joinDate;
 
+
     @OneToMany(targetEntity=Plan.class, mappedBy="user")
     private List<Plan> plans;
 
     @OneToMany(mappedBy="user")
     private List<PlanInteractor> planInteractors;
+
+    @Column(name = "provider_id")
+    private String providerId;
 
 //    public List<Plan> getPlans() {
 //        return plans;
@@ -58,11 +61,9 @@ public class User {
     public List<PlanInteractor> getPlanInteractors() {
         return planInteractors;
     }
-
     public void setPlanInteractors(List<PlanInteractor> planInteractors) {
         this.planInteractors = planInteractors;
     }
-
     public Long getId() {
         return id;
     }
@@ -125,6 +126,25 @@ public class User {
 
     public void setJoinDate(Date joinDate) {
         this.joinDate = joinDate;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
+
+    public AuthProvider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(AuthProvider provider) {
+        this.provider = provider;
     }
 
     @Override
