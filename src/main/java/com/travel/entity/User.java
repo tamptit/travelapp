@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -46,11 +47,7 @@ public class User {
     @OneToMany(mappedBy="user")
     private List<PlanInteractor> planInteractors;
 
-    @Column(name = "login_type")
-    private String loginType;
-
-    @Column(name = "principal_id")
-    private String principalId;
+    private String providerId;
 
 //    public List<Plan> getPlans() {
 //        return plans;
@@ -130,20 +127,24 @@ public class User {
         this.joinDate = joinDate;
     }
 
-    public String getLoginType() {
-        return loginType;
+    public String getProviderId() {
+        return providerId;
     }
 
-    public void setLoginType(String loginType) {
-        this.loginType = loginType;
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
     }
 
-    public String getPrincipalId() {
-        return principalId;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
+
+    public AuthProvider getProvider() {
+        return provider;
     }
 
-    public void setPrincipalId(String principalId) {
-        this.principalId = principalId;
+    public void setProvider(AuthProvider provider) {
+        this.provider = provider;
     }
 
     @Override
