@@ -2,7 +2,7 @@ package com.travel.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.travel.dto.MyUserForm;
+import com.travel.dto.ProfileForm;
 import com.travel.dto.UserForm;
 import com.travel.dto.UserPageResponse;
 import com.travel.entity.Plan;
@@ -85,19 +85,24 @@ public class MemberController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity getUserPlan(@PathVariable Long id) {
-        MyUserForm myUserForm = new MyUserForm();
+        ProfileForm profileForm = new ProfileForm();
         User user = userRepository.findById(id).orElse(null);
         com.travel.model.User userModel = new com.travel.model.User(user.getId(), user.getUsername(), user.getEmail(),
                 user.getFullName(), user.getdOfB(), user.isGender(), user.getJoinDate());
         //com.travel.model.User userModel = objectMapper.convertValue(user, com.travel.model.User.class);
-        myUserForm.setUser(userModel);
+        profileForm.setUser(userModel);
         List<PlanInteractor> planInteractors = user.getPlanInteractors();
         //List<PlanInteractor> planInteractors = planInteractorRepository.findByUserId(user.getId());
-        List<Plan> flowPlan = planInteractors.stream().filter(p -> p.getStatus() == Constants.USER_FOLLOW_STATUS || p.getStatus() == Constants.USER_JOIN_REQUEST).map(p -> p.getPlan()).collect(Collectors.toList());
-        List<Plan> joinPlan = planInteractors.stream().filter(p -> p.getStatus() == Constants.USER_JOINED).map(p -> p.getPlan()).collect(Collectors.toList());
-        myUserForm.setJoinPlan(joinPlan);
-        myUserForm.setFlowPlan(flowPlan);
-        return ResponseEntity.ok().body(myUserForm);
+        List<Plan> followPlan = planInteractors.stream()
+                .filter(p -> p.getStatus() == Constants.USER_FOLLOW_STATUS || p.getStatus() == Constants.USER_JOIN_REQUEST)
+                .map(p -> p.getPlan()).collect(Collectors.toList());
+        List<Plan> joinPlan = planInteractors.stream()
+                .filter(p -> p.getStatus() == Constants.USER_JOINED)
+                .map(p -> p.getPlan())
+                .collect(Collectors.toList());
+        profileForm.setJoinPlan(joinPlan);
+        profileForm.setFlowPlan(followPlan);
+        return ResponseEntity.ok().body(profileForm);
     }
 
 }

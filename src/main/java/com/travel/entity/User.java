@@ -47,6 +47,7 @@ public class User {
     @OneToMany(mappedBy="user")
     private List<PlanInteractor> planInteractors;
 
+    @Column(name = "provider_id")
     private String providerId;
 
 //    public List<Plan> getPlans() {

@@ -12,21 +12,21 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
-public class MyUserForm {
+public class ProfileForm {
 
     private User user; // model
 
     private  List<Plan> joinPlan;
 
-    private  List<Plan> flowPlan;
+    private  List<Plan> followPlan;
 
-    public MyUserForm() {
+    public ProfileForm() {
     }
 
-    public MyUserForm(User user, List<Plan> joinPlan, List<Plan> flowPlan) {
+    public ProfileForm(User user, List<Plan> joinPlan, List<Plan> flowPlan) {
         this.user = user;
         this.joinPlan = joinPlan;
-        this.flowPlan = flowPlan;
+        this.followPlan = flowPlan;
     }
 
     public User getUser() {
@@ -46,11 +46,11 @@ public class MyUserForm {
     }
 
     public List<Plan> getFlowPlan() {
-        return flowPlan;
+        return followPlan;
     }
 
     public void setFlowPlan(List<Plan> flowPlan) {
-        this.flowPlan = flowPlan;
+        this.followPlan = flowPlan;
     }
 
 }
