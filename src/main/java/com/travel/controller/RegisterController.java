@@ -3,6 +3,7 @@ package com.travel.controller;
 import com.travel.config.JwtTokenProvider;
 import com.travel.dto.TokenDto;
 import com.travel.dto.UserForm;
+import com.travel.entity.AuthProvider;
 import com.travel.model.ErrorMessage;
 import com.travel.entity.User;
 import com.travel.repository.UserRepository;
@@ -44,6 +45,7 @@ public class RegisterController {
             user.setEmail(userForm.getEmail());
             user.setPassword(passwordEncoder.encode(userForm.getPassword()));
             user.setJoinDate(new Date());
+            user.setProvider(AuthProvider.local);
             userRepository.save(user);
             return ResponseEntity.ok().body("OK");
         } else {

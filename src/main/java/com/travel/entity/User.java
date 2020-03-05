@@ -136,6 +136,8 @@ public class User {
         this.providerId = providerId;
     }
 
+    @NotNull
+    @Column(name = "provider")
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 
