@@ -8,16 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface PlanInteractorRepository extends JpaRepository<Plan, Long> {
+public interface PlanInteractorRepository extends JpaRepository<PlanInteractor, Long> {
 
     List<PlanInteractor> findByUserId(Long id);
-
-//    SELECT pi.cou , pl.*
-//    FROM (select count(DISTINCT pi.user_id) as cou, pi.plan_id
-//    from public.plan_interactor pi group by plan_id order by cou
-//) pi
-//    JOIN public.plan pl ON pl.id = pi.plan_id
-
-
-
 }

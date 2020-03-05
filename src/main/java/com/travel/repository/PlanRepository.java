@@ -26,5 +26,14 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
             nativeQuery = true)
     Page<Plan> findListHotPlan(Pageable pageable);
 
+    @Query(value = "SELECT pl.*\n" + "FROM (select  pi.plan_id\n" + " from public.plan_interactor pi " +
+            "group by pi.plan_id order by count(DISTINCT pi.user_id) desc" + ") pi " +
+            "JOIN public.plan pl ON pl.id = pi.plan_id",
+            countQuery = "SELECT count(*) FROM plan",
+            nativeQuery = true)
+    List<Plan> findListHotPlan();
+
+
+
     List<Plan> findAllById(Long id);
 }
