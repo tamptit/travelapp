@@ -82,16 +82,18 @@ public class PlanController {
         response.setPlans(planPager.getContent());
         return response;
     }
+
     // 10 kế hoạch mới nhất
     @RequestMapping(value = "/lastest-plan", method = RequestMethod.GET)
     public List<Plan> findAll() {
         List<Plan> sortPlan = planRepository.findAllByOrderByCreatedDayDesc();
         List<Plan> hotPlan = new ArrayList<Plan>();
-        for (int i = 0 ; i <10; i++){
+        for (int i = 0; i < 10; i++) {
             hotPlan.add(sortPlan.get(i));
         }
         return hotPlan;
     }
+
     //     lấy 10 kế hoạch HOT nhất
     @GetMapping("/plan-hot")
     public PageResponse getHotPlan(@PathParam(value = "page") int page) throws ParseException {
@@ -106,7 +108,7 @@ public class PlanController {
     }
 
     @RequestMapping("/hot-plan")
-    public ResponseEntity getListHotPlan( Pageable pageable) {
+    public ResponseEntity getListHotPlan(Pageable pageable) {
 
         Page page = planRepository.findListHotPlan(pageable);
 
@@ -114,18 +116,33 @@ public class PlanController {
 
     }
 
-    @PutMapping("/follow/{id-plan}")
+    @PutMapping(value = "/follow/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity followPlan(@RequestParam Long idPlan){
-        Optional<Plan> plan = planRepository.findById(idPlan);
+    public ResponseEntity followPLan(@PathVariable Long id) {
+        Optional<Plan> plan = planRepository.findById(id);
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByEmail(au.getName()).orElse(null);
-        PlanInteractor planInteractor = new PlanInteractor();
-        planInteractor.setUser(user);
-        planInteractor.setPlan(plan.get());
-        planInteractor.setStatus(0);
-        planInteractorRepository.save(planInteractor);
-        return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
+        User uR = userRepository.findByEmail(au.getName()).orElse(null);
+
+        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR);
+
+        if (interactor != null) {
+            return ResponseEntity.ok().body("un");
+        } else {
+            PlanInteractor planInteractor = new PlanInteractor();
+            planInteractor.setUser(uR);
+            planInteractor.setPlan(plan.get());
+            planInteractor.setStatus(0);
+            planInteractorRepository.save(planInteractor);
+            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
+        }
+    }
+
+    @DeleteMapping("/follow/{id}")
+    public ResponseEntity deleteEmployee(@PathVariable Long id) {
+        Authentication au = SecurityContextHolder.getContext().getAuthentication();
+        User uR = userRepository.findByEmail(au.getName()).orElse(null);
+        planInteractorRepository.deletePlanInteractorByUserAndPlan(uR.getId(), id);
+        return ResponseEntity.noContent().build();
     }
 
 }
