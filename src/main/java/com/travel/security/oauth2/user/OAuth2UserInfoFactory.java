@@ -1,7 +1,7 @@
 package com.travel.security.oauth2.user;
 
 
-import com.travel.entity.AuthProvider;
+import com.travel.model.AuthProvider;
 import com.travel.exception.OAuth2AuthenticationProcessingException;
 
 import java.util.Map;

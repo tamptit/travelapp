@@ -120,9 +120,9 @@ public class MemberController {
                 .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImage(), p.getPlanInteractors().size()))
                 .collect(Collectors.toList());
 
-//        profileForm.setListFollowPlan(new ArrayList<>());
-//        profileForm.setListJoinPlan(new ArrayList<>());
-//        profileForm.setListMyPlan(new ArrayList<>());
+        profileForm.setListFollowPlan(new ArrayList<>());
+        profileForm.setListJoinPlan(new ArrayList<>());
+        profileForm.setListMyPlan(new ArrayList<>());
 
         if (myPlanProfile.size() >= 4) {
             for (int i = 0; i < 4; i++) {

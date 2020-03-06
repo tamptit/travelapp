@@ -3,7 +3,7 @@ package com.travel.security.oauth2;
 
 import com.travel.config.UserPrincipal;
 
-import com.travel.entity.AuthProvider;
+import com.travel.model.AuthProvider;
 import com.travel.entity.User;
 import com.travel.exception.OAuth2AuthenticationProcessingException;
 import com.travel.repository.UserRepository;
