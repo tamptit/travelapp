@@ -54,9 +54,8 @@ public class LoginController {
             return new ResponseEntity<>(token, HttpStatus.OK);
 
         } catch (Exception e) {
-            new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/user")
