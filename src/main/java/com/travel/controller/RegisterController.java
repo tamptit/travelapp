@@ -1,22 +1,27 @@
 package com.travel.controller;
 
-import com.travel.config.JwtTokenProvider;
-import com.travel.dto.TokenDto;
 import com.travel.dto.UserForm;
+import com.travel.entity.AuthProvider;
 import com.travel.model.ErrorMessage;
 import com.travel.entity.User;
 import com.travel.repository.UserRepository;
+import com.travel.utils.Constants;
+import com.travel.validator.MapValidationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.*;
+
+import static com.travel.utils.Constants.EMAIL_ALREADY_EXISTS;
+import static com.travel.utils.Constants.USERNAME_ALREADY_EXISTS;
 
 @RestController
 @RequestMapping(value = "/api/register")
@@ -30,12 +35,18 @@ public class RegisterController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private MapValidationError mapValidationErrorService;
+
     @PutMapping
     public ResponseEntity registerUser(
-            @Valid @RequestBody UserForm userForm
+            @Valid @RequestBody UserForm userForm,
+            BindingResult result
     ) {
-        List<ErrorMessage> listError = validate(userForm);
-        if (listError.isEmpty()) {
+        ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
+        if (errorMap != null) return errorMap;
+        Map<String,String> errors = validate(userForm);
+        if (errors.isEmpty()) {
             User user = new User();
             user.setFullName(userForm.getFullName());
             user.setdOfB(userForm.getdOfB());
@@ -43,34 +54,25 @@ public class RegisterController {
             user.setUsername(userForm.getUsername());
             user.setEmail(userForm.getEmail());
             user.setPassword(passwordEncoder.encode(userForm.getPassword()));
+            user.setJoinDate(new Date());
+            user.setProvider(AuthProvider.local);
             userRepository.save(user);
-            return ResponseEntity.ok().body("OK");
+            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
         } else {
-            return ResponseEntity.badRequest().body(listError);
+            return ResponseEntity.badRequest().body(errors);
         }
     }
 
-    public List<ErrorMessage> validate(UserForm userForm) {
-        List<ErrorMessage> list = new ArrayList<>();
+    public  Map<String,String> validate(UserForm userForm) {
+        Map<String,String> errors = new HashMap<>();
         String username = userForm.getUsername();
         String email = userForm.getEmail();
-
         if (userRepository.findByUsername(username).orElse(null) != null) {
-            list.add(new ErrorMessage("This user already exists"));
+            errors.put("username",USERNAME_ALREADY_EXISTS);
         }
         if (userRepository.findByEmail(email).orElse(null) != null) {
-            list.add(new ErrorMessage("This email already exists"));
+            errors.put("email",EMAIL_ALREADY_EXISTS);
         }
-        return list;
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public List<ErrorMessage> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-
-        List<ErrorMessage> errors = new ArrayList<>();
-        ex.getBindingResult().getFieldErrors().forEach(error -> errors.add(new ErrorMessage(error.getDefaultMessage())));
-
         return errors;
     }
 

@@ -6,7 +6,7 @@ import javax.validation.constraints.*;
 import java.util.Date;
 
 public class UserForm {
-    @Size(min = 6, max = 50, message = "Username length must be between 8 and 50")
+    @Size(min = 6, max = 50, message = "Username length must be between 6 and 50")
     @NotEmpty(message = "Username is required")
     private String username;
 
@@ -26,6 +26,7 @@ public class UserForm {
 
     @NotNull(message = "Sex is required")
     private boolean gender;
+
 
     public UserForm() {
     }

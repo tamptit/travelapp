@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static com.travel.utils.Constants.USERNAME_PASSWORD_WRONG;
+
 
 @RestController
 @RequestMapping(value = "/api/")
@@ -54,7 +56,7 @@ public class LoginController {
             return new ResponseEntity<>(token, HttpStatus.OK);
 
         } catch (Exception e) {
-            new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            new ResponseEntity<>(USERNAME_PASSWORD_WRONG, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }

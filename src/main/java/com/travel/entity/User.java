@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User   {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -48,8 +48,16 @@ public class User   {
     @OneToMany(mappedBy="user")
     private List<PlanInteractor> planInteractors;
 
+    @Column(name = "provider_id")
     private String providerId;
 
+    public List<Plan> getPlans() {
+        return plans;
+    }
+
+    public void setPlans(List<Plan> plans) {
+        this.plans = plans;
+    }
 
     public List<PlanInteractor> getPlanInteractors() {
         return planInteractors;
@@ -130,6 +138,7 @@ public class User   {
     }
 
     @NotNull
+    @Column(name = "provider")
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 
