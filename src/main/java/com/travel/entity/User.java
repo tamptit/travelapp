@@ -50,13 +50,13 @@ public class User {
     @Column(name = "provider_id")
     private String providerId;
 
-//    public List<Plan> getPlans() {
-//        return plans;
-//    }
-//
-//    public void setPlans(List<Plan> plans) {
-//        this.plans = plans;
-//    }
+    public List<Plan> getPlans() {
+        return plans;
+    }
+
+    public void setPlans(List<Plan> plans) {
+        this.plans = plans;
+    }
 
     public List<PlanInteractor> getPlanInteractors() {
         return planInteractors;

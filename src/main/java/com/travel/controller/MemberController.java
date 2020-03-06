@@ -94,7 +94,7 @@ public class MemberController {
         profileForm.setUser(userModel);
         List<PlanInteractor> planInteractors = user.getPlanInteractors();
 
-        List<Plan> myPlan = planRepository.findAllById(id);
+        List<Plan> myPlan = user.getPlans();
         List<PlanProfileRespone> myPlanProfile = myPlan.stream().map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImage(), p.getPlanInteractors()
                 .size())).collect(Collectors.toList());
 
@@ -120,16 +120,16 @@ public class MemberController {
                 .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImage(), p.getPlanInteractors().size()))
                 .collect(Collectors.toList());
 
-        profileForm.setListFollowPlan(new ArrayList<>());
-        profileForm.setListJoinPlan(new ArrayList<>());
-        profileForm.setListMyPlan(new ArrayList<>());
+//        profileForm.setListFollowPlan(new ArrayList<>());
+//        profileForm.setListJoinPlan(new ArrayList<>());
+//        profileForm.setListMyPlan(new ArrayList<>());
 
         if (myPlanProfile.size() >= 4) {
             for (int i = 0; i < 4; i++) {
                 profileForm.getListMyPlan().add(myPlanProfile.get(i));
             }
         } else {
-            profileForm.setListFollowPlan(myPlanProfile);
+            profileForm.setListMyPlan(myPlanProfile);
         }
 
         if (listFollowPlan.size() >= 4) {

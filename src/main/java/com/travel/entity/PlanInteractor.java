@@ -16,13 +16,13 @@ public class PlanInteractor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotEmpty
+    //@NotEmpty
     @ManyToOne
     @JsonIgnore
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
-    @NotEmpty
+    //@NotEmpty
     @ManyToOne
     @JsonIgnore
     @JoinColumn(nullable = false, name = "plan_id")
