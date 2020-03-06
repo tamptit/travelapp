@@ -2,6 +2,7 @@ package com.travel.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.travel.model.AuditModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -12,7 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User   {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -49,13 +50,6 @@ public class User {
 
     private String providerId;
 
-//    public List<Plan> getPlans() {
-//        return plans;
-//    }
-//
-//    public void setPlans(List<Plan> plans) {
-//        this.plans = plans;
-//    }
 
     public List<PlanInteractor> getPlanInteractors() {
         return planInteractors;

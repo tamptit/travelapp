@@ -20,18 +20,5 @@ public class PlanService {
     @Autowired
     private UserRepository userRepository;
 
-    public Plan saveOrUpdate (Plan plan)
-    {
-        // logic
-        Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByEmail(au.getName()).orElse(null);
-        Date currentDate = new Date();
-        long stt = 0;
-        //plan.setCountUser(stt+1);
-        plan.setCreatedDay(currentDate);
-
-        //plan.setUser(user);
-        return planRepository.save(plan);
-    }
 
 }

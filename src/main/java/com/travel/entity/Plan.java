@@ -3,6 +3,7 @@ package com.travel.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.travel.model.AuditModel;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.persistence.*;
@@ -16,7 +17,7 @@ import java.util.Set;
 @Entity
 @Table(name = "plan")
 
-public class Plan {
+public class Plan extends AuditModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
