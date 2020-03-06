@@ -1,14 +1,13 @@
 package com.travel.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.travel.model.AuthProvider;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
