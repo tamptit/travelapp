@@ -2,6 +2,7 @@ package com.travel.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.travel.model.AuditModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;

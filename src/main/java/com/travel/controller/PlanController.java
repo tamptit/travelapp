@@ -1,6 +1,10 @@
 package com.travel.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.services.drive.model.File;
 import com.travel.config.JwtTokenProvider;
 import com.travel.dto.PageResponse;
 import com.travel.dto.PlanForm;
@@ -9,14 +13,17 @@ import com.travel.entity.PlanInteractor;
 import com.travel.entity.User;
 import com.travel.repository.PlanInteractorRepository;
 import com.travel.repository.PlanRepository;
+import com.travel.service.GoogleDriveService;
+import com.travel.utils.Constants;
 import com.travel.repository.UserRepository;
 import com.travel.utils.Constants;
 import com.travel.validator.MapValidationError;
 import com.travel.service.PlanService;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.audit.AuditEvent;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,13 +35,23 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.security.Principal;
 import java.text.ParseException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.*;
 
 @RestController
@@ -46,44 +63,60 @@ public class PlanController {
 
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private PlanService planService;
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    @Value("${preFixUrlImage}")
+    private String prefixUrlImage;
+
     @Autowired
     private PlanRepository planRepository;
+
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @Autowired
     private MapValidationError mapValidationErrorService;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
     @Autowired
     PlanInteractorRepository planInteractorRepository;
+    @Autowired
+    GoogleDriveService driveService;
 
     public static final int TOTAL_ROW_IN_PAGE = 10;
 
-    // ----- add plan ------//
+    //Them ke hoach
     @PreAuthorize("isAuthenticated()")
-    @PutMapping("/plans")
-    public ResponseEntity<?> createPlan(@Valid @RequestBody PlanForm planForm, BindingResult result) {
-        ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
-        if (errorMap != null) return errorMap;
-        Plan plan1 = planService.saveOrUpdate(planForm);
-        return new ResponseEntity<Plan>(plan1, HttpStatus.CREATED);
+    @PutMapping
+    public ResponseEntity handelUpload(MultipartFile file, Plan plan) {
+        //Files.createTempFile()
+
+        Authentication au = SecurityContextHolder.getContext().getAuthentication();
+        Date currentDate = new Date();
+        String dateStr = String.valueOf(currentDate);
+        String fileName = bCryptPasswordEncoder.encode(au.getPrincipal().toString() + au.getName());
+        java.io.File temp = new java.io.File("C:\\Users\\Nguyen\\Pictures\\" + file.getOriginalFilename());
+        try {
+            FileUtils.writeByteArrayToFile(temp, file.getBytes());
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        }
+        //File name: (idUser + username) hashCode + _date
+        File file2 = driveService.upLoadFile(fileName + dateStr + "jpg" , temp, "image/jpg");
+        try {
+            TypeReference<HashMap<String, Object>> typeRef
+                    = new TypeReference<HashMap<String, Object>>() {
+            };
+            HashMap<String, Object> map = objectMapper.readValue(file2.toPrettyString(), typeRef);
+            plan.setCreatedDay(currentDate);
+            plan.setImage(prefixUrlImage + map.get("id"));
+            planRepository.save(plan);
+            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            return ResponseEntity.badRequest().body(Constants.ERROR_MESSAGE);
+        }
     }
-    // ----- delete plan -------//
-//    @PreAuthorize("isAuthenticated()")
-//    @DeleteMapping("/plan/{id}")
-//    public ResponseEntity<?> editPlan(@Valid @PathVariable Long id) {
-//        Optional<Plan> plan = planRepository.findById(id);
-//
-//        Authentication au = SecurityContextHolder.getContext().getAuthentication();
-//        User uR = userRepository.findByEmail(au.getName()).orElse(null);
-//        if (plan.isPresent() && uR.getPlans().contains(plan) && plan.get().getStatus() !=   ){
-//            planRepository.deleteById(id);
-//            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
-//        }
-//    }
-
-
-
 
     // -------10 kế hoạch mới nhất  ----//
     @RequestMapping(value = "/lastest", method = RequestMethod.GET)

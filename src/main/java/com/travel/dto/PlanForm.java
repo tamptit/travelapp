@@ -1,19 +1,17 @@
 package com.travel.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.travel.entity.Schedule;
 
 import javax.validation.constraints.*;
 import java.util.Date;
+import java.util.List;
 
 public class PlanForm {
-    @Size(min = 6, max = 50, message = "Username length must be between 8 and 50")
-    @NotEmpty(message = "Username is required")
-    private String namePlan;
+    private String name;
 
     private String imgCover;
 
-    @Future(message = "Start day not correct")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date startDay;
 
     private Date endDay;
@@ -22,18 +20,13 @@ public class PlanForm {
 
     private String content;
 
-    private String status; // len KH, dang chay, Ket thuc, Huy
+    private String status;
+
+    private List<Schedule> schedules;
 
     public PlanForm() {
     }
 
-    public String getNamePlan() {
-        return namePlan;
-    }
-
-    public void setNamePlan(String namePlan) {
-        this.namePlan = namePlan;
-    }
 
     public String getImgCover() {
         return imgCover;
@@ -81,5 +74,21 @@ public class PlanForm {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public List<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(List<Schedule> schedules) {
+        this.schedules = schedules;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
