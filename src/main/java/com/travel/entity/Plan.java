@@ -29,7 +29,7 @@ public class Plan {
     private String content;
 
     @Column(name = "num_people")
-    private String numPeople;
+    private int numPeople;
 
     @Column(name = "start_day")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
