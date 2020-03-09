@@ -84,6 +84,7 @@ public class PlanController {
     public static final int TOTAL_ROW_IN_PAGE = 10;
 
     //Them ke hoach
+    @PutMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity handelUpload(@PathParam("file") MultipartFile file, Plan plan) throws IOException {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
