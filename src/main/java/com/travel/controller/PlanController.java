@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,6 +46,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.Principal;
 import java.text.ParseException;
 import java.util.Date;
@@ -86,12 +88,14 @@ public class PlanController {
     //Them ke hoach
     @PutMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity handelUpload(@PathParam("file") MultipartFile file, Plan plan) throws IOException {
+    @PutMapping
+    public ResponseEntity handelUpload(MultipartFile file, Plan plan) {
+        //Files.createTempFile()
+
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         Date currentDate = new Date();
         String dateStr = String.valueOf(currentDate);
         String fileName = bCryptPasswordEncoder.encode(au.getPrincipal().toString() + au.getName());
-
         java.io.File temp = new java.io.File("C:\\Users\\Nguyen\\Pictures\\" + file.getOriginalFilename());
         try {
             FileUtils.writeByteArrayToFile(temp, file.getBytes());

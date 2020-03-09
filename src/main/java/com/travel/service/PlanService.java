@@ -28,7 +28,7 @@ public class PlanService {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(au.getName()).orElse(null);
         Plan plan = new Plan(
-                planForm.getNamePlan(), planForm.getContent(),
+                planForm.getName(), planForm.getContent(),
                 planForm.getStartDay(), planForm.getEndDay(), planForm.getStatus(),
                 new Date(), planForm.getImgCover(), user
         );

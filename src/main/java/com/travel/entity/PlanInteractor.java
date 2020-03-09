@@ -12,7 +12,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "plan_interactor")
-public class PlanInteractor extends AuditModel {
+public class PlanInteractor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

@@ -14,7 +14,7 @@ import java.util.*;
 @Entity
 @Table(name = "plan")
 
-public class Plan extends AuditModel {
+public class Plan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -51,6 +51,10 @@ public class Plan extends AuditModel {
     @JsonBackReference
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany
+    @JoinColumn(name = "schedule_id", nullable = false)
+    private List<Schedule> schedules;
 
     @OneToMany(mappedBy = "plan")
     private List<PlanInteractor> planInteractors;
@@ -151,6 +155,14 @@ public class Plan extends AuditModel {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public List<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(List<Schedule> schedules) {
+        this.schedules = schedules;
     }
 
     @Override
