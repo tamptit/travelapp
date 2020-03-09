@@ -28,6 +28,9 @@ public class Plan {
     @Column(name = "content")
     private String content;
 
+    @Column(name = "num_people")
+    private String numPeople;
+
     @Column(name = "start_day")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date startDay;
@@ -53,7 +56,7 @@ public class Plan {
     private User user;
 
     @OneToMany
-    @JoinColumn(name = "schedule_id", nullable = false)
+    @JoinColumn(name = "plan_id", nullable = false)
     private List<Schedule> schedules;
 
     @OneToMany(mappedBy = "plan")

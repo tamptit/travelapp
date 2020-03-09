@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "Schedule")
+@Table(name = "schedule")
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,9 +17,9 @@ public class Schedule {
     private String from;
     @Column(name = "end_point")
     private String to;
-    @Column(name = "dateStart")
+    @Column(name = "date_start")
     private Date dateStart;
-    @Column(name = "dateFinish")
+    @Column(name = "date_finish")
     private Date dateFinish;
 
     public Long getId() {
