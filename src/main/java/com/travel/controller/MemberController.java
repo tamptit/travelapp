@@ -95,7 +95,7 @@ public class MemberController {
         List<PlanInteractor> planInteractors = user.getPlanInteractors();
 
         List<Plan> myPlan = user.getPlans();
-        List<PlanProfileRespone> myPlanProfile = myPlan.stream().map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImage(), p.getPlanInteractors()
+        List<PlanProfileRespone> myPlanProfile = myPlan.stream().map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors()
                 .size())).collect(Collectors.toList());
 
         //List<PlanInteractor> planInteractors = planInteractorRepository.findByUserId(user.getId());
@@ -107,17 +107,17 @@ public class MemberController {
                 .collect(Collectors.toList());
 
         List<PlanProfileRespone> listFollowPlan = planFollowList.stream()
-                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImage(), p.getPlanInteractors().size()))
+                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors().size()))
                 .collect(Collectors.toList());
 
         List<Plan> planJoinList = planInteractors.stream()
                 .filter(p -> p.getStatus() == Constants.USER_JOINED)
-                .map(p -> p.getPlan())
+                .map(PlanInteractor::getPlan)
                 .sorted((p1, p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
                 .collect(Collectors.toList());
 
         List<PlanProfileRespone> listJoinPlan = planJoinList.stream()
-                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImage(), p.getPlanInteractors().size()))
+                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors().size()))
                 .collect(Collectors.toList());
 
         profileForm.setListFollowPlan(new ArrayList<>());

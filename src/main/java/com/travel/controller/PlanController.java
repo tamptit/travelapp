@@ -87,30 +87,29 @@ public class PlanController {
 
     //Them ke hoach
     @PutMapping
-    @PreAuthorize("isAuthenticated()")
-    @PutMapping
-    public ResponseEntity handelUpload(MultipartFile file, Plan plan) {
-        //Files.createTempFile()
-
+    public ResponseEntity<?> handelUpload(@RequestBody Plan plan) throws IOException {
+        java.io.File file = java.io.File.createTempFile("tmp", ".jpg");
+        byte[] decodedBytes = Base64.getDecoder().decode(plan.getImageCover().split(",",2)[1]);
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         Date currentDate = new Date();
         String dateStr = String.valueOf(currentDate);
         String fileName = bCryptPasswordEncoder.encode(au.getPrincipal().toString() + au.getName());
-        java.io.File temp = new java.io.File("C:\\Users\\Nguyen\\Pictures\\" + file.getOriginalFilename());
+
+//        java.io.File temp = new java.io.File("C:\\Users\\Nguyen\\Pictures\\" + file.getOriginalFilename());
         try {
-            FileUtils.writeByteArrayToFile(temp, file.getBytes());
+            FileUtils.writeByteArrayToFile(file,decodedBytes)  ;
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
         //File name: (idUser + username) hashCode + _date
-        File file2 = driveService.upLoadFile(fileName + dateStr + "jpg" , temp, "image/jpg");
+        File file2 = driveService.upLoadFile(fileName + dateStr + "jpg" ,file , "image/jpg");
         try {
             TypeReference<HashMap<String, Object>> typeRef
                     = new TypeReference<HashMap<String, Object>>() {
             };
             HashMap<String, Object> map = objectMapper.readValue(file2.toPrettyString(), typeRef);
             plan.setCreatedDay(currentDate);
-            plan.setImage(prefixUrlImage + map.get("id"));
+            plan.setImageCover(prefixUrlImage + map.get("id"));
             planRepository.save(plan);
             return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
         } catch (IOException e) {

@@ -29,11 +29,11 @@ public class Plan {
     private String content;
 
     @Column(name = "start_day")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date startDay;
 
     @Column(name = "end_day")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date endDay;
 
     @NotBlank(message = "Status is required")
@@ -45,15 +45,18 @@ public class Plan {
     private Date createdDay;
 
     @Column(name = "image")
-    private String image;
+    private String imageCover;
+
+    @Column(name = "num_people")
+    private int numPeople;
 
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany
-    @JoinColumn(name = "schedule_id", nullable = false)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "plan_id", nullable = false)
     private List<Schedule> schedules;
 
     @OneToMany(mappedBy = "plan")
@@ -65,7 +68,7 @@ public class Plan {
     public Plan(@NotBlank(message = "Name is required") @Size(min = 4, max = 200, message = "Please use 4 to 200 letters") String name,
                 @NotBlank(message = "Content is required") String content, Date startDay, Date endDay,
                 @NotBlank(message = "Status is required") String status,
-                Date createdDay, String image,
+                Date createdDay, String imageCover,
                 User user) {
         this.name = name;
         this.content = content;
@@ -73,7 +76,7 @@ public class Plan {
         this.endDay = endDay;
         this.status = status;
         this.createdDay = createdDay;
-        this.image = image;
+        this.imageCover = imageCover;
         this.user = user;
     }
 
@@ -149,12 +152,12 @@ public class Plan {
         this.status = status;
     }
 
-    public String getImage() {
-        return image;
+    public String getImageCover() {
+        return imageCover;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImageCover(String imageCover) {
+        this.imageCover = imageCover;
     }
 
     public List<Schedule> getSchedules() {
@@ -163,6 +166,14 @@ public class Plan {
 
     public void setSchedules(List<Schedule> schedules) {
         this.schedules = schedules;
+    }
+
+    public int getNumPeople() {
+        return numPeople;
+    }
+
+    public void setNumPeople(int numPeople) {
+        this.numPeople = numPeople;
     }
 
     @Override
@@ -175,7 +186,7 @@ public class Plan {
                 ", endDay=" + endDay +
                 ", status='" + status + '\'' +
                 ", createdDay=" + createdDay +
-                ", image='" + image + '\'' +
+                ", image='" + imageCover + '\'' +
                 ", user=" + user +
                 '}';
     }
