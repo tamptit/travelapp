@@ -9,8 +9,8 @@ CREATE TABLE public.schedule
     date_start 		timestamp DEFAULT NULL,
     date_finish 	timestamp DEFAULT NULL
 );
-
-ALTER TABLE public.plan ADD COLUMN num_people int;
+ALTER TABLE public.plan
+ADD COLUMN num_people int default 1;
 
 
 

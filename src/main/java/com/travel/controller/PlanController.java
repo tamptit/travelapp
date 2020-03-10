@@ -119,7 +119,7 @@ public class PlanController {
     }
 
     // -------10 kế hoạch mới nhất  ----//
-    @RequestMapping(value = "/lastest", method = RequestMethod.GET)
+    @RequestMapping(value = "/latest", method = RequestMethod.GET)
     public ResponseEntity findAllHotPlan(Pageable pageable) {
         Page page= planRepository.findAllByOrderByCreatedDayDesc(pageable);
         PageResponse response = new PageResponse();
@@ -153,9 +153,9 @@ public class PlanController {
     }
     //----- Follow plan ------//
     @Transactional
-    @PutMapping(value = "/follow/{id}")
+    @PutMapping(value = "/{id}/follow")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity followPLan(@PathVariable Long id) {
+    public ResponseEntity followPlan(@PathVariable Long id) {
         Optional<Plan> plan = planRepository.findById(id);
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User uR = userRepository.findByEmail(au.getName()).orElse(null);
@@ -173,8 +173,8 @@ public class PlanController {
     }
     //----- Unfollow plan ------//
     @Transactional
-    @DeleteMapping("/follow/{id}")
-    public ResponseEntity deleteEmployee(@PathVariable Long id) {
+    @DeleteMapping("/{id}/follow")
+    public ResponseEntity unFollowPlan(@PathVariable Long id) {
         Optional<Plan> plan = planRepository.findById(id);
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User uR = userRepository.findByEmail(au.getName()).orElse(null);

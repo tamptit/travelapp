@@ -27,8 +27,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select us from User us where us.joinDate >= :joinDate order by us.joinDate")
     List<User> findAllWithJoinDateAfter(@Param("joinDate") Date joinDate);
 
-
-
-
-
+//    @Query("select us from User us where us.id = :id")
+//    Optional<User> findById(@Param("id") Long id, Pageable pageable);
 }
