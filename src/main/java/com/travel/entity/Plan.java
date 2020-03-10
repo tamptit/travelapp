@@ -3,6 +3,7 @@ package com.travel.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.travel.model.AuditModel;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -14,7 +15,7 @@ import java.util.*;
 @Entity
 @Table(name = "plan")
 
-public class Plan {
+public class Plan extends AuditModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -36,9 +37,8 @@ public class Plan {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date endDay;
 
-    @NotBlank(message = "Status is required")
     @Column(name = "status")
-    private String status;
+    private int status;
 
     @Column(name = "created_day")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
@@ -51,7 +51,6 @@ public class Plan {
     private int numPeople;
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -67,7 +66,7 @@ public class Plan {
 
     public Plan(@NotBlank(message = "Name is required") @Size(min = 4, max = 200, message = "Please use 4 to 200 letters") String name,
                 @NotBlank(message = "Content is required") String content, Date startDay, Date endDay,
-                @NotBlank(message = "Status is required") String status,
+                @NotBlank(message = "Status is required") int status,
                 Date createdDay, String imageCover,
                 User user) {
         this.name = name;
@@ -144,11 +143,11 @@ public class Plan {
         this.content = content;
     }
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
