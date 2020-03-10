@@ -1,5 +1,6 @@
 package com.travel.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.travel.model.AuthProvider;
 
@@ -41,6 +42,7 @@ public class User {
 
 
     @OneToMany(targetEntity=Plan.class, mappedBy="user")
+    @JsonBackReference
     private List<Plan> plans;
 
     @OneToMany(mappedBy="user")

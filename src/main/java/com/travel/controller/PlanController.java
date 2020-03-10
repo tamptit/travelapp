@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.services.drive.model.File;
 import com.travel.config.JwtTokenProvider;
 import com.travel.dto.PageResponse;
-import com.travel.dto.PlanForm;
 import com.travel.entity.Plan;
 import com.travel.entity.PlanInteractor;
 import com.travel.entity.User;
@@ -87,6 +86,7 @@ public class PlanController {
 
     //Them ke hoach
     @PutMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> handelUpload(@RequestBody Plan plan) throws IOException {
         java.io.File file = java.io.File.createTempFile("tmp", ".jpg");
         byte[] decodedBytes = Base64.getDecoder().decode(plan.getImageCover().split(",",2)[1]);
@@ -101,6 +101,7 @@ public class PlanController {
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
+
         //File name: (idUser + username) hashCode + _date
         File file2 = driveService.upLoadFile(fileName + dateStr + "jpg" ,file , "image/jpg");
         try {
@@ -108,6 +109,8 @@ public class PlanController {
                     = new TypeReference<HashMap<String, Object>>() {
             };
             HashMap<String, Object> map = objectMapper.readValue(file2.toPrettyString(), typeRef);
+            User user = userRepository.findByEmail(au.getName()).orElse(null);
+            plan.setUser(user);
             plan.setCreatedDay(currentDate);
             plan.setImageCover(prefixUrlImage + map.get("id"));
             planRepository.save(plan);

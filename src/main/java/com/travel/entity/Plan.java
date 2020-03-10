@@ -3,6 +3,7 @@ package com.travel.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.travel.model.AuditModel;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -14,7 +15,7 @@ import java.util.*;
 @Entity
 @Table(name = "plan")
 
-public class Plan {
+public class Plan extends AuditModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -36,7 +37,6 @@ public class Plan {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date endDay;
 
-    @NotBlank(message = "Status is required")
     @Column(name = "status")
     private int status;
 
