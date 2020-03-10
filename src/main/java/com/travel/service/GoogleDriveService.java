@@ -6,6 +6,6 @@ import java.nio.file.Path;
 
 public interface GoogleDriveService {
 	
-	public com.google.api.services.drive.model.File upLoadFile(String fileName, File file, String mimeType);
+	public com.google.api.services.drive.model.File uploadFile(String fileName, File file, String mimeType);
 
 }

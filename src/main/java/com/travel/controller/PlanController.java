@@ -73,7 +73,7 @@ public class PlanController {
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    private MapValidationError mapValidationErrorService;
+    private MapValidationError  mapValidationError;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -87,22 +87,18 @@ public class PlanController {
 
     //Them ke hoach
     @PutMapping
-    public ResponseEntity<?> handelUpload(@RequestBody Plan plan) throws IOException {
+    public ResponseEntity<?> handelUpload(@Valid @RequestBody Plan plan , BindingResult bindingResult) throws IOException {
+        ResponseEntity<?> errorMap = mapValidationError.mapValidation(bindingResult);
         java.io.File file = java.io.File.createTempFile("tmp", ".jpg");
         byte[] decodedBytes = Base64.getDecoder().decode(plan.getImageCover().split(",",2)[1]);
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         Date currentDate = new Date();
         String dateStr = String.valueOf(currentDate);
         String fileName = bCryptPasswordEncoder.encode(au.getPrincipal().toString() + au.getName());
+        FileUtils.writeByteArrayToFile(file,decodedBytes)  ;
 
-//        java.io.File temp = new java.io.File("C:\\Users\\Nguyen\\Pictures\\" + file.getOriginalFilename());
-        try {
-            FileUtils.writeByteArrayToFile(file,decodedBytes)  ;
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-        }
         //File name: (idUser + username) hashCode + _date
-        File file2 = driveService.upLoadFile(fileName + dateStr + "jpg" ,file , "image/jpg");
+        File file2 = driveService.uploadFile(fileName + dateStr + "jpg" ,file , "image/jpg");
         try {
             TypeReference<HashMap<String, Object>> typeRef
                     = new TypeReference<HashMap<String, Object>>() {

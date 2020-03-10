@@ -62,7 +62,7 @@ public class GoogleDriveServiceImp implements GoogleDriveService {
 	}
 
 	@Override
-	public File upLoadFile(String fileName, java.io.File fileUpload, String mimeType) {
+	public File uploadFile(String fileName, java.io.File fileUpload, String mimeType) {
 		File file = new File();
 		try {
 			 File fileMetadata = new com.google.api.services.drive.model.File();

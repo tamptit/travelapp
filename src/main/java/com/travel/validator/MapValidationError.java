@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 @Service
 public class MapValidationError {
-    public ResponseEntity<?> mapValidationService( BindingResult result)  {
+    public ResponseEntity<?> mapValidation( BindingResult result)  {
         if (result.hasErrors())
         {
             Map<String,String> errorMap = new HashMap<>();
