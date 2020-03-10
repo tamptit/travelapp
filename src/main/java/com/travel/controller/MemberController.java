@@ -80,6 +80,12 @@ public class MemberController {
         return response;
     }
 
+    /**
+     * method get list my plan creat by me
+     * @param id
+     * @return
+     */
+
     @GetMapping(value = "/{id}/myplan")
     public ResponseEntity getMyPlan(@PathVariable Long id) {
 
@@ -91,7 +97,12 @@ public class MemberController {
 
         return ResponseEntity.ok().body(myPlanProfile);
     }
-
+    /**
+     *
+     * @param id
+     * method getMyFollow.
+     * @return
+     */
     @GetMapping(value = "/{id}/follow")
     public ResponseEntity getMyFollow(@PathVariable Long id) {
         //User user = userRepository.findById(id).orElse(null);
@@ -110,6 +121,12 @@ public class MemberController {
 
         return ResponseEntity.ok().body(listFollowPlan);
     }
+
+    /**
+     * method get list my joining plan
+     * @param id
+     * @return
+     */
 
     @GetMapping(value = "/{id}/join")
     public ResponseEntity getMyJoin(@PathVariable Long id) {

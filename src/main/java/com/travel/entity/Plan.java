@@ -50,7 +50,7 @@ public class Plan {
     @Column(name = "num_people")
     private int numPeople;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
