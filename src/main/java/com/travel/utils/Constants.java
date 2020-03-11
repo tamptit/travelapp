@@ -1,6 +1,7 @@
 package com.travel.utils;
 
 public class Constants {
+    public static final String JWT_HEADER = "Authorization";
     public static final String SUCCESS_MESSAGE = "Ok";
     public static final String MESSAGE = "OkOk";
     public static final String FAIL_TO_LOAD_USERDETAILS = "Fail to load user profile";

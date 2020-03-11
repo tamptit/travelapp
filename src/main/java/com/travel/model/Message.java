@@ -22,4 +22,16 @@ public class Message {
     public String getSender() {
         return sender;
     }
+
+    public void setType(MessageType type) {
+        this.type = type;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
+    }
 }

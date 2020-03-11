@@ -71,7 +71,7 @@ public class JwtTokenProvider {
             });
             strId = mapModel.get(USER_ID);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
         return Long.parseLong(strId);
     }

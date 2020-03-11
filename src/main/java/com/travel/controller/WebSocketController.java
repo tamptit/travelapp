@@ -8,6 +8,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
@@ -17,9 +18,12 @@ import java.util.Date;
 
 @Controller
 public class WebSocketController {
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
-    public Message sendMessage(@Payload Message  message) {
+    public Message sendMessage(@Payload Message message) {
         return message;
     }
 
@@ -28,6 +32,7 @@ public class WebSocketController {
     public Message addUser(@Payload Message message,
                                SimpMessageHeaderAccessor headerAccessor) {
         //Add username in websocket session
+//        messagingTemplate.convertAndSendToUser(message.getSender(),"/queue/reply",message.getContent());
         headerAccessor.getSessionAttributes().put("username",message.getSender());
         return message;
     }
