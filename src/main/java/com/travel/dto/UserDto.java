@@ -1,6 +1,7 @@
 package com.travel.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.travel.entity.User;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -14,6 +15,20 @@ public class UserDto {
     private String fullName;
     private boolean gender;
 
+    public UserDto() {
+    }
+
+    public UserDto(User user){
+        this.username = user.getUsername();
+        this.email = user.getEmail();
+        this.fullName = user.getFullName();
+        this.gender = user.isGender();
+    }
+
+    public UserDto(String username, String fullName) {
+        this.username = username;
+        this.fullName = fullName;
+    }
 
     public String getUsername() {
         return username;

@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.services.drive.model.File;
 import com.travel.config.JwtTokenProvider;
 import com.travel.dto.PageResponse;
+import com.travel.dto.PlanDto;
+import com.travel.dto.UserDto;
 import com.travel.entity.Plan;
 import com.travel.entity.PlanInteractor;
 import com.travel.entity.User;
@@ -124,7 +126,11 @@ public class PlanController {
     // -------10 kế hoạch mới nhất  ----//
     @RequestMapping(value = "/latest", method = RequestMethod.GET)
     public ResponseEntity findAllHotPlan(Pageable pageable) {
-        Page page= planRepository.findAllByOrderByCreatedDayDesc(pageable);
+
+        Page page = planRepository.findAllByOrderByCreatedDayDesc(pageable)
+                .map(Plan::convertToDto);
+
+        //Page page= planRepository.findAllByOrderByCreatedDayDesc(pageable);
         PageResponse response = new PageResponse();
         response.setCurrentPage(pageable.getPageNumber());
         response.setTotalPage(page.getTotalPages());

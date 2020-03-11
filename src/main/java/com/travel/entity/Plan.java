@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.travel.dto.PlanDto;
 import com.travel.model.AuditModel;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -63,6 +64,10 @@ public class Plan extends AuditModel {
     private List<PlanInteractor> planInteractors;
 
     public Plan() {
+    }
+
+    public PlanDto convertToDto() {
+        return new PlanDto(this,this.getUser());
     }
 
     public Plan(@NotBlank(message = "Name is required") @Size(min = 4, max = 200, message = "Please use 4 to 200 letters") String name,
