@@ -62,6 +62,10 @@ dependencies {
     compile group: 'com.google.apis', name: 'google-api-services-drive', version: 'v3-rev160-1.25.0'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
+    // https://mvnrepository.com/artifact/org.springframework/spring-messaging
+    compile group: 'org.springframework', name: 'spring-messaging', version: '5.2.2.RELEASE'
+
+
 
 }
 

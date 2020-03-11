@@ -40,7 +40,7 @@ public class RegisterController {
             @Valid @RequestBody UserForm userForm,
             BindingResult result
     ) {
-        ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
+        ResponseEntity<?> errorMap = mapValidationErrorService. mapValidation(result);
         if (errorMap != null) return errorMap;
         Map<String,String> errors = validate(userForm);
         if (errors.isEmpty()) {

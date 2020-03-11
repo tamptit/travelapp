@@ -32,6 +32,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   String[] URLS = {"/api/**"};
+//  String[] URLS = {"/**"};
 
     @Autowired
     CustomUserDetailsService customUserDetailsService;
