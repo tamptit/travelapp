@@ -8,6 +8,7 @@ import com.google.api.services.drive.model.File;
 import com.travel.config.JwtTokenProvider;
 import com.travel.dto.PageResponse;
 import com.travel.dto.PlanDto;
+import com.travel.dto.PlanInteractorDto;
 import com.travel.dto.UserDto;
 import com.travel.entity.Plan;
 import com.travel.entity.PlanInteractor;
@@ -54,6 +55,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/plan")
@@ -125,17 +127,24 @@ public class PlanController {
 
     // -------10 kế hoạch mới nhất  ----//
     @RequestMapping(value = "/latest", method = RequestMethod.GET)
-    public ResponseEntity findAllHotPlan(Pageable pageable) {
-
+    public ResponseEntity findAllLatestPlan(Pageable pageable) {
         Page page = planRepository.findAllByOrderByCreatedDayDesc(pageable)
                 .map(Plan::convertToDto);
-
         //Page page= planRepository.findAllByOrderByCreatedDayDesc(pageable);
         PageResponse response = new PageResponse();
         response.setCurrentPage(pageable.getPageNumber());
         response.setTotalPage(page.getTotalPages());
         response.setPlans(page.getContent());
         return ResponseEntity.ok().body(response);
+    }
+
+    @RequestMapping(value = "/interactive", method = RequestMethod.GET)
+    public ResponseEntity findInteractiveByUser() {
+        Authentication au = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByEmail(au.getName()).orElse(null);
+        List<PlanInteractor> planInteractor = planInteractorRepository.findAllByUser(user);
+        List<PlanInteractorDto> list = planInteractor.stream().map(PlanInteractor::convertToDto).collect(Collectors.toList());
+        return ResponseEntity.ok().body(list);
     }
 
     //     lấy 10 kế hoạch HOT nhất

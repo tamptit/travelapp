@@ -67,7 +67,7 @@ public class Plan extends AuditModel {
     }
 
     public PlanDto convertToDto() {
-        return new PlanDto(this,this.getUser());
+        return new PlanDto(this,this.getUser(),this.getPlanInteractors());
     }
 
     public Plan(@NotBlank(message = "Name is required") @Size(min = 4, max = 200, message = "Please use 4 to 200 letters") String name,

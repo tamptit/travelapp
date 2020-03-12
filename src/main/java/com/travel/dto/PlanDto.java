@@ -8,6 +8,7 @@ import com.travel.entity.User;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PlanDto {
     private long id;
@@ -25,15 +26,19 @@ public class PlanDto {
 
     private UserDto user;
 
+    private List<PlanInteractorDto> planInteractorDtos;
+
     public PlanDto() {
     }
 
-    public PlanDto(Plan plan, User user) {
+    public PlanDto(Plan plan, User user, List<PlanInteractor> planInteractors) {
         this.id = plan.getId();
         this.name = plan.getName();
         this.content = plan.getContent();
         this.status = plan.getStatus();
+        this.imageCover = plan.getImageCover();
         this.user = new UserDto(user);
+        this.planInteractorDtos = planInteractors.stream().map(PlanInteractor::convertToDto).collect(Collectors.toList());
     }
 
     public long getId() {
@@ -92,4 +97,11 @@ public class PlanDto {
         this.user = user;
     }
 
+    public List<PlanInteractorDto> getPlanInteractorDtos() {
+        return planInteractorDtos;
+    }
+
+    public void setPlanInteractorDtos(List<PlanInteractorDto> planInteractorDtos) {
+        this.planInteractorDtos = planInteractorDtos;
+    }
 }
