@@ -29,5 +29,5 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
             nativeQuery = true)
     Page<Plan> findListHotPlan(Pageable pageable);
 
-    List<Plan> findAllById(Long id);
+    Optional<Plan> findById(Long id);
 }

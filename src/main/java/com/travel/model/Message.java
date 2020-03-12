@@ -8,7 +8,11 @@ public class Message {
     public enum MessageType {
         CHAT,
         JOIN,
-        LEAVE
+        LEAVE,
+        FOLLOW_PLAN,
+        UNFOLLOW_PLAN,
+        SUCCESS,
+        FAIL
     }
 
     public MessageType getType() {

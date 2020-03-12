@@ -86,9 +86,9 @@ public class PlanController {
     public static final int TOTAL_ROW_IN_PAGE = 10;
 
     //Them ke hoach
+    @Transactional
     @PutMapping
-    public ResponseEntity<?> handelUpload(@Valid @RequestBody Plan plan , BindingResult bindingResult) throws IOException {
-        ResponseEntity<?> errorMap = mapValidationError.mapValidation(bindingResult);
+    public ResponseEntity<?> handelUpload( @RequestBody Plan plan ) throws IOException {
         java.io.File file = java.io.File.createTempFile("tmp", ".jpg");
         byte[] decodedBytes = Base64.getDecoder().decode(plan.getImageCover().split(",",2)[1]);
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
@@ -148,39 +148,39 @@ public class PlanController {
         return ResponseEntity.ok().body(response);
     }
     //----- Follow plan ------//
-    @Transactional
-    @PutMapping(value = "/follow/{id}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity followPLan(@PathVariable Long id) {
-        Optional<Plan> plan = planRepository.findById(id);
-        Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        User uR = userRepository.findByEmail(au.getName()).orElse(null);
-        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR);
-        if (interactor != null) {
-            return ResponseEntity.ok().body(Constants.MESSAGE);
-        } else {
-            PlanInteractor planInteractor = new PlanInteractor();
-            planInteractor.setUser(uR);
-            planInteractor.setPlan(plan.get());
-            planInteractor.setStatus(0);
-            planInteractorRepository.save(planInteractor);
-            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
-        }
-    }
+//    @Transactional
+//    @PutMapping(value = "/follow/{id}")
+//    @PreAuthorize("isAuthenticated()")
+//    public ResponseEntity followPLan(@PathVariable Long id) {
+//        Optional<Plan> plan = planRepository.findById(id);
+//        Authentication au = SecurityContextHolder.getContext().getAuthentication();
+//        User uR = userRepository.findByEmail(au.getName()).orElse(null);
+//        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR);
+//        if (interactor != null) {
+//            return ResponseEntity.ok().body(Constants.MESSAGE);
+//        } else {
+//            PlanInteractor planInteractor = new PlanInteractor();
+//            planInteractor.setUser(uR);
+//            planInteractor.setPlan(plan.get());
+//            planInteractor.setStatus(0);
+//            planInteractorRepository.save(planInteractor);
+//            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
+//        }
+//    }
     //----- Unfollow plan ------//
-    @Transactional
-    @DeleteMapping("/follow/{id}")
-    public ResponseEntity deleteEmployee(@PathVariable Long id) {
-        Optional<Plan> plan = planRepository.findById(id);
-        Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        User uR = userRepository.findByEmail(au.getName()).orElse(null);
-        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR);
-        if (interactor != null){
-            planInteractorRepository.deleteById(interactor.getId());
-            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
-        }else{
-            return ResponseEntity.ok().body(Constants.MESSAGE);
-        }
-    }
-
+//    @Transactional
+//    @DeleteMapping("/follow/{id}")
+//    public ResponseEntity deleteEmployee(@PathVariable Long id) {
+//        Optional<Plan> plan = planRepository.findById(id);
+//        Authentication au = SecurityContextHolder.getContext().getAuthentication();
+//        User uR = userRepository.findByEmail(au.getName()).orElse(null);
+//        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR);
+//        if (interactor != null){
+//            planInteractorRepository.deleteById(interactor.getId());
+//            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
+//        }else{
+//            return ResponseEntity.ok().body(Constants.MESSAGE);
+//        }
+//    }
+//
 }

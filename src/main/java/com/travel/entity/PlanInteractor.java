@@ -29,8 +29,11 @@ public class PlanInteractor {
     @JoinColumn(nullable = false, name = "plan_id")
     private Plan plan;
 
-    @Column(name = "status")
-    private int status;
+    @Column(name = "follow")
+    private int follow;
+
+    @Column(name = "joined")
+    private int join;
 
     public PlanInteractor() {
     }
@@ -65,19 +68,19 @@ public class PlanInteractor {
         this.plan = plan;
     }
 
-    public int getStatus() {
-        return status;
+    public int getFollow() {
+        return follow;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setFollow(int follow) {
+        this.follow = follow;
     }
 
-    @Override
-    public String toString() {
-        return "PlanInteractor{" +
-                "id=" + id +
-                ", status=" + status +
-                '}';
+    public int getJoin() {
+        return join;
+    }
+
+    public void setJoin(int join) {
+        this.join = join;
     }
 }

@@ -54,7 +54,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer  {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app");
-        registry.enableSimpleBroker("/topic");
+        registry.enableSimpleBroker("/topic", "queue","user");
+        registry.setUserDestinationPrefix("user");
     }
 
     private DefaultHandshakeHandler defaultHandshakeHandler(){
@@ -87,9 +88,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer  {
                 if (serverHttpRequest instanceof ServletServerHttpRequest) {
                     ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) serverHttpRequest;
                     String token = servletRequest.getServletRequest().getHeader(Constants.JWT_HEADER);
+                    String user = servletRequest.getServletRequest().getHeader("user");
                     HttpSession session = servletRequest.getServletRequest().getSession();
                     map.put("sessionId", session.getId());
                     map.put(Constants.JWT_HEADER, token);
+                    map.put("user", user);
                 }
                 return true;
             }

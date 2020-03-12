@@ -9,10 +9,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PlanInteractorRepository extends JpaRepository<PlanInteractor, Long> {
 
-    PlanInteractor findByPlanAndUser( Plan plan , User user);
+    Optional<PlanInteractor> findByPlanAndUser(Plan plan , User user);
 
     //@Transactional
     //@Query(value = "delete from PlanInteractor pI where pI.user.id =  :idUser and pI.plan.id = :idPlan")
