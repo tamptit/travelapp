@@ -13,11 +13,13 @@ public class PlanInteractorDto {
     private long id;
     private UserDto userDto;
     private int status;
+    private int follow;
+    private int join;
 
     public PlanInteractorDto() {
     }
 
-    public PlanInteractorDto(long id, User user, int status) {
+    public PlanInteractorDto(long id, User user, int follow, int join) {
         this.id = id;
         this.userDto = new UserDto(user);
         this.status = status;

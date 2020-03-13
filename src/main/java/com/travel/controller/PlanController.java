@@ -43,6 +43,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -172,14 +173,15 @@ public class PlanController {
         Optional<Plan> plan = planRepository.findById(id);
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User uR = userRepository.findByEmail(au.getName()).orElse(null);
-        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR);
+        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR).orElse(null);
         if (interactor != null) {
             return ResponseEntity.ok().body(Constants.MESSAGE);
         } else {
             PlanInteractor planInteractor = new PlanInteractor();
             planInteractor.setUser(uR);
             planInteractor.setPlan(plan.get());
-            planInteractor.setStatus(0);
+            planInteractor.setFollow(1);
+            planInteractor.setJoin(0);
             planInteractorRepository.save(planInteractor);
             return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
         }
@@ -191,7 +193,7 @@ public class PlanController {
         Optional<Plan> plan = planRepository.findById(id);
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User uR = userRepository.findByEmail(au.getName()).orElse(null);
-        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR);
+        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR).orElse(null);
         if (interactor != null){
             planInteractorRepository.deleteById(interactor.getId());
             return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);

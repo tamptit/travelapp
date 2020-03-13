@@ -14,7 +14,7 @@ public class Constants {
     public static final String ERROR_MESSAGE = "InValid";
     public static final String VALID_MESSAGE = "Valid";
 
-    public static final int USER_FOLLOW_STATUS = 0;
+    public static final int USER_FOLLOW_STATUS = 1;
     public static final int USER_JOINED = 1;
     public static final int USER_JOIN_NO_FOLLOW = 2;
     public static final int USER_JOIN_REQUEST = 3;

@@ -71,9 +71,6 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework.security/spring-security-messaging
     compile group: 'org.springframework.security', name: 'spring-security-messaging', version: '5.2.2.RELEASE'
 
-
-
-
 }
 
 test {

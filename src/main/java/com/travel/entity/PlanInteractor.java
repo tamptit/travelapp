@@ -46,7 +46,7 @@ public class PlanInteractor {
     }
 
     public PlanInteractorDto convertToDto() {
-        return new PlanInteractorDto(this.id,this.user,this.status);
+        return new PlanInteractorDto(this.id,this.user,this.follow,this.join);
     }
 
 
