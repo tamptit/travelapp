@@ -12,17 +12,18 @@ import java.util.List;
 public class PlanInteractorDto {
     private long id;
     private UserDto userDto;
-    private int status;
-    private int follow;
-    private int join;
+    private boolean follow;
+    private boolean join;
 
     public PlanInteractorDto() {
     }
 
-    public PlanInteractorDto(long id, User user, int follow, int join) {
+
+    public PlanInteractorDto(long id, UserDto userDto, boolean follow, boolean join) {
         this.id = id;
-        this.userDto = new UserDto(user);
-        this.status = status;
+        this.userDto = userDto;
+        this.follow = follow;
+        this.join = join;
     }
 
     public long getId() {
@@ -33,19 +34,27 @@ public class PlanInteractorDto {
         this.id = id;
     }
 
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
     public UserDto getUserDto() {
         return userDto;
     }
 
     public void setUserDto(UserDto userDto) {
         this.userDto = userDto;
+    }
+
+    public boolean isFollow() {
+        return follow;
+    }
+
+    public void setFollow(boolean follow) {
+        this.follow = follow;
+    }
+
+    public boolean isJoin() {
+        return join;
+    }
+
+    public void setJoin(boolean join) {
+        this.join = join;
     }
 }

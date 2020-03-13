@@ -110,7 +110,7 @@ public class MemberController {
         //List<PlanInteractor> planInteractors = user.getPlanInteractors();
 
         List<Plan> planFollowList = planInteractors.stream()
-                .filter(p -> p.getFollow() == 1)
+                .filter(p -> p.isFollow() == true)
                 .map(p -> p.getPlan())
                 .sorted((p1, p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
                 .collect(Collectors.toList());
@@ -133,7 +133,7 @@ public class MemberController {
         User user = userRepository.findById(id).orElse(null);
         List<PlanInteractor> planInteractors = user.getPlanInteractors();
         List<Plan> planJoinList = planInteractors.stream()
-                .filter(p -> p.getJoin() == Constants.USER_JOINED)
+                .filter(p -> p.isJoin() == true)
                 .map(PlanInteractor::getPlan)
                 .sorted((p1, p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
                 .collect(Collectors.toList());

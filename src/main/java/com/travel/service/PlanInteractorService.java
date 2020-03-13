@@ -30,13 +30,13 @@ public class PlanInteractorService {
         Optional<PlanInteractor> opt = planInteractorRepository.findByPlanAndUser(plan,user);
         if(opt.isPresent()){
             planInteractor = opt.get();
-            planInteractor.setFollow(1);
+            planInteractor.setFollow(true);
             planInteractorRepository.save(planInteractor);
         }else{
             planInteractor = new PlanInteractor();
             planInteractor.setUser(user);
             planInteractor.setPlan(plan);
-            planInteractor.setFollow(1);
+            planInteractor.setFollow(true);
             planInteractorRepository.save(planInteractor);
         }
         return planInteractor;
