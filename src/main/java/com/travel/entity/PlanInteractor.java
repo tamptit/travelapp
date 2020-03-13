@@ -2,6 +2,7 @@ package com.travel.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.travel.dto.PlanInteractorDto;
 import com.travel.model.AuditModel;
 
 import javax.persistence.*;
@@ -43,6 +44,11 @@ public class PlanInteractor {
         this.user = user;
         this.plan = plan;
     }
+
+    public PlanInteractorDto convertToDto() {
+        return new PlanInteractorDto(this.id,this.user,this.status);
+    }
+
 
     public long getId() {
         return id;

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @RestController
@@ -43,9 +44,6 @@ public class MemberController {
 
     @Autowired
     PlanInteractorRepository planInteractorRepository;
-
-    @Autowired
-    ObjectMapper objectMapper;
 
     @GetMapping(value = "/profile")
     public ResponseEntity<Object> getUserProfileFromToken() {
@@ -82,73 +80,69 @@ public class MemberController {
         return response;
     }
 
-//    @GetMapping(value = "/{id}")
-//    public ResponseEntity getUserPlan(@PathVariable Long id) {
-//        ProfileForm profileForm = new ProfileForm();
-//        User user = userRepository.findById(id).orElse(null);
-//
-//        com.travel.model.User userModel = new com.travel.model.User(user.getId(), user.getUsername(), user.getEmail(),
-//                user.getFullName(), user.getdOfB(), user.isGender(), user.getJoinDate());
-//        //com.travel.model.User userModel = objectMapper.convertValue(user, com.travel.model.User.class);
-//
-//        profileForm.setUser(userModel);
-//        List<PlanInteractor> planInteractors = user.getPlanInteractors();
-//
-//        List<Plan> myPlan = user.getPlans();
-//        List<PlanProfileRespone> myPlanProfile = myPlan.stream().map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors()
-//                .size())).collect(Collectors.toList());
-//
-//        //List<PlanInteractor> planInteractors = planInteractorRepository.findByUserId(user.getId());
-//
-//        List<Plan> planFollowList = planInteractors.stream()
-//                .filter(p -> p.getStatus() == Constants.USER_FOLLOW_STATUS || p.getStatus() == Constants.USER_JOIN_REQUEST)
-//                .map(p -> p.getPlan())
-//                .sorted((p1, p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
-//                .collect(Collectors.toList());
-//
-//        List<PlanProfileRespone> listFollowPlan = planFollowList.stream()
-//                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors().size()))
-//                .collect(Collectors.toList());
-//
-//        List<Plan> planJoinList = planInteractors.stream()
-//                .filter(p -> p.getStatus() == Constants.USER_JOINED)
-//                .map(PlanInteractor::getPlan)
-//                .sorted((p1, p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
-//                .collect(Collectors.toList());
-//
-//        List<PlanProfileRespone> listJoinPlan = planJoinList.stream()
-//                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors().size()))
-//                .collect(Collectors.toList());
-//
-//        profileForm.setListFollowPlan(new ArrayList<>());
-//        profileForm.setListJoinPlan(new ArrayList<>());
-//        profileForm.setListMyPlan(new ArrayList<>());
-//
-//        if (myPlanProfile.size() >= 4) {
-//            for (int i = 0; i < 4; i++) {
-//                profileForm.getListMyPlan().add(myPlanProfile.get(i));
-//            }
-//        } else {
-//            profileForm.setListMyPlan(myPlanProfile);
-//        }
-//
-//        if (listFollowPlan.size() >= 4) {
-//            for (int i = 0; i < 4; i++) {
-//                profileForm.getListFollowPlan().add(listFollowPlan.get(i));
-//            }
-//        } else {
-//            profileForm.setListFollowPlan(listFollowPlan);
-//        }
-//
-//        if (listJoinPlan.size() >= 4) {
-//            for (int i = 0; i < 4; i++) {
-//                profileForm.getListJoinPlan().add(listJoinPlan.get(i));
-//            }
-//        } else {
-//            profileForm.setListJoinPlan(listJoinPlan);
-//        }
-//
-//        return ResponseEntity.ok().body(profileForm);
-//    }
+    /**
+     * method get list my plan creat by me
+     * @param id
+     * @return
+     */
+
+    @GetMapping(value = "/{id}/myplan")
+    public ResponseEntity getMyPlan(@PathVariable Long id) {
+
+        List<Plan> myPlan = userRepository.findById(id).map(user -> user.getPlans()).orElseGet(() -> null);
+        //List<Plan> myPlan = user.getPlans();
+        List<PlanProfileRespone> myPlanProfile = myPlan.stream()
+                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors()
+                        .size())).collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(myPlanProfile);
+    }
+    /**
+     *
+     * @param id
+     * method getMyFollow.
+     * @return
+     */
+    @GetMapping(value = "/{id}/follow")
+    public ResponseEntity getMyFollow(@PathVariable Long id) {
+        //User user = userRepository.findById(id).orElse(null);
+        List<PlanInteractor> planInteractors = userRepository.findById(id).map(user1 -> user1.getPlanInteractors()).orElseGet(() -> null);
+        //List<PlanInteractor> planInteractors = user.getPlanInteractors();
+
+        List<Plan> planFollowList = planInteractors.stream()
+                .filter(p -> p.getStatus() == Constants.USER_FOLLOW_STATUS || p.getStatus() == Constants.USER_JOIN_REQUEST)
+                .map(p -> p.getPlan())
+                .sorted((p1, p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
+                .collect(Collectors.toList());
+
+        List<PlanProfileRespone> listFollowPlan = planFollowList.stream()
+                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors().size()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(listFollowPlan);
+    }
+
+    /**
+     * method get list my joining plan
+     * @param id
+     * @return
+     */
+
+    @GetMapping(value = "/{id}/join")
+    public ResponseEntity getMyJoin(@PathVariable Long id) {
+        User user = userRepository.findById(id).orElse(null);
+        List<PlanInteractor> planInteractors = user.getPlanInteractors();
+        List<Plan> planJoinList = planInteractors.stream()
+                .filter(p -> p.getStatus() == Constants.USER_JOINED)
+                .map(PlanInteractor::getPlan)
+                .sorted((p1, p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
+                .collect(Collectors.toList());
+
+        List<PlanProfileRespone> listJoinPlan = planJoinList.stream()
+                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors().size()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(listJoinPlan);
+    }
 
 }

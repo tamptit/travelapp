@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.services.drive.model.File;
 import com.travel.config.JwtTokenProvider;
 import com.travel.dto.PageResponse;
-import com.travel.dto.PlanForm;
+import com.travel.dto.PlanDto;
+import com.travel.dto.PlanInteractorDto;
+import com.travel.dto.UserDto;
 import com.travel.entity.Plan;
 import com.travel.entity.PlanInteractor;
 import com.travel.entity.User;
@@ -53,6 +55,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/plan")
@@ -88,7 +91,8 @@ public class PlanController {
     //Them ke hoach
     @Transactional
     @PutMapping
-    public ResponseEntity<?> handelUpload( @RequestBody Plan plan ) throws IOException {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> handelUpload(@RequestBody Plan plan) throws IOException {
         java.io.File file = java.io.File.createTempFile("tmp", ".jpg");
         byte[] decodedBytes = Base64.getDecoder().decode(plan.getImageCover().split(",",2)[1]);
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
@@ -104,6 +108,8 @@ public class PlanController {
                     = new TypeReference<HashMap<String, Object>>() {
             };
             HashMap<String, Object> map = objectMapper.readValue(file2.toPrettyString(), typeRef);
+            User user = userRepository.findByEmail(au.getName()).orElse(null);
+            plan.setUser(user);
             plan.setCreatedDay(currentDate);
             plan.setImageCover(prefixUrlImage + map.get("id"));
             planRepository.save(plan);
@@ -115,14 +121,25 @@ public class PlanController {
     }
 
     // -------10 kế hoạch mới nhất  ----//
-    @RequestMapping(value = "/lastest", method = RequestMethod.GET)
-    public ResponseEntity findAllHotPlan(Pageable pageable) {
-        Page page= planRepository.findAllByOrderByCreatedDayDesc(pageable);
+    @RequestMapping(value = "/latest", method = RequestMethod.GET)
+    public ResponseEntity findAllLatestPlan(Pageable pageable) {
+        Page page = planRepository.findAllByOrderByCreatedDayDesc(pageable)
+                .map(Plan::convertToDto);
+        //Page page= planRepository.findAllByOrderByCreatedDayDesc(pageable);
         PageResponse response = new PageResponse();
         response.setCurrentPage(pageable.getPageNumber());
         response.setTotalPage(page.getTotalPages());
         response.setPlans(page.getContent());
         return ResponseEntity.ok().body(response);
+    }
+
+    @RequestMapping(value = "/interactive", method = RequestMethod.GET)
+    public ResponseEntity findInteractiveByUser() {
+        Authentication au = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByEmail(au.getName()).orElse(null);
+        List<PlanInteractor> planInteractor = planInteractorRepository.findAllByUser(user);
+        List<PlanInteractorDto> list = planInteractor.stream().map(PlanInteractor::convertToDto).collect(Collectors.toList());
+        return ResponseEntity.ok().body(list);
     }
 
     //     lấy 10 kế hoạch HOT nhất
@@ -148,39 +165,39 @@ public class PlanController {
         return ResponseEntity.ok().body(response);
     }
     //----- Follow plan ------//
-//    @Transactional
-//    @PutMapping(value = "/follow/{id}")
-//    @PreAuthorize("isAuthenticated()")
-//    public ResponseEntity followPLan(@PathVariable Long id) {
-//        Optional<Plan> plan = planRepository.findById(id);
-//        Authentication au = SecurityContextHolder.getContext().getAuthentication();
-//        User uR = userRepository.findByEmail(au.getName()).orElse(null);
-//        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR);
-//        if (interactor != null) {
-//            return ResponseEntity.ok().body(Constants.MESSAGE);
-//        } else {
-//            PlanInteractor planInteractor = new PlanInteractor();
-//            planInteractor.setUser(uR);
-//            planInteractor.setPlan(plan.get());
-//            planInteractor.setStatus(0);
-//            planInteractorRepository.save(planInteractor);
-//            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
-//        }
-//    }
+    @Transactional
+    @PutMapping(value = "/{id}/follow")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity followPlan(@PathVariable Long id) {
+        Optional<Plan> plan = planRepository.findById(id);
+        Authentication au = SecurityContextHolder.getContext().getAuthentication();
+        User uR = userRepository.findByEmail(au.getName()).orElse(null);
+        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR);
+        if (interactor != null) {
+            return ResponseEntity.ok().body(Constants.MESSAGE);
+        } else {
+            PlanInteractor planInteractor = new PlanInteractor();
+            planInteractor.setUser(uR);
+            planInteractor.setPlan(plan.get());
+            planInteractor.setStatus(0);
+            planInteractorRepository.save(planInteractor);
+            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
+        }
+    }
     //----- Unfollow plan ------//
-//    @Transactional
-//    @DeleteMapping("/follow/{id}")
-//    public ResponseEntity deleteEmployee(@PathVariable Long id) {
-//        Optional<Plan> plan = planRepository.findById(id);
-//        Authentication au = SecurityContextHolder.getContext().getAuthentication();
-//        User uR = userRepository.findByEmail(au.getName()).orElse(null);
-//        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR);
-//        if (interactor != null){
-//            planInteractorRepository.deleteById(interactor.getId());
-//            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
-//        }else{
-//            return ResponseEntity.ok().body(Constants.MESSAGE);
-//        }
-//    }
-//
+    @Transactional
+    @DeleteMapping("/{id}/follow")
+    public ResponseEntity unFollowPlan(@PathVariable Long id) {
+        Optional<Plan> plan = planRepository.findById(id);
+        Authentication au = SecurityContextHolder.getContext().getAuthentication();
+        User uR = userRepository.findByEmail(au.getName()).orElse(null);
+        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR);
+        if (interactor != null){
+            planInteractorRepository.deleteById(interactor.getId());
+            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
+        }else{
+            return ResponseEntity.ok().body(Constants.MESSAGE);
+        }
+    }
+
 }
