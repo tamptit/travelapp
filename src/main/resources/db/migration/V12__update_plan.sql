@@ -1,2 +1,5 @@
 ALTER TABLE public.plan
-ALTER COLUMN status TYPE int;
+    DROP COLUMN status;
+
+ALTER TABLE public.plan
+    ADD COLUMN status int default null

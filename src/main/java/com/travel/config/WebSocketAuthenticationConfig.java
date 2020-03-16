@@ -29,26 +29,8 @@ import java.util.List;
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class WebSocketAuthenticationConfig implements WebSocketMessageBrokerConfigurer {
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(new ChannelInterceptor() {
-            @Override
-            public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                StompHeaderAccessor accessor =
-                        MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-                accessor.getSessionAttributes().get(Constants.JWT_HEADER);
-                MessageHeaders headers = message.getHeaders();
-                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    String token = (String) accessor.getSessionAttributes().get(Constants.JWT_HEADER);
-                    String principal = jwtTokenProvider.getUserIdFromJWT(token).toString();
-                    String user = (String) accessor.getSessionAttributes().get("user");
-                    accessor.setUser(new BasicUserPrincipal(user));
-                }
-                return message;
-            }
-        });
+
     }
 }

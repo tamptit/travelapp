@@ -37,15 +37,10 @@ public class CustomUserDetailsService implements UserDetailsService {
                 userRepository
                         .findById(id)
                         .orElseThrow(() -> new UsernameNotFoundException("User not found with id : " + id));
-
         return create(user);
     }
 
     private UserDetails create(User user) {
-//    String roleName = user.getRole().getRoleName();
-//    List<GrantedAuthority> authorities = new ArrayList<>();
-//    authorities.add(new SimpleGrantedAuthority("ROLE_" + roleName));
-
         return new UserPrincipal(
                 user.getId(), user.getEmail(), user.getPassword(), null );
     }

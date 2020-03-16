@@ -51,6 +51,12 @@ public class User {
     @Column(name = "provider_id")
     private String providerId;
 
+    public User(){}
+
+    public User(long id) {
+        this.id = id;
+    }
+
     public List<Plan> getPlans() {
         return plans;
     }

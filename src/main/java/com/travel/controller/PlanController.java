@@ -165,41 +165,5 @@ public class PlanController {
         response.setPlans(planPager.getContent());
         return ResponseEntity.ok().body(response);
     }
-    //----- Follow plan ------//
-    @Transactional
-    @PutMapping(value = "/{id}/follow")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity followPlan(@PathVariable Long id) {
-        Optional<Plan> plan = planRepository.findById(id);
-        Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        User uR = userRepository.findByEmail(au.getName()).orElse(null);
-        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR).orElse(null);
-        if (interactor != null) {
-            return ResponseEntity.ok().body(Constants.MESSAGE);
-        } else {
-            PlanInteractor planInteractor = new PlanInteractor();
-            planInteractor.setUser(uR);
-            planInteractor.setPlan(plan.get());
-            planInteractor.setFollow(1);
-            planInteractor.setJoin(0);
-            planInteractorRepository.save(planInteractor);
-            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
-        }
-    }
-    //----- Unfollow plan ------//
-    @Transactional
-    @DeleteMapping("/{id}/follow")
-    public ResponseEntity unFollowPlan(@PathVariable Long id) {
-        Optional<Plan> plan = planRepository.findById(id);
-        Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        User uR = userRepository.findByEmail(au.getName()).orElse(null);
-        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR).orElse(null);
-        if (interactor != null){
-            planInteractorRepository.deleteById(interactor.getId());
-            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
-        }else{
-            return ResponseEntity.ok().body(Constants.MESSAGE);
-        }
-    }
 
 }

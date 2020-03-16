@@ -31,10 +31,10 @@ public class PlanInteractor {
     private Plan plan;
 
     @Column(name = "follow")
-    private int follow;
+    private boolean follow;
 
     @Column(name = "joined")
-    private int join;
+    private boolean join;
 
     public PlanInteractor() {
     }
@@ -74,19 +74,19 @@ public class PlanInteractor {
         this.plan = plan;
     }
 
-    public int getFollow() {
+    public boolean isFollow() {
         return follow;
     }
 
-    public void setFollow(int follow) {
+    public void setFollow(boolean follow) {
         this.follow = follow;
     }
 
-    public int getJoin() {
+    public boolean isJoin() {
         return join;
     }
 
-    public void setJoin(int join) {
+    public void setJoin(boolean join) {
         this.join = join;
     }
 }

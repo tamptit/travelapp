@@ -47,15 +47,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer  {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
                 .setHandshakeHandler(defaultHandshakeHandler())
-                .addInterceptors(getInterceptot())
+                .addInterceptors(getInterceptor())
                 .withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app");
-        registry.enableSimpleBroker("/topic", "queue","user");
-        registry.setUserDestinationPrefix("user");
+        registry.enableSimpleBroker("/topic", "/queue","/user");
+        registry.setUserDestinationPrefix("/user");
     }
 
     private DefaultHandshakeHandler defaultHandshakeHandler(){
@@ -63,36 +63,35 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer  {
             @Override
             public Principal determineUser(ServerHttpRequest request, WebSocketHandler handler, Map<String, Object> attributes) {
                 String token = (String) attributes.get(Constants.JWT_HEADER);
+                UsernamePasswordAuthenticationToken authentication = null;
                 try {
                     if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
                         Long userId = jwtTokenProvider.getUserIdFromJWT(token);
                         UserDetails userDetails = customUserDetailsService.loadUserById(userId);
-                        UsernamePasswordAuthenticationToken authentication =
+                        authentication =
                                 new UsernamePasswordAuthenticationToken(
                                         userDetails, null, null);
                         SecurityContextHolder.getContext().setAuthentication(authentication);
-                        return authentication;
                     }
                 } catch (Exception ex) {
                     LOGGER.error("Could not set user authentication in security context", ex);
+
                 }
-                return null;
+                return authentication;
             }
         };
     }
 
-    private HandshakeInterceptor getInterceptot() {
+    private HandshakeInterceptor getInterceptor() {
         return new HandshakeInterceptor(){
             @Override
             public boolean beforeHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Map<String, Object> map) throws Exception {
                 if (serverHttpRequest instanceof ServletServerHttpRequest) {
                     ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) serverHttpRequest;
                     String token = servletRequest.getServletRequest().getHeader(Constants.JWT_HEADER);
-                    String user = servletRequest.getServletRequest().getHeader("user");
                     HttpSession session = servletRequest.getServletRequest().getSession();
                     map.put("sessionId", session.getId());
                     map.put(Constants.JWT_HEADER, token);
-                    map.put("user", user);
                 }
                 return true;
             }

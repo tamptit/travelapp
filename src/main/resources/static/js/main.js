@@ -36,6 +36,8 @@ function onConnected() {
     // Subscribe to the Public Topic
     stompClient.subscribe('/user/queue/reply', onMessageReceived);
 
+    stompClient.subscribe('/user/queue/errors', onMessageReceived);
+
     // Tell your username to the server
     stompClient.send("/app/follow",
         {},

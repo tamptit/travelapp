@@ -66,6 +66,10 @@ public class Plan extends AuditModel {
     public Plan() {
     }
 
+    public Plan(long id) {
+        this.id = id;
+    }
+
     public PlanDto convertToDto() {
         return new PlanDto(this,this.getUser(),this.getPlanInteractors());
     }

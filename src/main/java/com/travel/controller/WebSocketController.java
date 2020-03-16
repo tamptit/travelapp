@@ -1,5 +1,6 @@
 package com.travel.controller;
 
+import com.travel.config.CustomUserDetailsService;
 import com.travel.config.JwtTokenProvider;
 import com.travel.entity.Plan;
 import com.travel.entity.PlanInteractor;
@@ -28,6 +29,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.security.Principal;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -47,14 +49,20 @@ public class WebSocketController {
     private PlanInteractorService planInteractorService;
 
     @Autowired
-    private PlanInteractorRepository planInteractorRepository;
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private CustomUserDetailsService customUserDetailsService;
 
     @MessageMapping("/chat.sendMessage")
-    public void sendMessage(@Payload Message message) {
-        messagingTemplate.convertAndSendToUser("13", "/queue/reply", message);
+    public void sendMessage(@Payload Message message, SimpMessageHeaderAccessor headerAccessor) {
+        String id = headerAccessor.toString();
+        messagingTemplate.convertAndSendToUser("q@@1212q", "/queue/reply", message);
+    }
+
+    @MessageMapping("/notification.followPlan")
+    public void followPlan(@Payload Message message, Principal principal) {
+        long idPlan = Long.parseLong(message.getSender());
+        Plan plan = planInteractorService.updateFollowPlanInteractor(idPlan,1l,true);
+        String userReceived = plan.getUser().getEmail();
+        messagingTemplate.convertAndSendToUser(userReceived, "/queue/reply", message);
     }
 
     @MessageMapping("/follow")
