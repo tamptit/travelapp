@@ -3,6 +3,7 @@ package com.travel.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.dto.PlanInteractorDto;
+import com.travel.dto.UserDto;
 import com.travel.model.AuditModel;
 
 import javax.persistence.*;
@@ -46,7 +47,7 @@ public class PlanInteractor {
     }
 
     public PlanInteractorDto convertToDto() {
-        return new PlanInteractorDto(this.id,this.user,this.follow,this.join);
+        return new PlanInteractorDto(this.id,new UserDto(this.user),this.follow,this.join);
     }
 
 
