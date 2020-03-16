@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -33,6 +34,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.travel.utils.Constants.USERNAME_PASSWORD_WRONG;
+import static com.travel.utils.Constants.VALID_MESSAGE;
 
 @RestController
 @RequestMapping(value = "/api/plan")
@@ -115,14 +119,20 @@ public class PlanController {
         PageResponse<Plan> response = new PageResponse<Plan>();
         response.setCurrentPage(pageable.getPageNumber());
         response.setTotalPage(page.getTotalPages());
-        response.setPlans(page.getContent());
+        response.setContent(page.getContent());
         return ResponseEntity.ok().body(response);
     }
 
+    /**
+     * @method get list PlanInterac by User
+     * @return
+     */
+
     @RequestMapping(value = "/interactive", method = RequestMethod.GET)
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity findInteractiveByUser() {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByEmail(au.getName()).orElse(null);
+        User user = userRepository.findByEmail(au.getName()).orElseThrow(() -> new NullPointerException(Constants.AUTHENTICATION_REQUIRED));
         List<PlanInteractor> planInteractor = planInteractorRepository.findAllByUser(user);
         List<PlanInteractorDto> list = planInteractor.stream().map(PlanInteractor::convertToDto).collect(Collectors.toList());
         return ResponseEntity.ok().body(list);
@@ -139,7 +149,7 @@ public class PlanController {
         PageResponse<Plan> response = new PageResponse<Plan>();
         response.setCurrentPage(pageable.getPageNumber());
         response.setTotalPage(page.getTotalPages());
-        response.setPlans(page.getContent());
+        response.setContent(page.getContent());
         return ResponseEntity.ok().body(response);
     }
 
@@ -152,16 +162,23 @@ public class PlanController {
     @PutMapping(value = "/{id}/follow")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity followPlan(@PathVariable Long id) {
-        Optional<Plan> plan = planRepository.findById(id);
+
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        User uR = userRepository.findByEmail(au.getName()).orElse(null);
-        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR).orElse(null);
+        User user = null;
+        Plan plan = null;
+             user = userRepository.findByEmail(au.getName()).get();
+             plan = planRepository.findById(id).orElse(null);
+
+
+               // .orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
+
+        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan, user).orElse(null);
         if (interactor != null) {
             return ResponseEntity.ok().body(Constants.MESSAGE);
         } else {
             PlanInteractor planInteractor = new PlanInteractor();
-            planInteractor.setUser(uR);
-            planInteractor.setPlan(plan.get());
+            planInteractor.setUser(user);
+            planInteractor.setPlan(plan);
             planInteractor.setFollow(true);
             planInteractor.setJoin(false);
             planInteractorRepository.save(planInteractor);
@@ -179,8 +196,8 @@ public class PlanController {
     public ResponseEntity unFollowPlan(@PathVariable Long id) {
         Optional<Plan> plan = planRepository.findById(id);
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        User uR = userRepository.findByEmail(au.getName()).orElse(null);
-        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), uR).orElse(null);
+        User user = userRepository.findByEmail(au.getName()).orElseThrow(() -> new NullPointerException(Constants.AUTHENTICATION_REQUIRED));
+        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), user).orElse(null);
         if (interactor != null){
             planInteractorRepository.deleteById(interactor.getId());
             return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
