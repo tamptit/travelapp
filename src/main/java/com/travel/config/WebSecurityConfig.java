@@ -31,8 +31,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-//  String[] URLS = {"/api/**"};
-  String[] URLS = {"/**"};
+  String[] URLS = {"/api/**"};
+//  String[] URLS = {"/**"};
 
     @Autowired
     CustomUserDetailsService customUserDetailsService;

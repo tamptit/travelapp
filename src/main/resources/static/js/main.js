@@ -39,7 +39,7 @@ function onConnected() {
     stompClient.subscribe('/user/queue/errors', onMessageReceived);
 
     // Tell your username to the server
-    stompClient.send("/app/follow",
+    stompClient.send("/app/notification.followPlan",
         {},
         JSON.stringify({sender: username, type: 'JOIN'})
     )

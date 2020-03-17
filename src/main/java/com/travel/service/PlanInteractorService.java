@@ -25,8 +25,8 @@ public class PlanInteractorService {
 
     public Plan updateFollowPlanInteractor(long planId, long userId, boolean isFollow) throws IllegalArgumentException {
         PlanInteractor planInteractor;
-        Plan plan = planRepository.findById(planId).orElse(null);
         User user = new User(userId);
+        Plan plan = planRepository.findById(planId).orElse(null);
         Optional<PlanInteractor> opt = planInteractorRepository.findByPlanAndUser(plan,user);
         if(opt.isPresent()){
             planInteractor = opt.get();

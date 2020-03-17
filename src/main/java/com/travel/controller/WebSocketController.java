@@ -53,35 +53,38 @@ public class WebSocketController {
 
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(@Payload Message message, SimpMessageHeaderAccessor headerAccessor) {
-        String id = headerAccessor.toString();
-        messagingTemplate.convertAndSendToUser("q@@1212q", "/queue/reply", message);
+        String username = headerAccessor.getUser().getName();
+        messagingTemplate.convertAndSendToUser(username, "/queue/reply", message);
     }
 
     @MessageMapping("/notification.followPlan")
     public void followPlan(@Payload Message message, Principal principal) {
         long idPlan = Long.parseLong(message.getSender());
-        Plan plan = planInteractorService.updateFollowPlanInteractor(idPlan,1l,true);
+        String userEmail = principal.getName();
+        Long userId = userRepository.findByEmail(userEmail).map(u -> u.getId()).orElseThrow(() -> new NullPointerException(Constants.ERROR));
+        Plan plan = planInteractorService.updateFollowPlanInteractor(idPlan, userId, true);
         String userReceived = plan.getUser().getEmail();
         messagingTemplate.convertAndSendToUser(userReceived, "/queue/reply", message);
     }
 
-    @MessageMapping("/follow")
-    public Message followPlan(@Payload Message message,
-                               SimpMessageHeaderAccessor headerAccessor) {
-//        Add username in websocket session
-//        long planId = Long.parseLong(message.getSender());
-//        long userId = Long.parseLong(headerAccessor.getUser().getName());
-        try {
-//            PlanInteractor planInteractor = planInteractorService.followPlan(planId, userId);
-            message.setType(Message.MessageType.SUCCESS);
-//            User user = planInteractor.getPlan().getUser();
-//            messagingTemplate.convertAndSendToUser(user.getId().toString(), "/queue/reply", message);
-            messagingTemplate.convertAndSendToUser("13", "/queue/reply", message);
-        } catch (IllegalArgumentException e) {
-            message.setType(Message.MessageType.FAIL);
-        }
-        messagingTemplate.convertAndSendToUser("13", "/queue/reply", message);
-        return message;
-    }
+
+//    @MessageMapping("/follow")
+//    public Message followPlan(@Payload Message message,
+//                               SimpMessageHeaderAccessor headerAccessor) {
+////        Add username in websocket session
+////        long planId = Long.parseLong(message.getSender());
+////        long userId = Long.parseLong(headerAccessor.getUser().getName());
+//        try {
+////            PlanInteractor planInteractor = planInteractorService.followPlan(planId, userId);
+//            message.setType(Message.MessageType.SUCCESS);
+////            User user = planInteractor.getPlan().getUser();
+////            messagingTemplate.convertAndSendToUser(user.getId().toString(), "/queue/reply", message);
+//            messagingTemplate.convertAndSendToUser("13", "/queue/reply", message);
+//        } catch (IllegalArgumentException e) {
+//            message.setType(Message.MessageType.FAIL);
+//        }
+//        messagingTemplate.convertAndSendToUser("13", "/queue/reply", message);
+//        return message;
+//    }
 }
 

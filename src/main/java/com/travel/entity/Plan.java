@@ -51,7 +51,7 @@ public class Plan extends AuditModel {
     @Column(name = "num_people")
     private int numPeople;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
