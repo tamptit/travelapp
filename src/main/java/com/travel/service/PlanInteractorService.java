@@ -23,9 +23,9 @@ public class PlanInteractorService {
     @Autowired
     private PlanInteractorRepository planInteractorRepository;
 
-    public Plan updateFollowPlanInteractor(long planId, long userId, boolean isFollow) throws IllegalArgumentException {
+    public PlanInteractor updateFollowPlanInteractor(long planId, long userId, boolean isFollow) throws IllegalArgumentException {
         PlanInteractor planInteractor;
-        Plan plan = planRepository.findById(planId).orElse(null);
+        Plan plan = planRepository.findById(planId).orElseThrow(() -> new NullPointerException());
         User user = new User(userId);
         Optional<PlanInteractor> opt = planInteractorRepository.findByPlanAndUser(plan,user);
         if(opt.isPresent()){
@@ -37,9 +37,10 @@ public class PlanInteractorService {
             planInteractor.setUser(user);
             planInteractor.setPlan(plan);
             planInteractor.setFollow(isFollow);
+            planInteractor.setJoin(false);
             planInteractorRepository.save(planInteractor);
         }
-        return plan;
+        return planInteractor;
     }
 
 }

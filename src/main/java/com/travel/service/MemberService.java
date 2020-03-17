@@ -30,10 +30,9 @@ public class MemberService {
     @Autowired
     private UserRepository userRepository;
 
-    public User getMyJoin(Long id, Pageable pageable) {
+    public User getUserbyId(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new ArrayIndexOutOfBoundsException(Constants.USER_NOT_EXIST));
         return user;
-
     }
 
 

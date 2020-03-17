@@ -54,17 +54,21 @@ public class WebSocketController {
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(@Payload Message message, SimpMessageHeaderAccessor headerAccessor) {
         String id = headerAccessor.toString();
-        messagingTemplate.convertAndSendToUser("q@@1212q", "/queue/reply", message);
+        String sender = headerAccessor.toString();
+        String sender2 = headerAccessor.getUser().getName();
+        messagingTemplate.convertAndSendToUser(sender, "/queue/reply", message);
     }
 
     @MessageMapping("/notification.followPlan")
     public void followPlan(@Payload Message message, Principal principal) {
         long idPlan = Long.parseLong(message.getSender());
-        Plan plan = planInteractorService.updateFollowPlanInteractor(idPlan,1l,true);
+        String emailUser = principal.getName();
+        long idUser = userRepository.findByEmail(emailUser).map(u -> u.getId()).orElseThrow(() -> new NullPointerException(Constants.USER_NOT_EXIST));
+        Plan plan = planInteractorService.updateFollowPlanInteractor(idPlan,idUser,true).getPlan();
         String userReceived = plan.getUser().getEmail();
         messagingTemplate.convertAndSendToUser(userReceived, "/queue/reply", message);
     }
-
+/*
     @MessageMapping("/follow")
     public Message followPlan(@Payload Message message,
                                SimpMessageHeaderAccessor headerAccessor) {
@@ -83,5 +87,6 @@ public class WebSocketController {
         messagingTemplate.convertAndSendToUser("13", "/queue/reply", message);
         return message;
     }
+ */
 }
 

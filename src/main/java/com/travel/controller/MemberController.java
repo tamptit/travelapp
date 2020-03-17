@@ -76,8 +76,7 @@ public class MemberController {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_WEEK, NUM_DAY);
         Date agoDate = calendar.getTime();
-        Page<User> page =
-                userRepository.findAllWithJoinDateAfter(agoDate, pageable);
+        Page<User> page = userRepository.findAllWithJoinDateAfter(agoDate, pageable);
         
         PageResponse<User> response = new PageResponse<User>();
         response.setCurrentPage(pageable.getPageNumber());
@@ -94,13 +93,19 @@ public class MemberController {
      */
 
     @GetMapping(value = "/{id}/myplan")
-    public ResponseEntity getMyPlan(@PathVariable Long id) {
+    public ResponseEntity getMyPlan(@PathVariable Long id, Pageable pageable) {
 
         List<Plan> myPlan = userRepository.findById(id).map(user -> user.getPlans()).orElseThrow(() -> new NullPointerException("User not found with id : " + id));
         //List<Plan> myPlan = user.getPlans();
         List<PlanProfileRespone> myPlanProfile = myPlan.stream()
-                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors()
-                        .size())).collect(Collectors.toList());
+                .map(p -> p.convertToPlanProfile()).collect(Collectors.toList());
+
+//        int start = (int) pageable.getOffset();
+//        int end = (start + pageable.getPageSize()) > myPlanProfile.size() ? myPlanProfile.size() : (start + pageable.getPageSize());
+//
+//        Page page = new PageImpl<>(myPlanProfile.subList(start, end), pageable, myPlanProfile.size());
+//        PageResponse<PlanProfileRespone> planPage = new PageResponse<PlanProfileRespone>(pageable.getPageNumber(),
+//                page.getTotalPages(), page.getContent());
 
         return ResponseEntity.ok().body(myPlanProfile);
     }
@@ -110,7 +115,7 @@ public class MemberController {
      * @return
      */
     @GetMapping(value = "/{id}/follow")
-    public ResponseEntity getMyFollow(@PathVariable Long id) {
+    public ResponseEntity getMyFollow(@PathVariable Long id, Pageable pageable) {
         //User user = userRepository.findById(id).orElse(null);
         List<PlanInteractor> planInteractors = userRepository.findById(id).map(user1 -> user1.getPlanInteractors())
                 .orElseThrow(() -> new NullPointerException("User not found with id : " + id) );
@@ -123,11 +128,18 @@ public class MemberController {
                 .sorted((p1, p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
                 .collect(Collectors.toList());
 
-        List<PlanProfileRespone> listFollowPlan = planFollowList.stream()
-                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors().size()))
+        List<PlanProfileRespone> listFollowPlan = planFollowList.stream()  // list PlanProfile dto in Mypage
+                .map(p -> p.convertToPlanProfile())
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok().body(listFollowPlan);
+        int start = (int) pageable.getOffset();
+        int end = (start + pageable.getPageSize()) > listFollowPlan.size() ? listFollowPlan.size() : (start + pageable.getPageSize());
+
+        Page page = new PageImpl<>(listFollowPlan.subList(start, end), pageable, listFollowPlan.size());
+        PageResponse<PlanProfileRespone> planPage = new PageResponse<PlanProfileRespone>(pageable.getPageNumber(),
+                page.getTotalPages(), page.getContent());
+
+        return ResponseEntity.ok().body(planPage);
     }
 
     /**
@@ -139,7 +151,7 @@ public class MemberController {
     @GetMapping(value = "/{id}/join")
     public ResponseEntity getMyJoin(@PathVariable Long id, Pageable pageable) {
         try{
-            User user =  memberService.getMyJoin(id,pageable);
+            User user =  memberService.getUserbyId(id);
             List<PlanInteractor> planInteractors = user.getPlanInteractors();
             List<Plan> planJoinList = planInteractors.stream()
                     .filter(p -> p.isJoin() == true)
@@ -147,8 +159,7 @@ public class MemberController {
                     .sorted((p1, p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
                     .collect(Collectors.toList());
 
-            List<PlanProfileRespone> listJoinPlan = planJoinList.stream()
-                    .map(p -> p.convertMyPlan())  // cover Plan to PlanProfile
+            List<PlanProfileRespone> listJoinPlan = planJoinList.stream().map(p -> p.convertToPlanProfile())   // cover Plans to PlanProfiles
                     //.map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors().size()))
                     .collect(Collectors.toList());
 

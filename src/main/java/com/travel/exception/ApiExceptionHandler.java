@@ -22,7 +22,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(IndexOutOfBoundsException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorMessage TodoException(Exception ex, WebRequest request) {
-        return new ErrorMessage( ex.getLocalizedMessage());
+        return new ErrorMessage(ex.getLocalizedMessage());
     }
 
 }

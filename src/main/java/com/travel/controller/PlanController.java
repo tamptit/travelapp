@@ -164,23 +164,18 @@ public class PlanController {
     public ResponseEntity followPlan(@PathVariable Long id) {
 
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        User user = null;
-        Plan plan = null;
-             user = userRepository.findByEmail(au.getName()).get();
-             plan = planRepository.findById(id).orElse(null);
-
-
-               // .orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
+        User user;
+        Plan plan;
+             user = userRepository.findByEmail(au.getName()).get();  // sao cho nay lai findbyEmail?? & au.getName()
+             plan = planRepository.findById(id).orElseThrow(()-> new NullPointerException(Constants.PLAN_NOT_EXIST));
 
         PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan, user).orElse(null);
         if (interactor != null) {
+            interactor.setFollow(true);
+            planInteractorRepository.save(interactor);
             return ResponseEntity.ok().body(Constants.MESSAGE);
         } else {
-            PlanInteractor planInteractor = new PlanInteractor();
-            planInteractor.setUser(user);
-            planInteractor.setPlan(plan);
-            planInteractor.setFollow(true);
-            planInteractor.setJoin(false);
+            PlanInteractor planInteractor = new PlanInteractor(user,plan,true, false);
             planInteractorRepository.save(planInteractor);
             return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
         }

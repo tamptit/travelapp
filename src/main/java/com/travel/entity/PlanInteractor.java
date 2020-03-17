@@ -46,6 +46,13 @@ public class PlanInteractor {
         this.plan = plan;
     }
 
+    public PlanInteractor(User user, Plan plan, boolean follow, boolean join) {
+        this.user = user;
+        this.plan = plan;
+        this.follow = follow;
+        this.join = join;
+    }
+
     public PlanInteractorDto convertToDto() {
         return new PlanInteractorDto(this.id,new UserDto(this.user),this.follow,this.join);
     }

@@ -72,7 +72,7 @@ public class Plan extends AuditModel {
     public PlanDto convertToDto() {
         return new PlanDto(this,this.getUser(),this.getPlanInteractors());
     }
-    public PlanProfileRespone convertMyPlan(){
+    public PlanProfileRespone convertToPlanProfile(){
         return new PlanProfileRespone(this.getId(), this.getName(), this.getImageCover(), this.getPlanInteractors().size());
     }
 
