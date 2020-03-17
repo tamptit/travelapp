@@ -2,16 +2,15 @@ package com.travel.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.travel.dto.PlanDto;
+import com.travel.dto.PlanProfileRespone;
 import com.travel.model.AuditModel;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "plan")
@@ -72,6 +71,9 @@ public class Plan extends AuditModel {
 
     public PlanDto convertToDto() {
         return new PlanDto(this,this.getUser(),this.getPlanInteractors());
+    }
+    public PlanProfileRespone convertToPlanProfile(){
+        return new PlanProfileRespone(this.getId(), this.getName(), this.getImageCover(), this.getPlanInteractors().size());
     }
 
     public Plan(@NotBlank(message = "Name is required") @Size(min = 4, max = 200, message = "Please use 4 to 200 letters") String name,

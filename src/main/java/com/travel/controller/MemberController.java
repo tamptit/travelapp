@@ -1,36 +1,41 @@
 package com.travel.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.travel.dto.PageResponse;
 import com.travel.dto.PlanProfileRespone;
-import com.travel.dto.ProfileForm;
 import com.travel.dto.UserForm;
 import com.travel.dto.UserPageResponse;
 import com.travel.entity.Plan;
 import com.travel.entity.PlanInteractor;
 import com.travel.entity.User;
+import com.travel.exception.BadRequestException;
 import com.travel.repository.PlanInteractorRepository;
 import com.travel.repository.PlanRepository;
 import com.travel.repository.UserRepository;
+import com.travel.service.MemberService;
 import com.travel.utils.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@ControllerAdvice
 @RequestMapping(value = "api/member")
 public class MemberController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MemberController.class);
 
     private static final int NUM_DAY = -7;
 
@@ -38,6 +43,9 @@ public class MemberController {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    MemberService memberService;
 
     @Autowired
     PlanRepository planRepository;
@@ -63,20 +71,18 @@ public class MemberController {
     }
 
     @GetMapping(value = "/new-comer")
-    public UserPageResponse getNewComers(@PathParam(value = "page") int page) {
-        page = page <= 0 ? 0 : page - 1;
-        Pageable sortedByNewComer = PageRequest.of(page, TOTAL_ROW_IN_PAGE, Sort.by("joinDate").descending());
+    public PageResponse getNewComers(Pageable pageable) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_WEEK, NUM_DAY);
         Date agoDate = calendar.getTime();
+        Page<User> page = userRepository.findAllWithJoinDateAfter(agoDate, pageable);
+        
+        PageResponse<User> response = new PageResponse<User>();
+        response.setCurrentPage(pageable.getPageNumber());
+        response.setTotalPage(page.getTotalPages());
+        response.setContent(page.getContent());
 
-        Page<User> memberPager =
-                userRepository.findAllWithJoinDateAfter(agoDate, sortedByNewComer);
-        UserPageResponse response = new UserPageResponse();
-        response.setCurrentPage(page);
-        response.setTotalPage(memberPager.getTotalPages());
-        response.setUsers(memberPager.getContent());
         return response;
     }
 
@@ -87,26 +93,33 @@ public class MemberController {
      */
 
     @GetMapping(value = "/{id}/myplan")
-    public ResponseEntity getMyPlan(@PathVariable Long id) {
+    public ResponseEntity getMyPlan(@PathVariable Long id, Pageable pageable) {
 
-        List<Plan> myPlan = userRepository.findById(id).map(user -> user.getPlans()).orElseGet(() -> null);
+        List<Plan> myPlan = userRepository.findById(id).map(user -> user.getPlans()).orElseThrow(() -> new NullPointerException("User not found with id : " + id));
         //List<Plan> myPlan = user.getPlans();
         List<PlanProfileRespone> myPlanProfile = myPlan.stream()
-                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors()
-                        .size())).collect(Collectors.toList());
+                .map(p -> p.convertToPlanProfile()).collect(Collectors.toList());
+
+//        int start = (int) pageable.getOffset();
+//        int end = (start + pageable.getPageSize()) > myPlanProfile.size() ? myPlanProfile.size() : (start + pageable.getPageSize());
+//
+//        Page page = new PageImpl<>(myPlanProfile.subList(start, end), pageable, myPlanProfile.size());
+//        PageResponse<PlanProfileRespone> planPage = new PageResponse<PlanProfileRespone>(pageable.getPageNumber(),
+//                page.getTotalPages(), page.getContent());
 
         return ResponseEntity.ok().body(myPlanProfile);
     }
     /**
-     *
+     *  method getMyFollow.
      * @param id
-     * method getMyFollow.
      * @return
      */
     @GetMapping(value = "/{id}/follow")
-    public ResponseEntity getMyFollow(@PathVariable Long id) {
+    public ResponseEntity getMyFollow(@PathVariable Long id, Pageable pageable) {
         //User user = userRepository.findById(id).orElse(null);
-        List<PlanInteractor> planInteractors = userRepository.findById(id).map(user1 -> user1.getPlanInteractors()).orElseGet(() -> null);
+        List<PlanInteractor> planInteractors = userRepository.findById(id).map(user1 -> user1.getPlanInteractors())
+                .orElseThrow(() -> new NullPointerException("User not found with id : " + id) );
+                    //return new ResponseEntity<>(Constants.USER_NOT_EXIST, HttpStatus.BAD_REQUEST); );
         //List<PlanInteractor> planInteractors = user.getPlanInteractors();
 
         List<Plan> planFollowList = planInteractors.stream()
@@ -115,11 +128,18 @@ public class MemberController {
                 .sorted((p1, p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
                 .collect(Collectors.toList());
 
-        List<PlanProfileRespone> listFollowPlan = planFollowList.stream()
-                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors().size()))
+        List<PlanProfileRespone> listFollowPlan = planFollowList.stream()  // list PlanProfile dto in Mypage
+                .map(p -> p.convertToPlanProfile())
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok().body(listFollowPlan);
+        int start = (int) pageable.getOffset();
+        int end = (start + pageable.getPageSize()) > listFollowPlan.size() ? listFollowPlan.size() : (start + pageable.getPageSize());
+
+        Page page = new PageImpl<>(listFollowPlan.subList(start, end), pageable, listFollowPlan.size());
+        PageResponse<PlanProfileRespone> planPage = new PageResponse<PlanProfileRespone>(pageable.getPageNumber(),
+                page.getTotalPages(), page.getContent());
+
+        return ResponseEntity.ok().body(planPage);
     }
 
     /**
@@ -129,20 +149,37 @@ public class MemberController {
      */
 
     @GetMapping(value = "/{id}/join")
-    public ResponseEntity getMyJoin(@PathVariable Long id) {
-        User user = userRepository.findById(id).orElse(null);
-        List<PlanInteractor> planInteractors = user.getPlanInteractors();
-        List<Plan> planJoinList = planInteractors.stream()
-                .filter(p -> p.isJoin() == true)
-                .map(PlanInteractor::getPlan)
-                .sorted((p1, p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
-                .collect(Collectors.toList());
+    public ResponseEntity getMyJoin(@PathVariable Long id, Pageable pageable) {
+        try{
+            User user =  memberService.getUserbyId(id);
+            List<PlanInteractor> planInteractors = user.getPlanInteractors();
+            List<Plan> planJoinList = planInteractors.stream()
+                    .filter(p -> p.isJoin() == true)
+                    .map(PlanInteractor::getPlan)
+                    .sorted((p1, p2) -> p1.getCreatedDay().before(p2.getCreatedDay()) ? 1 : -1)
+                    .collect(Collectors.toList());
 
-        List<PlanProfileRespone> listJoinPlan = planJoinList.stream()
-                .map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors().size()))
-                .collect(Collectors.toList());
+            List<PlanProfileRespone> listJoinPlan = planJoinList.stream().map(p -> p.convertToPlanProfile())   // cover Plans to PlanProfiles
+                    //.map(p -> new PlanProfileRespone(p.getId(), p.getName(), p.getImageCover(), p.getPlanInteractors().size()))
+                    .collect(Collectors.toList());
 
-        return ResponseEntity.ok().body(listJoinPlan);
+            int start = (int) pageable.getOffset();
+            int end = (start + pageable.getPageSize()) > listJoinPlan.size() ? listJoinPlan.size() : (start + pageable.getPageSize());
+
+            Page page = new PageImpl<>(listJoinPlan.subList(start, end), pageable, listJoinPlan.size());
+            PageResponse<PlanProfileRespone> planPage = new PageResponse<PlanProfileRespone>(pageable.getPageNumber(),
+                    page.getTotalPages(), page.getContent());
+
+            return ResponseEntity.ok().body(planPage);
+        }catch (BadRequestException e){
+            LOGGER.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getLocalizedMessage());
+            //return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
+
+//            return ResponseEntity.badRequest()
+//                    .body(new HashMap<String,String>().put("Error",e.getMessage()));
+        }
+
     }
 
 }

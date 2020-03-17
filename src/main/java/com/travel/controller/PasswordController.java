@@ -8,6 +8,7 @@ import com.travel.repository.UserRepository;
 import com.travel.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -79,10 +80,10 @@ public class PasswordController {
         //String newPassword = requestParams.get("password").toString();
         PasswordResetToken passwordResetToken = passwordTokenRepository.findByToken(requestParams.get("token"));
         if (passwordResetToken == null) {                                            // check token in table
-            return ResponseEntity.badRequest().body(new ErrorMessage("Invalid"));
+            return ResponseEntity.badRequest().body(new ErrorMessage(HttpStatus.BAD_REQUEST, "Invalid"));
         } else {
             if (new Date().after(passwordResetToken.getExpiryDate())){
-                return ResponseEntity.badRequest().body(new ErrorMessage("Date"));
+                return ResponseEntity.badRequest().body(new ErrorMessage(HttpStatus.BAD_REQUEST, "Date"));
             }else{
                 return ResponseEntity.ok().body("tk");
             }
@@ -100,7 +101,7 @@ public class PasswordController {
         if (new Date().before(passwordResetToken.getExpiryDate())) {
             User resetUser = user.get();
             if (requestParams.get("password").toString().isEmpty()) {                  // Set new password
-                return ResponseEntity.ok().body(new ErrorMessage("Password should be minimum of 6 characters"));
+                return ResponseEntity.ok().body(new ErrorMessage(HttpStatus.BAD_REQUEST, "Password should be minimum of 6 characters"));
             }
             resetUser.setPassword(bCryptPasswordEncoder.encode(requestParams.get("password").toString()));
 

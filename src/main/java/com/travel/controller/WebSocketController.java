@@ -62,7 +62,7 @@ public class WebSocketController {
         long idPlan = Long.parseLong(message.getSender());
         String userEmail = principal.getName();
         Long userId = userRepository.findByEmail(userEmail).map(u -> u.getId()).orElseThrow(() -> new NullPointerException(Constants.ERROR));
-        Plan plan = planInteractorService.updateFollowPlanInteractor(idPlan, userId, true);
+        Plan plan = planInteractorService.updateFollowPlanInteractor(idPlan, userId, true).getPlan();
         String userReceived = plan.getUser().getEmail();
         messagingTemplate.convertAndSendToUser(userReceived, "/queue/reply", message);
     }

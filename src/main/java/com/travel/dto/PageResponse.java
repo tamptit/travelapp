@@ -7,7 +7,16 @@ import java.util.List;
 public class PageResponse<T> {
     private int currentPage;
     private int totalPage;
-    private List<T> t;
+    private List<T> content;
+
+    public PageResponse() {
+    }
+
+    public PageResponse(int currentPage, int totalPage, List<T> content) {
+        this.currentPage = currentPage;
+        this.totalPage = totalPage;
+        this.content = content;
+    }
 
     public int getCurrentPage() {
         return currentPage;
@@ -25,19 +34,11 @@ public class PageResponse<T> {
         this.totalPage = totalPage;
     }
 
-    public List<T> getT() {
-        return t;
+    public List<T> getContent() {
+        return content;
     }
 
-    public void setT(List<T> t) {
-        this.t = t;
-    }
-
-    public List<T> getTs() {
-        return t;
-    }
-
-    public void setPlans(List<T> ts) {
-        this.t = ts;
+    public void setContent(List<T> content) {
+        this.content = content;
     }
 }
