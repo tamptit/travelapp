@@ -28,11 +28,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.security.Principal;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Optional;
+
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Controller
 public class WebSocketController {
@@ -49,23 +52,50 @@ public class WebSocketController {
     private PlanInteractorService planInteractorService;
 
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private CustomUserDetailsService customUserDetailsService; private SimpMessagingTemplate template;
+
+
+//    @RequestMapping(path="/follow", method=POST)
+//    public ResponseEntity follow(@Payload Message message) {
+//        String text = "[" + new Date() + "]:" + "Good Afternoon";
+//        long idPlan = Long.parseLong(message.getSender());
+//
+//        //String userEmail = headerAccessor.getUser().getName();
+//       // Long userId = userRepository.findByEmail(userEmail).map(u -> u.getId()).orElseThrow(() -> new NullPointerException(Constants.ERROR));
+//
+//        //Plan plan = planInteractorService.updateFollowPlanInteractor(idPlan, userId, true).getPlan();
+//        //String userReceived = plan.getUser().getEmail();
+//       // String userReceived = headerAccessor.getUser().getName();
+//       // messagingTemplate.convertAndSendToUser(userReceived, "/topic/follow", message );
+//        return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
+//    }
+
+
+    @RequestMapping(path="/greetings", method=POST)
+    public void greet(String greeting) {
+        String text = "Good Afternoon" ;
+        this.messagingTemplate.convertAndSendToUser("tamptit2016@gmail.com", "/topic/greetings", text);
+    }
+
 
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(@Payload Message message, SimpMessageHeaderAccessor headerAccessor) {
         String username = headerAccessor.getUser().getName();
         messagingTemplate.convertAndSendToUser(username, "/queue/reply", message);
     }
+   // @MessageMapping("/notification.followPlan")
+//    public void followPlan(@Payload Message message, Principal principal) {
+//        long idPlan = Long.parseLong(message.getSender());
+//        String userEmail = principal.getName();
+//        Long userId = userRepository.findByEmail(userEmail).map(u -> u.getId()).orElseThrow(() -> new NullPointerException(Constants.ERROR));
+//        Plan plan = planInteractorService.updateFollowPlanInteractor(idPlan, userId, true).getPlan();
+//        String userReceived = plan.getUser().getEmail();
+//        message.setContent(userId + "follow plan id: " + idPlan );
+//        messagingTemplate.convertAndSendToUser(userReceived, "/queue/reply", message);
+//    }
+//
 
-    @MessageMapping("/notification.followPlan")
-    public void followPlan(@Payload Message message, Principal principal) {
-        long idPlan = Long.parseLong(message.getSender());
-        String userEmail = principal.getName();
-        Long userId = userRepository.findByEmail(userEmail).map(u -> u.getId()).orElseThrow(() -> new NullPointerException(Constants.ERROR));
-        Plan plan = planInteractorService.updateFollowPlanInteractor(idPlan, userId, true).getPlan();
-        String userReceived = plan.getUser().getEmail();
-        messagingTemplate.convertAndSendToUser(userReceived, "/queue/reply", message);
-    }
+
 
 
 //    @MessageMapping("/follow")

@@ -170,8 +170,12 @@ public class PlanController {
              plan = planRepository.findById(id).orElseThrow(()-> new NullPointerException(Constants.PLAN_NOT_EXIST));
 
         PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan, user).orElse(null);
-        if (interactor != null) {
-            interactor.setFollow(true);
+        if (interactor != null ) {
+            if (interactor.isFollow()){
+                interactor.setFollow(false);
+            }else{
+                interactor.setFollow(true);
+            }
             planInteractorRepository.save(interactor);
             return ResponseEntity.ok().body(Constants.MESSAGE);
         } else {
@@ -182,22 +186,35 @@ public class PlanController {
     }
 
     /**
-     * @method Unfollow plan
+     * @method Join plan
      * @param id
      * @return
      */
     @Transactional
-    @DeleteMapping("/{id}/follow")
-    public ResponseEntity unFollowPlan(@PathVariable Long id) {
-        Optional<Plan> plan = planRepository.findById(id);
+    @PutMapping(value = "/{id}/join")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity joinPlan(@PathVariable Long id) {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByEmail(au.getName()).orElseThrow(() -> new NullPointerException(Constants.AUTHENTICATION_REQUIRED));
-        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), user).orElse(null);
-        if (interactor != null){
-            planInteractorRepository.deleteById(interactor.getId());
-            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
-        }else{
+        User user;
+        Plan plan;
+        user = userRepository.findByEmail(au.getName()).get();  // sao cho nay lai findbyEmail?? & au.getName()
+        plan = planRepository.findById(id).orElseThrow(()-> new NullPointerException(Constants.PLAN_NOT_EXIST));
+
+        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan, user).orElse(null);
+        if (interactor != null ) {
+            if (interactor.isJoin()){
+                interactor.setJoin(false);
+                interactor.setFollow(false);
+                //planInteractorRepository.delete(interactor);
+            }else{
+                interactor.setJoin(true);
+            }
+            planInteractorRepository.save(interactor);
             return ResponseEntity.ok().body(Constants.MESSAGE);
+        } else {
+            PlanInteractor planInteractor = new PlanInteractor(user,plan,true, true);
+            planInteractorRepository.save(planInteractor);
+            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
         }
     }
 

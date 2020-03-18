@@ -35,16 +35,23 @@ function connect(event) {
 function onConnected() {
     // Subscribe to the Public Topic
     stompClient.subscribe('/user/queue/reply', onMessageReceived);
-
+    stompClient.subscribe('/queue/reply', onMessageReceived);
     stompClient.subscribe('/user/queue/errors', onMessageReceived);
 
+    stompClient.subscribe('/user/topic/greetings', onMessageReceived);
+    //stompClient.subscribe('/topic/hii', onMessageReceived);
     // Tell your username to the server
     stompClient.send("/app/notification.followPlan",
         {},
         JSON.stringify({sender: username, type: 'JOIN'})
     )
 
-    connectingElement.classList.add('hidden');
+//    stompClient.send("/topic/grett",
+//            {},
+//            JSON.stringify({sender: username, type: 'JOIN'})
+//        )
+//
+//    connectingElement.classList.add('hidden');
 }
 
 
@@ -71,7 +78,6 @@ function sendMessage(event) {
 
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
-
     var messageElement = document.createElement('li');
 
     if(message.type === 'JOIN') {
