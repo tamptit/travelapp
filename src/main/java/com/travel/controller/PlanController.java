@@ -31,7 +31,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -71,10 +70,10 @@ public class PlanController {
     public static final int TOTAL_ROW_IN_PAGE = 10;
 
     /**
+     * @method Add Plan
      * @param plan
      * @return
      * @throws IOException
-     * @method Add Plan
      */
     @Transactional
     @PutMapping
@@ -172,17 +171,33 @@ public class PlanController {
 
         PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan, user).orElse(null);
         if (interactor != null) {
-            if (interactor.isFollow()) {
-                interactor.setFollow(false);
-            } else {
-                interactor.setFollow(true);
-            }
+            interactor.setFollow(true);
             planInteractorRepository.save(interactor);
             return ResponseEntity.ok().body(Constants.MESSAGE);
         } else {
             PlanInteractor planInteractor = new PlanInteractor(user, plan, true, false);
             planInteractorRepository.save(planInteractor);
             return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
+        }
+    }
+
+    /**
+     * @method Unfollow plan
+     * @param id
+     * @return
+     */
+    @Transactional
+    @DeleteMapping("/{id}/unfollow")
+    public ResponseEntity unFollowPlan(@PathVariable Long id) {
+        Optional<Plan> plan = planRepository.findById(id);
+        Authentication au = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByEmail(au.getName()).orElseThrow(() -> new NullPointerException(Constants.AUTHENTICATION_REQUIRED));
+        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), user).orElse(null);
+        if (interactor != null){
+            planInteractorRepository.deleteById(interactor.getId());
+            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
+        }else{
+            return ResponseEntity.ok().body(Constants.MESSAGE);
         }
     }
 
