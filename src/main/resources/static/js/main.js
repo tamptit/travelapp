@@ -18,7 +18,6 @@ var colors = [
 
 function connect(event) {
     username = document.querySelector('#name').value.trim();
-
     if(username) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
@@ -35,11 +34,11 @@ function connect(event) {
 function onConnected() {
     // Subscribe to the Public Topic
     stompClient.subscribe('/user/queue/reply', onMessageReceived);
-
+    //     // stompClient.
     stompClient.subscribe('/user/queue/errors', onMessageReceived);
 
     // Tell your username to the server
-    stompClient.send("/app/notification.followPlan",
+    stompClient.send("/app/notification",
         {},
         JSON.stringify({sender: username, type: 'JOIN'})
     )
@@ -62,7 +61,7 @@ function sendMessage(event) {
             content: messageInput.value,
             type: 'CHAT'
         };
-        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+        stompClient.chat("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
         messageInput.value = '';
     }
     event.preventDefault();

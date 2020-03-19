@@ -163,6 +163,8 @@ public class PlanController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity followPlan(@PathVariable Long id) {
 
+
+
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user;
         Plan plan;
@@ -187,9 +189,11 @@ public class PlanController {
      * @return
      */
     @Transactional
-    @DeleteMapping("/{id}/follow")
+    @DeleteMapping("/{id}/unfollow")
     public ResponseEntity unFollowPlan(@PathVariable Long id) {
         Optional<Plan> plan = planRepository.findById(id);
+
+
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(au.getName()).orElseThrow(() -> new NullPointerException(Constants.AUTHENTICATION_REQUIRED));
         PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), user).orElse(null);
