@@ -163,8 +163,6 @@ public class PlanController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity followPlan(@PathVariable Long id) {
 
-
-
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user;
         Plan plan;
@@ -204,5 +202,58 @@ public class PlanController {
             return ResponseEntity.ok().body(Constants.MESSAGE);
         }
     }
+
+    @Transactional
+    @PutMapping(value = "/{id}/join")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity joinPlan(@PathVariable Long id) {
+        Authentication au = SecurityContextHolder.getContext().getAuthentication();
+        User user;
+        Plan plan;
+        user = userRepository.findByEmail(au.getName()).get();  // sao cho nay lai findbyEmail?? & au.getName()
+        plan = planRepository.findById(id).orElseThrow(()-> new NullPointerException(Constants.PLAN_NOT_EXIST));
+
+        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan, user).orElse(null);
+        if (interactor != null ) {
+            interactor.setJoin(true);
+            interactor.setFollow(true);
+
+            planInteractorRepository.save(interactor);
+            return ResponseEntity.ok().body(Constants.MESSAGE);
+        } else {
+            PlanInteractor planInteractor = new PlanInteractor(user,plan,true, true);
+            planInteractorRepository.save(planInteractor);
+            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
+        }
+    }
+
+    @Transactional
+    @PutMapping(value = "/{id}/disjoin")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity disjoinPlan(@PathVariable Long id) {
+        Authentication au = SecurityContextHolder.getContext().getAuthentication();
+        User user;
+        Plan plan;
+        user = userRepository.findByEmail(au.getName()).get();  // sao cho nay lai findbyEmail?? & au.getName()
+        plan = planRepository.findById(id).orElseThrow(()-> new NullPointerException(Constants.PLAN_NOT_EXIST));
+
+        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan, user).orElse(null);
+        if (interactor != null ) {
+            if (interactor.isJoin()){
+                interactor.setJoin(false);
+                interactor.setFollow(true);
+                //planInteractorRepository.delete(interactor);
+            }else{
+                // ?
+            }
+            planInteractorRepository.save(interactor);
+            return ResponseEntity.ok().body(Constants.MESSAGE);
+        } else {
+            PlanInteractor planInteractor = new PlanInteractor(user,plan,true, true);
+            planInteractorRepository.save(planInteractor);
+            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
+        }
+    }
+
 
 }
