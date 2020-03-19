@@ -8,39 +8,35 @@ import com.travel.entity.User;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class PlanDto {
+public class PlanDetail {
     private long id;
-
     private String name;
-
     private String content;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+    private Date startDay;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+    private Date endDay;
     private int status;
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date createdDay;
-
     private String imageCover;
-
+    private int numPeople;
     private UserDto user;
+    private List<Schedule> schedules;
+    private List<PlanInteractor> planInteractors;
 
-    private List<PlanInteractorDto> planInteractorDtos;
-
-    public PlanDto() {
+    public PlanDetail() {
     }
 
-
-
-    public PlanDto(Plan plan, User user, List<PlanInteractor> planInteractors) {
-        this.id = plan.getId();
+    public PlanDetail(Plan plan, User user){
         this.name = plan.getName();
         this.content = plan.getContent();
-        this.status = plan.getStatus();
-        this.imageCover = plan.getImageCover();
+        this.createdDay = plan.getCreatedDay();
+        this.startDay = plan.getStartDay();
+        this.endDay = plan.getEndDay();
         this.user = new UserDto(user);
-        this.planInteractorDtos = planInteractors.stream().map(PlanInteractor::convertToDto).collect(Collectors.toList());
+        this.schedules = plan.getSchedules();
     }
 
     public long getId() {
@@ -67,6 +63,22 @@ public class PlanDto {
         this.content = content;
     }
 
+    public Date getStartDay() {
+        return startDay;
+    }
+
+    public void setStartDay(Date startDay) {
+        this.startDay = startDay;
+    }
+
+    public Date getEndDay() {
+        return endDay;
+    }
+
+    public void setEndDay(Date endDay) {
+        this.endDay = endDay;
+    }
+
     public int getStatus() {
         return status;
     }
@@ -91,6 +103,14 @@ public class PlanDto {
         this.imageCover = imageCover;
     }
 
+    public int getNumPeople() {
+        return numPeople;
+    }
+
+    public void setNumPeople(int numPeople) {
+        this.numPeople = numPeople;
+    }
+
     public UserDto getUser() {
         return user;
     }
@@ -99,11 +119,19 @@ public class PlanDto {
         this.user = user;
     }
 
-    public List<PlanInteractorDto> getPlanInteractorDtos() {
-        return planInteractorDtos;
+    public List<Schedule> getSchedules() {
+        return schedules;
     }
 
-    public void setPlanInteractorDtos(List<PlanInteractorDto> planInteractorDtos) {
-        this.planInteractorDtos = planInteractorDtos;
+    public void setSchedules(List<Schedule> schedules) {
+        this.schedules = schedules;
+    }
+
+    public List<PlanInteractor> getPlanInteractors() {
+        return planInteractors;
+    }
+
+    public void setPlanInteractors(List<PlanInteractor> planInteractors) {
+        this.planInteractors = planInteractors;
     }
 }
