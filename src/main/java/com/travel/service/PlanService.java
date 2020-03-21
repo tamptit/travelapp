@@ -24,16 +24,16 @@ public class PlanService {
     @Autowired
     private PlanInteractorRepository planInteractorRepository;
 
-    //public void findUserById()
+    //                     public void findUserById()
 
-    public PlanInteractor checkInteracPlan(Long id){
+    public PlanInteractor checkInteracPlan(Long id) {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user;
         Plan plan;
         user = userRepository.findByEmail(au.getName()).get();  // sao cho nay lai findbyEmail?? & au.getName()
-        plan = planRepository.findById(id).orElseThrow(()-> new NullPointerException(Constants.PLAN_NOT_EXIST));
+        plan = planRepository.findById(id).orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
         PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan, user).orElse(null);
-        if (interactor != null){
+        if (interactor != null) {
             return interactor;
         }
         return null;

@@ -149,7 +149,12 @@ public class PlanController {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(au.getName()).orElseThrow(() -> new NullPointerException(Constants.AUTHENTICATION_REQUIRED));
         List<PlanInteractor> planInteractor = planInteractorRepository.findAllByUser(user);
-        List<PlanInteractorDto> list = planInteractor.stream().map(PlanInteractor::convertToDto).collect(Collectors.toList());
+        // @formatter:on
+        List<PlanInteractorDto> list =
+                planInteractor.stream()
+                              .map(PlanInteractor::convertToDto)
+                              .collect(Collectors.toList());
+        // @formatter:off
         return ResponseEntity.ok().body(list);
     }
 
@@ -284,7 +289,7 @@ public class PlanController {
         Plan plan = planRepository.findById(id).orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
         planDto = plan.convertToDto();
         List<UserDto> userDtos = planDto.getPlanInteractorDtos().stream()
-                .filter(planInteractorDto -> planInteractorDto.isFollow())
+                .filter(PlanInteractorDto::isFollow)
                 .map(planInteractorDto -> planInteractorDto.getUserDto()).collect(Collectors.toList());
         return ResponseEntity.ok().body(userDtos);
     }

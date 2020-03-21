@@ -14,14 +14,16 @@ public class PlanInteractorDto {
     private UserDto userDto;
     private boolean follow;
     private boolean join;
+    private Long idPlan;
 
     public PlanInteractorDto() {
     }
 
 
-    public PlanInteractorDto(long id, UserDto userDto, boolean follow, boolean join) {
+    public PlanInteractorDto(long id, UserDto userDto,Long idPlan, boolean follow, boolean join) {
         this.id = id;
         this.userDto = userDto;
+        this.idPlan = idPlan;
         this.follow = follow;
         this.join = join;
     }
@@ -56,5 +58,13 @@ public class PlanInteractorDto {
 
     public void setJoin(boolean join) {
         this.join = join;
+    }
+
+    public Long getIdPlan() {
+        return idPlan;
+    }
+
+    public void setIdPlan(Long idPlan) {
+        this.idPlan = idPlan;
     }
 }
