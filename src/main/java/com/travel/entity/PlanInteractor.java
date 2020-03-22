@@ -54,9 +54,8 @@ public class PlanInteractor {
     }
 
     public PlanInteractorDto convertToDto() {
-        return new PlanInteractorDto(this.id,new UserDto(this.user),this.follow,this.join);
+        return new PlanInteractorDto(this.id, new UserDto(this.user), this.plan == null ? null : this.plan.getId(), this.follow, this.join );
     }
-
 
     public long getId() {
         return id;
