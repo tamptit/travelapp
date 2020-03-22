@@ -129,7 +129,6 @@ public class PlanController {
      */
 
     @RequestMapping(value = "/interactive", method = RequestMethod.GET)
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity findInteractiveByUser() {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(au.getName()).orElseThrow(() -> new NullPointerException(Constants.AUTHENTICATION_REQUIRED));
@@ -187,11 +186,9 @@ public class PlanController {
      * @return
      */
     @Transactional
-    @DeleteMapping("/{id}/unfollow")
+    @DeleteMapping("/{id}/follow")
     public ResponseEntity unFollowPlan(@PathVariable Long id) {
         Optional<Plan> plan = planRepository.findById(id);
-
-
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(au.getName()).orElseThrow(() -> new NullPointerException(Constants.AUTHENTICATION_REQUIRED));
         PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), user).orElse(null);
@@ -228,8 +225,7 @@ public class PlanController {
     }
 
     @Transactional
-    @PutMapping(value = "/{id}/disjoin")
-    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping(value = "/{id}/disjoin")
     public ResponseEntity disjoinPlan(@PathVariable Long id) {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user;
@@ -241,7 +237,7 @@ public class PlanController {
         if (interactor != null ) {
             if (interactor.isJoin()){
                 interactor.setJoin(false);
-                interactor.setFollow(true);
+                interactor.setFollow(false);
                 //planInteractorRepository.delete(interactor);
             }else{
                 // ?
