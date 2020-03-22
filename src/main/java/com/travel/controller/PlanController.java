@@ -192,6 +192,7 @@ public class PlanController {
      */
     @Transactional
     @DeleteMapping("/{id}/follow")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity unFollowPlan(@PathVariable Long id) {
         Optional<Plan> plan = planRepository.findById(id);
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
@@ -241,6 +242,7 @@ public class PlanController {
      */
     @Transactional
     @DeleteMapping(value = "/{id}/disjoin")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity disjoinPlan(@PathVariable Long id) {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user;
