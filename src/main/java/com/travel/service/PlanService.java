@@ -1,5 +1,6 @@
 package com.travel.service;
 
+import com.travel.dto.PlanDto;
 import com.travel.entity.Plan;
 import com.travel.entity.PlanInteractor;
 import com.travel.entity.User;
@@ -37,6 +38,20 @@ public class PlanService {
             return interactor;
         }
         return null;
+    }
+
+    public PlanDto convertPlantoPlanDto(User user, Plan plan){// check follow, join by User login
+        if (user == null){
+            return null;
+        }
+
+        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan, user).orElse(null);
+        if (interactor == null){
+            return plan.convertToDto(user, false, false);
+        }else {
+            return plan.convertToDto(user, interactor.isFollow(), interactor.isJoin());
+        }
+
     }
 
 

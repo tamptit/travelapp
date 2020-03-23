@@ -5,6 +5,7 @@ import com.travel.entity.Plan;
 import com.travel.entity.PlanInteractor;
 import com.travel.entity.Schedule;
 import com.travel.entity.User;
+import com.travel.repository.PlanInteractorRepository;
 
 import java.util.Date;
 import java.util.List;
@@ -28,19 +29,23 @@ public class PlanDto {
 
     private List<PlanInteractorDto> planInteractorDtos;
 
+    private boolean join;
+    private boolean follow;
+
     public PlanDto() {
     }
 
-
-
-    public PlanDto(Plan plan, User user, List<PlanInteractor> planInteractors) {
+    public PlanDto(Plan plan, User creator, List<PlanInteractor> planInteractors, boolean follow, boolean join) {
         this.id = plan.getId();
         this.name = plan.getName();
         this.content = plan.getContent();
         this.status = plan.getStatus();
         this.imageCover = plan.getImageCover();
-        this.user = new UserDto(user);
+        this.user = new UserDto(creator);
         this.planInteractorDtos = planInteractors.stream().map(PlanInteractor::convertToDto).collect(Collectors.toList());
+        this.follow = follow;
+        this.join = join;
+
     }
 
     public long getId() {
@@ -105,5 +110,21 @@ public class PlanDto {
 
     public void setPlanInteractorDtos(List<PlanInteractorDto> planInteractorDtos) {
         this.planInteractorDtos = planInteractorDtos;
+    }
+
+    public boolean isJoin() {
+        return join;
+    }
+
+    public void setJoin(boolean join) {
+        this.join = join;
+    }
+
+    public boolean isFollow() {
+        return follow;
+    }
+
+    public void setFollow(boolean follow) {
+        this.follow = follow;
     }
 }

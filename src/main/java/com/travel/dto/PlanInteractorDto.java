@@ -2,6 +2,7 @@ package com.travel.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.travel.entity.Plan;
 import com.travel.entity.PlanInteractor;
 import com.travel.entity.Schedule;
 import com.travel.entity.User;
@@ -12,13 +13,29 @@ import java.util.List;
 public class PlanInteractorDto {
     private long id;
     private UserDto userDto;
+    private Long idUser;
+    private Long idPlan;
+    private User user;
+    private Plan plan;
+    private PlanDto planDto;
     private boolean follow;
     private boolean join;
-    private Long idPlan;
+
 
     public PlanInteractorDto() {
     }
 
+    public PlanInteractorDto(User user, Plan plan) {
+        this.user = user;
+        this.plan = plan;
+    }
+
+    public PlanInteractorDto( Long userLogin, Long idPlan, boolean follow, boolean join){
+        this.idUser = userLogin;
+        this.idPlan = idPlan;
+        this.follow = follow;
+        this.join = join;
+    }
 
     public PlanInteractorDto(long id, UserDto userDto,Long idPlan, boolean follow, boolean join) {
         this.id = id;
@@ -66,5 +83,13 @@ public class PlanInteractorDto {
 
     public void setIdPlan(Long idPlan) {
         this.idPlan = idPlan;
+    }
+
+    public Long getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(Long idUser) {
+        this.idUser = idUser;
     }
 }

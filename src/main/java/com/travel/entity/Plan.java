@@ -3,8 +3,10 @@ package com.travel.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.travel.dto.PlanDto;
+import com.travel.dto.PlanInteractorDto;
 import com.travel.dto.PlanProfileRespone;
 import com.travel.model.AuditModel;
+import com.travel.repository.PlanInteractorRepository;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -69,9 +71,10 @@ public class Plan extends AuditModel {
         this.id = id;
     }
 
-    public PlanDto convertToDto() {
-        return new PlanDto(this,this.getUser(),this.getPlanInteractors());
+    public PlanDto convertToDto(User userLogin, boolean follow, boolean join) {
+        return new PlanDto(this,this.getUser(),this.getPlanInteractors(), follow, join);
     }
+
     public PlanProfileRespone convertToPlanProfile(){
         return new PlanProfileRespone(this.getId(), this.getName(), this.getImageCover(), this.getPlanInteractors().size());
     }
@@ -131,7 +134,7 @@ public class Plan extends AuditModel {
         this.endDay = endDay;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

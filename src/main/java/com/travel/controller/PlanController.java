@@ -112,10 +112,18 @@ public class PlanController {
      * @method Latest Plan
      */
     @RequestMapping(value = "/latest", method = RequestMethod.GET)
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity findAllLatestPlan(Pageable pageable) {
-        Page page = planRepository.findAllByOrderByCreatedDayDesc(pageable)
-                .map(Plan::convertToDto);
+        Authentication au = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByEmail(au.getName()).get();
+        //PlanInteractor interactor = planInteractorRepository.findByPlanAndUser();
+
+        Page page = planRepository.findAllByOrderByCreatedDayDesc(pageable).map(p ->  planService.convertPlantoPlanDto(user, p));
+
+
         //Page page= planRepository.findAllByOrderByCreatedDayDesc(pageable);
+
+
         PageResponse<Plan> response = new PageResponse<Plan>();
         response.setCurrentPage(pageable.getPageNumber());
         response.setTotalPage(page.getTotalPages());
@@ -286,12 +294,18 @@ public class PlanController {
     @RequestMapping(value = "/plan/{id}/interactive", method = RequestMethod.GET)
     public ResponseEntity detailInteractiveByPlan(@PathVariable Long id) {
         PlanDto planDto = new PlanDto();
+        Authentication au = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByEmail(au.getName()).get();
         Plan plan = planRepository.findById(id).orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
-        planDto = plan.convertToDto();
+
+        List<UserDto> userDtos2 = plan.getPlanInteractors().stream().filter(PlanInteractor::isFollow)
+                .map(planInteractor -> planInteractor.convertToDto().getUserDto()).collect(Collectors.toList());
+
         List<UserDto> userDtos = planDto.getPlanInteractorDtos().stream()
                 .filter(PlanInteractorDto::isFollow)
                 .map(planInteractorDto -> planInteractorDto.getUserDto()).collect(Collectors.toList());
-        return ResponseEntity.ok().body(userDtos);
+
+        return ResponseEntity.ok().body(userDtos2);
     }
 
     @PreAuthorize("isAuthenticated()")
