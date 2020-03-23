@@ -37,6 +37,10 @@ public class PlanDetail {
         this.endDay = plan.getEndDay();
         this.user = new UserDto(user);
         this.schedules = plan.getSchedules();
+        this.imageCover = plan.getImageCover();
+        this.numPeople = plan.getNumPeople();
+        this.status = plan.getStatus();
+        this.planInteractors = plan.getPlanInteractors();
     }
 
     public long getId() {

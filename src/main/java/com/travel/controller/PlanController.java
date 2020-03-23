@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -114,7 +115,11 @@ public class PlanController {
     @RequestMapping(value = "/latest", method = RequestMethod.GET)
     public ResponseEntity findAllLatestPlan(Pageable pageable) {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByEmail(au.getName()).get();
+        if (!(au instanceof AnonymousAuthenticationToken)) {
+            String currentUserName = au.getName();
+            return ResponseEntity.ok().body(currentUserName);
+        }
+        User user = userRepository.findByEmail(au.getName()).orElse(null);
         //PlanInteractor interactor = planInteractorRepository.findByPlanAndUser();
 
         Page page = planRepository.findAllByOrderByCreatedDayDesc(pageable).map(p ->  planService.convertDtoWithInterac(user, p));

@@ -40,15 +40,15 @@ public class PlanService {
         return null;
     }
 
-    public PlanDto convertDtoWithInterac(User user, Plan plan){// check follow, join by User login
-        if (user == null){
-            return null;
+    public PlanDto convertDtoWithInterac(User user, Plan plan) {// check follow, join by User login
+        if (user == null) {
+            return plan.convertToDto(false, false);
         }
 
         PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan, user).orElse(null);
-        if (interactor == null){
-            return plan.convertToDto( false, false);
-        }else {
+        if (interactor == null) {
+            return plan.convertToDto(false, false);
+        } else {
             return plan.convertToDto(interactor.isFollow(), interactor.isJoin());
         }
 
