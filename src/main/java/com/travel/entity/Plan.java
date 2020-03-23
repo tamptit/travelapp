@@ -71,8 +71,11 @@ public class Plan extends AuditModel {
         this.id = id;
     }
 
-    public PlanDto convertToDto(User userLogin, boolean follow, boolean join) {
+    public PlanDto convertToDto(boolean follow, boolean join) {
         return new PlanDto(this,this.getUser(),this.getPlanInteractors(), follow, join);
+    }
+    public PlanDto convertNewsToDto() {
+        return new PlanDto(this,this.getUser(),this.getPlanInteractors());
     }
 
     public PlanProfileRespone convertToPlanProfile(){

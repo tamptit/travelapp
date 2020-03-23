@@ -35,6 +35,16 @@ public class PlanDto {
     public PlanDto() {
     }
 
+    public PlanDto(Plan plan, User creator, List<PlanInteractor> planInteractors) {
+        this.id = plan.getId();
+        this.name = plan.getName();
+        this.content = plan.getContent();
+        this.status = plan.getStatus();
+        this.imageCover = plan.getImageCover();
+        this.user = new UserDto(creator);
+        this.planInteractorDtos = planInteractors.stream().map(PlanInteractor::convertToDto).collect(Collectors.toList());
+    }
+
     public PlanDto(Plan plan, User creator, List<PlanInteractor> planInteractors, boolean follow, boolean join) {
         this.id = plan.getId();
         this.name = plan.getName();
@@ -47,6 +57,8 @@ public class PlanDto {
         this.join = join;
 
     }
+
+
 
     public long getId() {
         return id;
