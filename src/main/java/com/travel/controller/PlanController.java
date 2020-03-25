@@ -111,7 +111,7 @@ public class PlanController {
      * @return
      * @method Latest Plan after login
      */
-    @RequestMapping(value = "/latest", method = RequestMethod.GET)
+    @RequestMapping(value = "/newsfeed", method = RequestMethod.GET)
     public ResponseEntity findAllLatestPlan(Pageable pageable) {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
 //        if (!(au instanceof AnonymousAuthenticationToken)) {
@@ -136,7 +136,7 @@ public class PlanController {
      * @method Newsfeed no Login
      */
 
-    @RequestMapping(value = "/discovery", method = RequestMethod.GET)
+    @RequestMapping(value = "/latest", method = RequestMethod.GET)
     public ResponseEntity findAllLatestPlanWithoutLogin(Pageable pageable) {
 
         Page page = planRepository.findAllByOrderByCreatedDayDesc(pageable).map(p -> p.convertNewsToDto());
