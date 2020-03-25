@@ -2,12 +2,9 @@ package com.travel.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.travel.entity.Plan;
-import com.travel.entity.PlanInteractor;
-import com.travel.entity.Schedule;
 import com.travel.entity.User;
 
 import java.util.Date;
-import java.util.List;
 
 public class PlanDetail {
     private long id;
@@ -23,9 +20,6 @@ public class PlanDetail {
     private String imageCover;
     private int numPeople;
     private UserDto user;
-    private List<Schedule> schedules;
-    private List<PlanInteractor> planInteractors;
-
     public PlanDetail() {
     }
 
@@ -36,11 +30,9 @@ public class PlanDetail {
         this.startDay = plan.getStartDay();
         this.endDay = plan.getEndDay();
         this.user = new UserDto(user);
-        this.schedules = plan.getSchedules();
         this.imageCover = plan.getImageCover();
         this.numPeople = plan.getNumPeople();
         this.status = plan.getStatus();
-        this.planInteractors = plan.getPlanInteractors();
     }
 
     public long getId() {
@@ -123,19 +115,4 @@ public class PlanDetail {
         this.user = user;
     }
 
-    public List<Schedule> getSchedules() {
-        return schedules;
-    }
-
-    public void setSchedules(List<Schedule> schedules) {
-        this.schedules = schedules;
-    }
-
-    public List<PlanInteractor> getPlanInteractors() {
-        return planInteractors;
-    }
-
-    public void setPlanInteractors(List<PlanInteractor> planInteractors) {
-        this.planInteractors = planInteractors;
-    }
 }

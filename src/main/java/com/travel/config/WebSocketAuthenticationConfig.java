@@ -33,4 +33,8 @@
 //    public void configureClientInboundChannel(ChannelRegistration registration) {
 //
 //    }
+//    @Override
+//    protected boolean sameOriginDisabled() {
+//        return true;
+//    }
 //}

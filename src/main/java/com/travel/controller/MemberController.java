@@ -1,13 +1,12 @@
 package com.travel.controller;
 
-import com.travel.dto.PageResponse;
-import com.travel.dto.PlanProfileRespone;
-import com.travel.dto.UserForm;
-import com.travel.dto.UserPageResponse;
+import com.travel.dto.*;
+import com.travel.entity.Comment;
 import com.travel.entity.Plan;
 import com.travel.entity.PlanInteractor;
 import com.travel.entity.User;
 import com.travel.exception.BadRequestException;
+import com.travel.repository.CommentRepository;
 import com.travel.repository.PlanInteractorRepository;
 import com.travel.repository.PlanRepository;
 import com.travel.repository.UserRepository;
@@ -52,6 +51,9 @@ public class MemberController {
 
     @Autowired
     PlanInteractorRepository planInteractorRepository;
+
+    @Autowired
+    CommentRepository commentRepository;
 
     @GetMapping(value = "/profile")
     public ResponseEntity<Object> getUserProfileFromToken() {
@@ -181,5 +183,34 @@ public class MemberController {
         }
 
     }
+
+    @PutMapping(value = "/plan/{id}/comment" )
+    public ResponseEntity addComment(@PathVariable Long id, @RequestBody CommentForm commentForm) {
+
+        Authentication au = SecurityContextHolder.getContext().getAuthentication();
+        User user;
+        Plan plan;
+        user = userRepository.findByEmail(au.getName()).get();  // sao cho nay lai findbyEmail?? & au.getName()
+        plan = planRepository.findById(id).orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
+        Comment comment = new Comment(commentForm.getContent(), user, plan, new Date());
+        commentRepository.save(comment);
+        if ( comment != null) {
+            //return ResponseEntity.ok().body(Constants.MESSAGE);
+            return ResponseEntity.ok().body(new CommentDto(new UserDto(user), comment.getContent(), comment.getTime() ) );
+        } else {
+            return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
+        }
+    }
+
+    @GetMapping(value = "/plan/{id}/comment")
+    public ResponseEntity getListCommentByPlan(@PathVariable Long id){
+        Plan plan;
+        plan = planRepository.findById(id).orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
+        List<CommentDto> commentDtos = plan.getComments().stream().map(Comment::convertCommentToDto).collect(Collectors.toList());
+        return ResponseEntity.ok().body(commentDtos);
+    }
+
+
+
 
 }

@@ -25,7 +25,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -71,10 +70,10 @@ public class PlanController {
     public static final int TOTAL_ROW_IN_PAGE = 10;
 
     /**
-     * @method Add Plan
      * @param plan
      * @return
      * @throws IOException
+     * @method Add Plan
      */
     @Transactional
     @PutMapping
@@ -115,14 +114,14 @@ public class PlanController {
     @RequestMapping(value = "/latest", method = RequestMethod.GET)
     public ResponseEntity findAllLatestPlan(Pageable pageable) {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        if (!(au instanceof AnonymousAuthenticationToken)) {
-            String currentUserName = au.getName();
-            return ResponseEntity.ok().body(currentUserName);
-        }
+//        if (!(au instanceof AnonymousAuthenticationToken)) {
+//            String currentUserName = au.getName();
+//            return ResponseEntity.ok().body(currentUserName);
+//        }
         User user = userRepository.findByEmail(au.getName()).orElse(null);
         //PlanInteractor interactor = planInteractorRepository.findByPlanAndUser();
 
-        Page page = planRepository.findAllByOrderByCreatedDayDesc(pageable).map(p ->  planService.convertDtoWithInterac(user, p));
+        Page page = planRepository.findAllByOrderByCreatedDayDesc(pageable).map(p -> planService.convertDtoWithInterac(user, p));
 
         PageResponse<Plan> response = new PageResponse<Plan>();
         response.setCurrentPage(pageable.getPageNumber());
@@ -132,15 +131,15 @@ public class PlanController {
     }
 
     /**
-     * @method Newsfeed no Login
      * @param pageable
      * @return
+     * @method Newsfeed no Login
      */
 
     @RequestMapping(value = "/discovery", method = RequestMethod.GET)
     public ResponseEntity findAllLatestPlanWithoutLogin(Pageable pageable) {
 
-        Page page = planRepository.findAllByOrderByCreatedDayDesc(pageable).map(p ->  p.convertNewsToDto());
+        Page page = planRepository.findAllByOrderByCreatedDayDesc(pageable).map(p -> p.convertNewsToDto());
         //Page page= planRepository.findAllByOrderByCreatedDayDesc(pageable);
         PageResponse<Plan> response = new PageResponse<Plan>();
         response.setCurrentPage(pageable.getPageNumber());
@@ -176,8 +175,8 @@ public class PlanController {
         List<PlanInteractor> planInteractor = planInteractorRepository.findAllByUser(user);
         // @formatter:on
         List<PlanInteractorDto> list = planInteractor.stream()
-                                                     .map(PlanInteractor::convertToDto)
-                                                     .collect(Collectors.toList());
+                .map(PlanInteractor::convertToDto)
+                .collect(Collectors.toList());
         // @formatter:off
         return ResponseEntity.ok().body(list);
     }
@@ -211,9 +210,9 @@ public class PlanController {
     }
 
     /**
-     * @method Unfollow plan
      * @param id
      * @return
+     * @method Unfollow plan
      */
     @Transactional
     @DeleteMapping("/{id}/follow")
@@ -223,10 +222,10 @@ public class PlanController {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(au.getName()).orElseThrow(() -> new NullPointerException(Constants.AUTHENTICATION_REQUIRED));
         PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), user).orElse(null);
-        if (interactor != null){
+        if (interactor != null) {
             planInteractorRepository.deleteById(interactor.getId());
             return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
-        }else{
+        } else {
             return ResponseEntity.ok().body(Constants.MESSAGE);
         }
     }
@@ -250,7 +249,6 @@ public class PlanController {
         if (interactor != null) {
             interactor.setJoin(true);
             interactor.setFollow(true);
-
             planInteractorRepository.save(interactor);
             return ResponseEntity.ok().body(Constants.MESSAGE);
         } else {
@@ -315,14 +313,10 @@ public class PlanController {
         User user = userRepository.findByEmail(au.getName()).get();
         Plan plan = planRepository.findById(id).orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
 
-        List<UserDto> userDtos2 = plan.getPlanInteractors().stream().filter(PlanInteractor::isFollow)
+        List<UserDto> userDtos = plan.getPlanInteractors().stream().filter(PlanInteractor::isFollow)
                 .map(planInteractor -> planInteractor.convertToDto().getUserDto()).collect(Collectors.toList());
 
-        List<UserDto> userDtos = planDto.getPlanInteractorDtos().stream()
-                .filter(PlanInteractorDto::isFollow)
-                .map(planInteractorDto -> planInteractorDto.getUserDto()).collect(Collectors.toList());
-
-        return ResponseEntity.ok().body(userDtos2);
+        return ResponseEntity.ok().body(userDtos);
     }
 
     @PreAuthorize("isAuthenticated()")

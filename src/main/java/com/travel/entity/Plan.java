@@ -3,10 +3,8 @@ package com.travel.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.travel.dto.PlanDto;
-import com.travel.dto.PlanInteractorDto;
 import com.travel.dto.PlanProfileRespone;
 import com.travel.model.AuditModel;
-import com.travel.repository.PlanInteractorRepository;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -64,6 +62,9 @@ public class Plan extends AuditModel {
     @OneToMany(mappedBy = "plan")
     private List<PlanInteractor> planInteractors;
 
+    @OneToMany(mappedBy = "plan")
+    private List<Comment> comments;
+
     public Plan() {
     }
 
@@ -72,10 +73,10 @@ public class Plan extends AuditModel {
     }
 
     public PlanDto convertToDto(boolean follow, boolean join) {
-        return new PlanDto(this,this.getUser(),this.getPlanInteractors(), follow, join);
+        return new PlanDto(this, this.getUser(), follow, join, this.getPlanInteractors() , this.getComments());
     }
     public PlanDto convertNewsToDto() {
-        return new PlanDto(this,this.getUser(),this.getPlanInteractors());
+        return new PlanDto(this,this.getUser(),this.getPlanInteractors(), this.getComments());
     }
 
     public PlanProfileRespone convertToPlanProfile(){
@@ -191,6 +192,14 @@ public class Plan extends AuditModel {
 
     public void setNumPeople(int numPeople) {
         this.numPeople = numPeople;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     @Override

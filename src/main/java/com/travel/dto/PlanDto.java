@@ -1,11 +1,10 @@
 package com.travel.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.travel.entity.Comment;
 import com.travel.entity.Plan;
 import com.travel.entity.PlanInteractor;
-import com.travel.entity.Schedule;
 import com.travel.entity.User;
-import com.travel.repository.PlanInteractorRepository;
 
 import java.util.Date;
 import java.util.List;
@@ -29,23 +28,19 @@ public class PlanDto {
 
     private List<PlanInteractorDto> planInteractorDtos;
 
+    private List<CommentDto> commentDtos;
+
     private boolean join;
     private boolean follow;
 
     public PlanDto() {
     }
 
-    public PlanDto(Plan plan, User creator, List<PlanInteractor> planInteractors) {
-        this.id = plan.getId();
-        this.name = plan.getName();
-        this.content = plan.getContent();
-        this.status = plan.getStatus();
-        this.imageCover = plan.getImageCover();
-        this.user = new UserDto(creator);
-        this.planInteractorDtos = planInteractors.stream().map(PlanInteractor::convertToDto).collect(Collectors.toList());
+    public PlanDto(long idPlan) {
+        this.id = idPlan;
     }
 
-    public PlanDto(Plan plan, User creator, List<PlanInteractor> planInteractors, boolean follow, boolean join) {
+    public PlanDto(Plan plan, User creator, List<PlanInteractor> planInteractors, List<Comment> comments ) {
         this.id = plan.getId();
         this.name = plan.getName();
         this.content = plan.getContent();
@@ -53,12 +48,24 @@ public class PlanDto {
         this.imageCover = plan.getImageCover();
         this.user = new UserDto(creator);
         this.planInteractorDtos = planInteractors.stream().map(PlanInteractor::convertToDto).collect(Collectors.toList());
+        this.commentDtos = comments.stream().map(Comment::convertCommentToDto).collect(Collectors.toList());
+    }
+
+    public PlanDto(Plan plan, User creator,  boolean follow, boolean join ,
+                   List<PlanInteractor> planInteractors, List<Comment> comments) {
+        this.id = plan.getId();
+        this.name = plan.getName();
+        this.content = plan.getContent();
+        this.status = plan.getStatus();
+        this.imageCover = plan.getImageCover();
+        this.user = new UserDto(creator);
+
         this.follow = follow;
         this.join = join;
 
+        this.planInteractorDtos = planInteractors.stream().map(PlanInteractor::convertToDto).collect(Collectors.toList());
+        this.commentDtos = comments.stream().map(Comment::convertCommentToDto).collect(Collectors.toList());
     }
-
-
 
     public long getId() {
         return id;
@@ -138,5 +145,13 @@ public class PlanDto {
 
     public void setFollow(boolean follow) {
         this.follow = follow;
+    }
+
+    public List<CommentDto> getCommentDtos() {
+        return commentDtos;
+    }
+
+    public void setCommentDtos(List<CommentDto> commentDtos) {
+        this.commentDtos = commentDtos;
     }
 }

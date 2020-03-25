@@ -48,6 +48,9 @@ public class User {
     @OneToMany(mappedBy="user")
     private List<PlanInteractor> planInteractors;
 
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
+
     @Column(name = "provider_id")
     private String providerId;
 
@@ -133,6 +136,14 @@ public class User {
 
     public void setJoinDate(Date joinDate) {
         this.joinDate = joinDate;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     public String getProviderId() {

@@ -38,8 +38,10 @@ function onConnected() {
 
     stompClient.subscribe('/user/queue/errors', onMessageReceived);
 
+    stompClient.subscribe('/topic/greetings', onMessageReceived);
+
     // Tell your username to the server
-    stompClient.send("/app/notification.followPlan",
+    stompClient.send("/app/followPlan",
         {},
         JSON.stringify({sender: username, type: 'JOIN'})
     )
@@ -58,9 +60,9 @@ function sendMessage(event) {
     var messageContent = messageInput.value.trim();
     if(messageContent && stompClient) {
         var chatMessage = {
-            sender: username,
-            content: messageInput.value,
-            type: 'CHAT'
+            sender: username,  // getSender
+            content: messageInput.value,  // getContent
+            type: 'CHAT' // type?
         };
         stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
         messageInput.value = '';

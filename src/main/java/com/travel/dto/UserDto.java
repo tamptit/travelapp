@@ -1,19 +1,13 @@
 package com.travel.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.travel.entity.User;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Size;
-import java.util.Date;
 
 public class UserDto {
     private String username;
     private String email;
     private String fullName;
     private boolean gender;
+//    private String imgAvart;
 
     public UserDto() {
     }
@@ -61,4 +55,12 @@ public class UserDto {
     public void setGender(boolean gender) {
         this.gender = gender;
     }
+
+//    public String getImgAvart() {
+//        return imgAvart;
+//    }
+//
+//    public void setImgAvart(String imgAvart) {
+//        this.imgAvart = imgAvart;
+//    }
 }
