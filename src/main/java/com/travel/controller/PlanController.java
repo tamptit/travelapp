@@ -295,8 +295,8 @@ public class PlanController {
      * @param id
      * @return
      * @method info Plan detail
+     *  Hai trạng thái xem, đăng nhập có user và không đăng nhập
      */
-    @PreAuthorize("isAuthenticated()")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity detailPlan(@PathVariable Long id) {
 
@@ -305,12 +305,12 @@ public class PlanController {
         return ResponseEntity.ok().body(planDetail);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    //@PreAuthorize("isAuthenticated()")
     @RequestMapping(value = "/{id}/interactive", method = RequestMethod.GET)
     public ResponseEntity detailInteractiveByPlan(@PathVariable Long id) {
-        PlanDto planDto = new PlanDto();
+        //PlanDto planDto = new PlanDto();
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByEmail(au.getName()).get();
+        //User user = userRepository.findByEmail(au.getName()).get();
         Plan plan = planRepository.findById(id).orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
 
         List<UserDto> userDtos = plan.getPlanInteractors().stream().filter(PlanInteractor::isFollow)
@@ -319,7 +319,7 @@ public class PlanController {
         return ResponseEntity.ok().body(userDtos);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    //@PreAuthorize("isAuthenticated()")
     @RequestMapping(value = "/{id}/schedule", method = RequestMethod.GET)
     public ResponseEntity detailScheduleByPlan(@PathVariable Long id) {
         Plan plan = planRepository.findById(id).orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
