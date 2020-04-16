@@ -1,6 +1,5 @@
 package com.travel.controller;
 
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.services.drive.model.File;
@@ -25,7 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -65,8 +63,8 @@ public class PlanController {
     @Autowired
     GoogleDriveService driveService;
 
-    @Autowired
-    PlanService planService;
+//    @Autowired
+//    PlanService planService;
 
     public static final int TOTAL_ROW_IN_PAGE = 10;
 
@@ -113,16 +111,18 @@ public class PlanController {
      * @method Latest Plan after login
      */
     @RequestMapping(value = "/latest", method = RequestMethod.GET)
-    public ResponseEntity findAllLatestPlan(Pageable pageable) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public ResponseEntity<PageResponse<Plan>> findAllLatestPlan(Pageable pageable) {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        if (!(au instanceof AnonymousAuthenticationToken)) {
-            String currentUserName = au.getName();
-            return ResponseEntity.ok().body(currentUserName);
-        }
+//        if (!(au instanceof AnonymousAuthenticationToken)) {
+//            String currentUserName = au.getName();
+//            return ResponseEntity.ok().body(currentUserName);
+//        }
         User user = userRepository.findByEmail(au.getName()).orElse(null);
         //PlanInteractor interactor = planInteractorRepository.findByPlanAndUser();
-
-        Page page = planRepository.findAllByOrderByCreatedDayDesc(pageable).map(p ->  planService.convertDtoWithInterac(user, p));
+        PlanService planService = new PlanService();
+        Page<Plan> page = (Page<Plan>) planRepository.findAllByOrderByCreatedDayDesc(pageable).stream()
+                                                    .map(p ->  planService.convertDtoWithInterac(user, p));
 
         PageResponse<Plan> response = new PageResponse<Plan>();
         response.setCurrentPage(pageable.getPageNumber());
@@ -138,11 +138,11 @@ public class PlanController {
      */
 
     @RequestMapping(value = "/discovery", method = RequestMethod.GET)
-    public ResponseEntity findAllLatestPlanWithoutLogin(Pageable pageable) {
+    public ResponseEntity<PageResponse<PlanDto>> findAllLatestPlanWithoutLogin(Pageable pageable) {
 
-        Page page = planRepository.findAllByOrderByCreatedDayDesc(pageable).map(p ->  p.convertNewsToDto());
+        Page<PlanDto> page = planRepository.findAllByOrderByCreatedDayDesc(pageable).map(Plan::convertNewsToDto);
         //Page page= planRepository.findAllByOrderByCreatedDayDesc(pageable);
-        PageResponse<Plan> response = new PageResponse<Plan>();
+        PageResponse<PlanDto> response = new PageResponse<PlanDto>();
         response.setCurrentPage(pageable.getPageNumber());
         response.setTotalPage(page.getTotalPages());
         response.setContent(page.getContent());
@@ -155,9 +155,9 @@ public class PlanController {
      * @method Hot Plan
      */
     @RequestMapping("/hot-plan")
-    public ResponseEntity getListHotPlan(Pageable pageable) {
-        Page page = planRepository.findListHotPlan(pageable);
-        PageResponse<Plan> response = new PageResponse<Plan>();
+    public ResponseEntity<PageResponse<PlanDto>> getListHotPlan(Pageable pageable) {
+        Page<PlanDto> page = planRepository.findListHotPlan(pageable).map(Plan::convertNewsToDto);
+        PageResponse<PlanDto> response = new PageResponse<PlanDto>();
         response.setCurrentPage(pageable.getPageNumber());
         response.setTotalPage(page.getTotalPages());
         response.setContent(page.getContent());
@@ -170,7 +170,7 @@ public class PlanController {
      */
 
     @RequestMapping(value = "/interactive", method = RequestMethod.GET)
-    public ResponseEntity findInteractiveByUser() {
+    public ResponseEntity<List<PlanInteractorDto>> findInteractiveByUser() {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(au.getName()).orElseThrow(() -> new NullPointerException(Constants.AUTHENTICATION_REQUIRED));
         List<PlanInteractor> planInteractor = planInteractorRepository.findAllByUser(user);
@@ -190,12 +190,11 @@ public class PlanController {
     @Transactional
     @PutMapping(value = "/{id}/follow")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity followPlan(@PathVariable Long id) {
+    public ResponseEntity<String> followPlan(@PathVariable Long id) {
 
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        User user;
         Plan plan;
-        user = userRepository.findByEmail(au.getName()).get();  // sao cho nay lai findbyEmail?? & au.getName()
+        User  user = userRepository.findByEmail(au.getName()).orElse(null);      // sao cho nay lai findbyEmail?? & au.getName()
         plan = planRepository.findById(id).orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
 
         PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan, user).orElse(null);
@@ -218,11 +217,11 @@ public class PlanController {
     @Transactional
     @DeleteMapping("/{id}/follow")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity unFollowPlan(@PathVariable Long id) {
+    public ResponseEntity<String> unFollowPlan(@PathVariable Long id) {
         Optional<Plan> plan = planRepository.findById(id);
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(au.getName()).orElseThrow(() -> new NullPointerException(Constants.AUTHENTICATION_REQUIRED));
-        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.get(), user).orElse(null);
+        PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan.orElse(null), user).orElse(null);
         if (interactor != null){
             planInteractorRepository.deleteById(interactor.getId());
             return ResponseEntity.ok().body(Constants.SUCCESS_MESSAGE);
@@ -230,7 +229,6 @@ public class PlanController {
             return ResponseEntity.ok().body(Constants.MESSAGE);
         }
     }
-
     /**
      * @param id Plan
      * @return
@@ -239,11 +237,11 @@ public class PlanController {
     @Transactional
     @PutMapping(value = "/{id}/join")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity joinPlan(@PathVariable Long id) {
+    public ResponseEntity<String> joinPlan(@PathVariable Long id) {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user;
         Plan plan;
-        user = userRepository.findByEmail(au.getName()).get();  // sao cho nay lai findbyEmail?? & au.getName()
+        user = userRepository.findByEmail(au.getName()).orElse(null);  // sao cho nay lai findbyEmail?? & au.getName()
         plan = planRepository.findById(id).orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
 
         PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan, user).orElse(null);
@@ -268,11 +266,11 @@ public class PlanController {
     @Transactional
     @DeleteMapping(value = "/{id}/disjoin")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity disjoinPlan(@PathVariable Long id) {
+    public ResponseEntity<String> disjoinPlan(@PathVariable Long id) {
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
         User user;
         Plan plan;
-        user = userRepository.findByEmail(au.getName()).get();  // sao cho nay lai findbyEmail?? & au.getName()
+        user = userRepository.findByEmail(au.getName()).orElse(null);  // sao cho nay lai findbyEmail?? & au.getName()
         plan = planRepository.findById(id).orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
 
         PlanInteractor interactor = planInteractorRepository.findByPlanAndUser(plan, user).orElse(null);
@@ -294,13 +292,13 @@ public class PlanController {
     }
 
     /**
-     * @param id
-     * @return
-     * @method info Plan detail
+     * @param id plan
+     * @return plan detail include basic info
+     * @method Plan detail
      */
     @PreAuthorize("isAuthenticated()")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity detailPlan(@PathVariable Long id) {
+    public ResponseEntity<PlanDetail> detailPlan(@PathVariable Long id) {
 
         Plan plan = planRepository.findById(id).orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
         PlanDetail planDetail = new PlanDetail(plan, plan.getUser());
@@ -309,25 +307,25 @@ public class PlanController {
 
     @PreAuthorize("isAuthenticated()")
     @RequestMapping(value = "/{id}/interactive", method = RequestMethod.GET)
-    public ResponseEntity detailInteractiveByPlan(@PathVariable Long id) {
+    public ResponseEntity<List<UserDto>> detailInteractiveByPlan(@PathVariable Long id) {
         PlanDto planDto = new PlanDto();
         Authentication au = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByEmail(au.getName()).get();
+        User user = userRepository.findByEmail(au.getName()).orElse(null);
         Plan plan = planRepository.findById(id).orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
 
         List<UserDto> userDtos2 = plan.getPlanInteractors().stream().filter(PlanInteractor::isFollow)
                 .map(planInteractor -> planInteractor.convertToDto().getUserDto()).collect(Collectors.toList());
 
-        List<UserDto> userDtos = planDto.getPlanInteractorDtos().stream()
-                .filter(PlanInteractorDto::isFollow)
-                .map(planInteractorDto -> planInteractorDto.getUserDto()).collect(Collectors.toList());
+//        List<UserDto> userDtos = planDto.getPlanInteractorDtos().stream()
+//                .filter(PlanInteractorDto::isFollow)
+//                .map(planInteractorDto -> planInteractorDto.getUserDto()).collect(Collectors.toList());
 
         return ResponseEntity.ok().body(userDtos2);
     }
 
     @PreAuthorize("isAuthenticated()")
     @RequestMapping(value = "/{id}/schedule", method = RequestMethod.GET)
-    public ResponseEntity detailScheduleByPlan(@PathVariable Long id) {
+    public ResponseEntity<List<Schedule>> detailScheduleByPlan(@PathVariable Long id) {
         Plan plan = planRepository.findById(id).orElseThrow(() -> new NullPointerException(Constants.PLAN_NOT_EXIST));
         List<Schedule> schedules = plan.getSchedules();
         return ResponseEntity.ok().body(schedules);
