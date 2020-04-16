@@ -99,7 +99,7 @@ public class PasswordController {
         Optional<User> user = Optional.ofNullable(passwordResetToken.getUser());
 
         if (new Date().before(passwordResetToken.getExpiryDate())) {
-            User resetUser = user.get();
+            User resetUser = user.orElse(null);
             if (requestParams.get("password").toString().isEmpty()) {                  // Set new password
                 return ResponseEntity.ok().body(new ErrorMessage(HttpStatus.BAD_REQUEST, "Password should be minimum of 6 characters"));
             }
@@ -109,7 +109,7 @@ public class PasswordController {
             passwordResetToken.setToken(null);
             passwordTokenRepository.save(passwordResetToken);
             //passwordResetToken.save(passwordResetToken);
-            return ResponseEntity.ok().body("logined");
+            return ResponseEntity.ok().body("logged");
 
         } else {
             return ResponseEntity.badRequest().body("InValid");
